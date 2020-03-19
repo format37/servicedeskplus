@@ -6,5 +6,5 @@
 <parameter><name>Subject</name><value>%Subject%</value></parameter>
 <parameter><name>Resolution</name><value>%Resolution%</value></parameter>
 <parameter><name>Level</name><value>Обычная заявка</value></parameter>
-<parameter><name>Status</name><value>Закрыта</value></parameter>%requester%
+<parameter><name>Status</name><value>Закрыта</value></parameter>
 </Details>

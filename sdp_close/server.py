@@ -27,6 +27,10 @@ async def bid_edit(request):
 		workHours	= request.rel_url.query['workHours']
 	except:
 		workHours	=''
+	try:
+		token	= request.rel_url.query['token']
+	except:
+		token	=''
 	
 	content='''<html><body>
 		<form method="get" action="http://10.2.4.87:8080/bidclose">
@@ -38,11 +42,7 @@ async def bid_edit(request):
 		  <tr>
 			<td>Тема:</td>
 			<td><input name="SUBJECT" value="'''+SUBJECT+'''"> *</td>			
-		  </tr>
-		  <tr>
-			<td>Заказчик:</td>
-			<td><input name="REQUESTER"></td>
-		  </tr>
+		  </tr>		  
 		  <tr>
 			<td>Исполнитель:</td>
 			<td><input name="TECHNICIAN" value="'''+technician+'''"> *</td>
@@ -58,6 +58,10 @@ async def bid_edit(request):
 		  <tr>
 			<td>Часов:</td>
 			<td><input name="WORKHOURS" value="'''+workHours+'''"></td>
+		  </tr>
+		  <tr>
+			<td>Ключ:</td>
+			<td><input name="TOKEN" value="'''+token+'''"></td>
 		  </tr>
 		</table>
 		<br>		
@@ -93,6 +97,12 @@ async def bid_close(request):
 	except:
 		print('Не заполнено поле Исполнитель'+back_link)
 		return
+		
+	try:
+		token	= request.rel_url.query['TOKEN']
+	except:
+		print('Не заполнено поле Ключ'+back_link)
+		return
 	
 	try:
 		workMinutes = request.rel_url.query['WORKMINUTES']	
@@ -103,20 +113,11 @@ async def bid_close(request):
 		workHours	= request.rel_url.query['WORKHOURS']
 	except:
 		workHours	=''
-
-	try:
-		requester	= request.rel_url.query['REQUESTER']
-	except:
-		requester	= ''
 	
 	if workMinutes=='':
 		workMinutes='0'
 	if workHours=='':
 		workHours='0'
-
-	token=''
-	with open('token.key','r') as fh:
-		token=fh.read()
 	
 	edit_request_file='EDIT_REQUEST.xml'
 	add_worklog_file='ADD_WORKLOG.xml'
@@ -129,6 +130,7 @@ async def bid_close(request):
 	<input type="hidden" id="RESOLUTION" name="RESOLUTION" value="'''+RESOLUTION+'''">
 	<input type="hidden" id="workMinutes" name="workMinutes" value="'''+workMinutes+'''">
 	<input type="hidden" id="workHours" name="workHours" value="'''+workHours+'''">
+	<input type="hidden" id="token" name="token" value="'''+token+'''">
 		<table>
 		  <tr>
 			<td>ID Заявки:</td>
@@ -137,10 +139,6 @@ async def bid_close(request):
 		  <tr>
 			<td>Тема:</td>
 			<td>'''+SUBJECT+'''</td>			
-		  </tr>
-		  <tr>
-			<td>Заказчик:</td>
-			<td>'''+requester+'''</td>
 		  </tr>
 		  <tr>
 			<td>Исполнитель:</td>
@@ -175,7 +173,7 @@ async def bid_close(request):
 		INPUT_DATA	= fh.read().decode("utf-8")
 		INPUT_DATA = INPUT_DATA.replace("%Subject%", SUBJECT)
 		INPUT_DATA = INPUT_DATA.replace("%Resolution%", RESOLUTION)
-		INPUT_DATA = INPUT_DATA.replace("%requester%", '' if requester=='' else '<parameter><name>requester</name><value>'+requester+'</value></parameter>')
+		#INPUT_DATA = INPUT_DATA.replace("%requester%", '' if requester=='' else '<parameter><name>requester</name><value>'+requester+'</value></parameter>')
 		url='http://10.2.4.46/sdpapi/request/'+WORKORDERID+'?OPERATION_NAME=EDIT_REQUEST&TECHNICIAN_KEY='+token+'&INPUT_DATA='+INPUT_DATA
 		headers = {'Content-Type': 'application/xml'}	
 		response = requests.post(url, headers=headers).text
