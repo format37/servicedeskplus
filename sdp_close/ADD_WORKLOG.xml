@@ -1,0 +1,13 @@
+<Operation>
+<Details>
+<Worklogs>
+<Worklog>
+<description></description>
+<technician>%technician%</technician>
+<cost></cost>
+<workMinutes>%workMinutes%</workMinutes>
+<workHours>%workHours%</workHours>
+</Worklog>
+</Worklogs>
+</Details>
+</Operation>
