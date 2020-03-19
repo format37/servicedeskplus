@@ -114,7 +114,10 @@ async def bid_close(request):
 	if workHours=='':
 		workHours='0'
 
-	token='76ED27EB-D26D-412A-8151-5A65A16198E7'
+	token=''
+	with open('token.key','r') as fh:
+		token=fh.read()
+	
 	edit_request_file='EDIT_REQUEST.xml'
 	add_worklog_file='ADD_WORKLOG.xml'
 	
