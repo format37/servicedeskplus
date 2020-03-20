@@ -7,7 +7,7 @@ http interfaced server, to simplify close work orders
 ## SDP monitoring
 continous work order time checker and alerting to telegram  
 add simple text files:  
-telegram.group - telegram group id. U can obtain that with @relaybot /group message in the same group  
+telegram.group - telegram group id. U can obtain that with @relaybot /lockedurl message in the same group  
 token.key - sdp token
 
 ### REST API for native app

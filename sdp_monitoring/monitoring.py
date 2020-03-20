@@ -18,8 +18,8 @@ with open('telegram.group','r') as fh:
 get_requests_file='GET_REQUESTS.xml'
 alert_minutes_limit	= 30
 check_minutes_interval = 10
-check_hour_start	= 7  # include
-check_hour_end		= 19 # exclude
+check_hour_start	= 7
+check_hour_end		= 19
 
 def send_to_telegram(chat,message):
 	headers = {
@@ -59,6 +59,7 @@ def check():
 			'Васильев Дмитрий Александрович':'@DVasilev',
 			'Головин Олег Дмитриевич':'@Enaleven',
 			'Бойко Илья Вадимович':'@IlyaBoiko',
+			'Васильченко Евгения Алексеевна':'@Vasilcka',
 			}
 		
 		message = ''
@@ -80,28 +81,28 @@ def check():
 			createdtime_difference_m	= (current_time-createdtime)/60
 			
 			if duebytime_difference_m<alert_minutes_limit and duebytime_difference_m>-31 and 'technician' in workorder.keys() and workorder['technician'] in telegram_users.keys():
-				message+='Заявка: '+workorder['workorderid']+ \
+				message='Заявка: '+workorder['workorderid']+ \
 					'\n'+workorder['subject']+ \
 					'\n'+'http://help.icecorp.ru/WorkOrder.do?woMode=viewWO&woID='+workorder['workorderid'] +\
-					'\nОт '+workorder['requester']+ \
-					'\nНа '+workorder['technician']+' '+telegram_users[workorder['technician']]+ \
+					'\nОт: '+workorder['requester']+ \
+					'\nНа: '+workorder['technician']+' '+telegram_users[workorder['technician']]+ \
 					'\n'+( 'Истекает через '+str(int(duebytime_difference_m))+' мин.' if int(duebytime_difference_m)>0 else 'Просрочена '+str(int(-duebytime_difference_m))+' мин. назад.' )
-				message+='\n\n'
 				event_count+=1
+				send_to_telegram(telegram_group,message)
 			
 			if createdtime_difference_m>=5 and 'technician' in workorder.keys() and workorder['technician']=='':
-				message+='Заявка: '+workorder['workorderid']+ \
+				message='Заявка: '+workorder['workorderid']+ \
 					'\n'+workorder['subject']+ \
 					'\n'+'http://help.icecorp.ru/WorkOrder.do?woMode=viewWO&woID='+workorder['workorderid'] +\
-					'\nОт '+workorder['requester']+ \
+					'\nОт: '+workorder['requester']+ \
 					'\n'+( 'Создана '+str(int(createdtime_difference_m))+' мин. назад и не имеет исполнителя.' )
-				message+='\n\n'
 				event_count+=1
+				send_to_telegram(telegram_group,message)
 				
 		if event_count==0:
 			return('ok')
 		else:
-			return('sent '+str(event_count)+' events:\n'+str(send_to_telegram(telegram_group,message)))
+			return('sent '+str(event_count)+' events')
 	
 while True:
 	
