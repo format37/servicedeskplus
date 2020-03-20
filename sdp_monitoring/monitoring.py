@@ -21,6 +21,35 @@ check_minutes_interval = 10
 check_hour_start	= 7
 check_hour_end		= 19
 
+def today_is_holiday():
+	week_day	= datetime.datetime.today().weekday()
+	now = datetime.datetime.now()
+	
+	workdays	= {
+		2018:{
+			4:[28],
+			}
+		}
+
+	if week_day==5 or week_day==6:
+		if	now.year in workdays.keys() and now.month in workdays[now.year].keys() and now.day in workdays[now.year][now.month]:
+			return False
+		else:
+			return True
+		
+	holydays	= {
+		2020:{
+			5:[1,4,5,11],
+			6:[12],
+			11:[4],
+		}
+	}
+
+	if	now.year in holydays.keys() and now.month in holydays[now.year].keys() and now.day in holydays[now.year][now.month]:
+		return True
+	
+	return False	
+
 def send_to_telegram(chat,message):
 	headers = {
 		"Origin": "http://scriptlab.net",
@@ -90,7 +119,7 @@ def check():
 				event_count+=1
 				send_to_telegram(telegram_group,message)
 			
-			if createdtime_difference_m>=5 and 'technician' in workorder.keys() and workorder['technician']=='':
+			if createdtime_difference_m>=5 and 'technician' not in workorder.keys():
 				message='Заявка: '+workorder['workorderid']+ \
 					'\n'+workorder['subject']+ \
 					'\n'+'http://help.icecorp.ru/WorkOrder.do?woMode=viewWO&woID='+workorder['workorderid'] +\
@@ -103,11 +132,11 @@ def check():
 			return('ok')
 		else:
 			return('sent '+str(event_count)+' events')
-	
+
 while True:
 	
 	now = datetime.datetime.now()
-	if now.hour>=check_hour_start and now.hour<check_hour_end:
+	if now.hour>=check_hour_start and now.hour<check_hour_end and today_is_holiday()==False:
 		print(str(now.year)+'.'+str(now.month)+'.'+str(now.day)+' '+str(now.hour)+':'+str(now.minute)+':'+str(now.second)+' '+str(check()))
 	time.sleep(check_minutes_interval*60)
 	
