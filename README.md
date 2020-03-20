@@ -1,5 +1,14 @@
-# servicedesk plus
-Servicedesk plus python scripts. close workorder, etc
+# servicedesk plus python scripts
+Servicedesk plus python scripts.
+
+## SDP close
+http interfaced server, to simplify close work orders
+
+## SDP monitoring
+continous work order time checker and alerting to telegram  
+add simple text files:  
+telegram.group - telegram group id. U can obtain that with @relaybot /group message in the same group  
+token.key - sdp token
 
 ### REST API for native app
 https://servicedeskplusmsp.wiki.zoho.com/REST-API-for-native-app.html
