@@ -53,7 +53,7 @@ with open(json_path, encoding='utf-8') as json_file:
 #exit()
 	
 issue=create_issue(
-	'PRJ1C',
+	'HELP1C',
 	request['SUBJECT'],
 	request['DESCRIPTION'],
 	sdp_jira_accounts[request['TECHNICIAN']],
