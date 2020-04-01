@@ -15,10 +15,10 @@ def issue_assignee(jira,issue,accountId):
 	return jira._session.put(url, data=json.dumps(payload))
 
 	
-def create_issue(project,summary,description,accountId):
+def create_issue(project,summary,description,accountId,issuetype):
 	issue_dict={
 		'project': project,
-		'issuetype': 'Task',
+		'issuetype': issuetype,
 		'components': [{'name': 'Jira'}],
 		'summary': summary,
 		'description': description,
@@ -38,6 +38,13 @@ sdp_jira_accounts={
 	'Юрасов Алексей Александрович':'557058:f0548e8f-6a09-44bd-bfb5-43a0a40531bb',
 	}
 	
+sdp_jira_issue_types={
+	'Изменение':'Task',
+	'Информация':'Consultation',
+	'Инцидент':'Bug',
+	'Обслуживание':'Service',
+}
+	
 jira_options = {'server': 'https://icebergproject.atlassian.net'}
 jira = JIRA(options=jira_options, basic_auth=('yurasov@iceberg.ru', get_api_key()))
 
@@ -50,13 +57,14 @@ with open(json_path, encoding='utf-8') as json_file:
 
 #issue=jira.issue('PRJ1C-324')
 #issue.update({'Epic_link':'PRJ1C-5'})
-#exit()
-	
-issue=create_issue(
-	'HELP1C',
-	request['SUBJECT'],
-	request['DESCRIPTION'],
-	sdp_jira_accounts[request['TECHNICIAN']],
-	)
-issue.update({'customfield_10043':request['WORKORDERID']})
-comment = jira.add_comment(str(issue), 'Created automatically from Service Desk Plus')
+
+if request['TECHNICIAN'] in sdp_jira_accounts.keys():	
+	issue=create_issue(
+		'HELP1C',
+		request['WORKORDERID']+' '+request['SUBJECT'],
+		request['DESCRIPTION'],
+		sdp_jira_accounts[request['TECHNICIAN']],
+		sdp_jira_issue_types[request['REQUESTTYPE']],
+		)
+	issue.update({'customfield_10043':request['WORKORDERID']})
+	#comment = jira.add_comment(str(issue), 'Created automatically from Service Desk Plus')

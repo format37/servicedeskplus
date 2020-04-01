@@ -200,10 +200,53 @@ async def bid_close(request):
 	content+='</form></body></html>'
 	return web.Response(text=content,content_type="text/html")
 
+async def bid_close_by_jira(request):
+	
+	WORKORDERID = request.rel_url.query['sdp_id']
+	SUBJECT		= request.rel_url.query['subject']
+	RESOLUTION	= request.rel_url.query['resolution']
+	token	= '76ED27EB-D26D-412A-8151-5A65A16198E7'
+	workHours	= '0'
+	workMinutes = '1'	
+	add_worklog_file='ADD_WORKLOG.xml'
+	edit_request_file='EDIT_REQUEST.xml'
+	
+	# users={
+			# '557058:fa79f484-a387-495b-9862-1af505d8d70a'	: 'Фролов Максим Евгеньевич',
+			# '5de505aa22389c0d118c3eaf'						: 'Сотников Артём Игоревич'
+			# '5dfb26b2588f6e0cb033698e'						: 'Семенов Олег Владимирович',
+			# '557058:f0548e8f-6a09-44bd-bfb5-43a0a40531bb'	: 'Юрасов Алексей Александрович',
+			# '5dfb273f9422830cacaa5c02'						: 'Полухин Владимир Геннадьевич',
+			# '5dfb26b35697460cb3d98780'						: 'Бывальцев Виктор Валентинович',
+			# '5dfb2741eaf5880cad03b10f'						: 'Васильченко Евгения Алексеевна'
+			# }
+			
+	# technician = users[request.rel_url.query['user']]
+	technician = 'Юрасов Алексей Александрович'
+	response = ''
+	with open(add_worklog_file,'rb') as fh:
+		INPUT_DATA	= fh.read().decode("utf-8")
+		INPUT_DATA = INPUT_DATA.replace("%technician%", technician)
+		INPUT_DATA = INPUT_DATA.replace("%workMinutes%", workMinutes)
+		INPUT_DATA = INPUT_DATA.replace("%workHours%", workHours)
+		url='http://10.2.4.46/sdpapi/request/'+WORKORDERID+'/worklogs?OPERATION_NAME=ADD_WORKLOG&TECHNICIAN_KEY='+token+'&INPUT_DATA='+INPUT_DATA
+		headers = {'Content-Type': 'application/xml'}	
+		response += requests.post(url, headers=headers).text
+
+	with open(edit_request_file,'rb') as fh:
+		INPUT_DATA	= fh.read().decode("utf-8")
+		INPUT_DATA = INPUT_DATA.replace("%Subject%", SUBJECT)
+		INPUT_DATA = INPUT_DATA.replace("%Resolution%", RESOLUTION)
+		url='http://10.2.4.46/sdpapi/request/'+WORKORDERID+'?OPERATION_NAME=EDIT_REQUEST&TECHNICIAN_KEY='+token+'&INPUT_DATA='+INPUT_DATA
+		headers = {'Content-Type': 'application/xml'}	
+		response += requests.post(url, headers=headers).text
+
+	return web.Response(text=response,content_type="text/html")
+
 app = web.Application()
 app.router.add_route('GET', '/bidedit', bid_edit)
-#app.router.add_route('GET', '/bidclose/{workorderid}/{subject}/{resolution}/{technician}/{workMinutes}/{workHours}/{requester}', bid_close)
 app.router.add_route('GET', '/bidclose', bid_close)
+app.router.add_route('GET', '/bidclosebyjira', bid_close_by_jira)
 
 loop = asyncio.get_event_loop()
 handler = app.make_handler()
