@@ -1,7 +1,4 @@
 <Details>
-<parameter><name>Request Type</name><value>Обслуживание</value></parameter>
-<parameter><name>Category</name><value>Программное обеспечение</value></parameter>
-<parameter><name>Subcategory</name><value>1С Системы</value></parameter>
 <parameter><name>Group</name><value>Программное обеспечение</value></parameter>
 <parameter><name>Subject</name><value>%Subject%</value></parameter>
 <parameter><name>Resolution</name><value>%Resolution%</value></parameter>

@@ -4,6 +4,8 @@ from aiohttp import web
 from urllib.parse import urlparse, parse_qsl
 import multidict as MultiDict
 import requests
+from sdp_create import bid_create
+import datetime
 
 #@asyncio.coroutine
 async def bid_edit(request):
@@ -201,28 +203,38 @@ async def bid_close(request):
 	return web.Response(text=content,content_type="text/html")
 
 async def bid_close_by_jira(request):
-	
+	print('\n======= sdp close by jira:',datetime.datetime.now())
+	#print(request.rel_url.query)
 	WORKORDERID = request.rel_url.query['sdp_id']
 	SUBJECT		= request.rel_url.query['subject']
 	RESOLUTION	= request.rel_url.query['resolution']
+	user = request.rel_url.query['user']
 	token	= '76ED27EB-D26D-412A-8151-5A65A16198E7'
 	workHours	= '0'
 	workMinutes = '1'	
 	add_worklog_file='ADD_WORKLOG.xml'
 	edit_request_file='EDIT_REQUEST.xml'
 	
-	# users={
-			# '557058:fa79f484-a387-495b-9862-1af505d8d70a'	: 'Фролов Максим Евгеньевич',
-			# '5de505aa22389c0d118c3eaf'						: 'Сотников Артём Игоревич'
-			# '5dfb26b2588f6e0cb033698e'						: 'Семенов Олег Владимирович',
-			# '557058:f0548e8f-6a09-44bd-bfb5-43a0a40531bb'	: 'Юрасов Алексей Александрович',
-			# '5dfb273f9422830cacaa5c02'						: 'Полухин Владимир Геннадьевич',
-			# '5dfb26b35697460cb3d98780'						: 'Бывальцев Виктор Валентинович',
-			# '5dfb2741eaf5880cad03b10f'						: 'Васильченко Евгения Алексеевна'
-			# }
-			
-	# technician = users[request.rel_url.query['user']]
-	technician = 'Юрасов Алексей Александрович'
+	print('sdp_id',WORKORDERID)
+	print('subject',SUBJECT)
+	print('resolution',RESOLUTION)
+	
+	users={
+		'557058:fa79f484-a387-495b-9862-1af505d8d70a'	: 'Фролов Максим Евгеньевич',
+		'5de505aa22389c0d118c3eaf'						: 'Сотников Артём Игоревич',
+		'5dfb26b2588f6e0cb033698e'						: 'Семенов Олег Владимирович',
+		'557058:f0548e8f-6a09-44bd-bfb5-43a0a40531bb'	: 'Юрасов Алексей Александрович',
+		'5dfb273f9422830cacaa5c02'						: 'Полухин Владимир Геннадьевич',
+		'5dfb26b35697460cb3d98780'						: 'Бывальцев Виктор Валентинович',
+		'5dfb2741eaf5880cad03b10f'						: 'Васильченко Евгения Алексеевна'
+	}
+	technician = 'Юрасов Алексей Александрович'		
+	if user in users.keys():
+		technician = users[user]
+		print('technician',technician)
+	else:
+		print('technician not found:',user)
+	
 	response = ''
 	with open(add_worklog_file,'rb') as fh:
 		INPUT_DATA	= fh.read().decode("utf-8")
@@ -246,6 +258,7 @@ async def bid_close_by_jira(request):
 app = web.Application()
 app.router.add_route('GET', '/bidedit', bid_edit)
 app.router.add_route('GET', '/bidclose', bid_close)
+app.router.add_route('GET', '/bidcreate', bid_create)
 app.router.add_route('GET', '/bidclosebyjira', bid_close_by_jira)
 
 loop = asyncio.get_event_loop()
