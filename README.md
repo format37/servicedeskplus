@@ -21,3 +21,8 @@ Install python at sdp server, not in users path. C:\Python for example. With fla
 
 To send prameters from sdp to script with triggers, use:
 py custom_log.py $COMPLETE_JSON_FILE
+
+### Jira  
+The URIs for resources have the following structure:  
+https://<site-url>/rest/api/3/<resource-name>  
+For example, https://your-domain.atlassian.net/rest/api/3/issue/DEMO-1  

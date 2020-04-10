@@ -10,6 +10,9 @@ import json
 from jira.utils import json_loads
 import urllib
 
+def jira_datetime_format(dt):
+    return str(dt.year)+'-'+str(dt.month).zfill(2)+'-'+str(dt.day).zfill(2)+'T'+str(dt.hour).zfill(2)+':'+str(dt.minute).zfill(2)+':'+str(dt.second).zfill(2)+'.'+str(int(dt.microsecond/1000)).zfill(3)+'+0300'
+
 def issue_assignee(jira,issue,accountId):
 	url = jira._options['server'] + '/rest/api/latest/issue/' + issue + '/assignee'
 	payload = {'accountId': accountId}
@@ -18,14 +21,17 @@ def issue_assignee(jira,issue,accountId):
 def create_issue(jira, project,summary,description,accountId,issuetype,item):
 	if '-Сервис' in item:
 		item='1С-Сервис'
-	
+	#b = datetime.datetime.now()
+	#print(ex)
+	#print(jira_datetime_format(b))
 	issue_dict={
 		'project': project,
 		'issuetype': issuetype,
 		'components': [{'name': item}],
 		'summary': summary,
 		'description': description,
-		'assignee': {'accountId': accountId}
+		'assignee': {'accountId': accountId},
+		'duedate': jira_datetime_format(datetime.datetime.now()),
 	}
 	return jira.create_issue(fields=issue_dict)
 
@@ -170,20 +176,12 @@ async def sdp_bid_create(request):
 			'Инцидент':'Bug',
 			'Обслуживание':'Service',
 		}
-			
+
 		jira_options = {'server': 'https://icebergproject.atlassian.net'}
 		with open('jira.key','r') as key_file:
 			jira_key = key_file.read()
 
 		jira = JIRA(options=jira_options, basic_auth=('yurasov@iceberg.ru', jira_key))
-
-		# param=sys.argv[1]
-		# file_name=param[param.rfind('/')+1:]
-		# json_path='request\\'+file_name
-		# with open(json_path, encoding='utf-8') as json_file:
-		# #with open(json_path, encoding='cp1251') as json_file:
-			# json_data=json.loads(json_file.read())
-			# request=json_data['request']
 
 		#issue=jira.issue('PRJ1C-324')
 		#issue.update({'Epic_link':'PRJ1C-5'})
