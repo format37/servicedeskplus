@@ -9,199 +9,199 @@ import datetime
 
 #@asyncio.coroutine
 
-# async def bid_edit(request):
-	# try:
-		# SUBJECT		= request.rel_url.query['SUBJECT']
-	# except:
-		# SUBJECT		=''
-	# try:
-		# RESOLUTION	= request.rel_url.query['RESOLUTION']
-	# except:
-		# RESOLUTION	=''
-	# try:
-		# technician	= request.rel_url.query['TECHNICIAN']
-	# except:
-		# technician	=''
-	# try:
-		# workMinutes = request.rel_url.query['workMinutes']
-	# except:
-		# workMinutes =''
-	# try:
-		# workHours	= request.rel_url.query['workHours']
-	# except:
-		# workHours	=''
-	# try:
-		# token	= request.rel_url.query['token']
-	# except:
-		# token	=''
+async def bid_edit(request):
+	try:
+		SUBJECT		= request.rel_url.query['SUBJECT']
+	except:
+		SUBJECT		=''
+	try:
+		RESOLUTION	= request.rel_url.query['RESOLUTION']
+	except:
+		RESOLUTION	=''
+	try:
+		technician	= request.rel_url.query['TECHNICIAN']
+	except:
+		technician	=''
+	try:
+		workMinutes = request.rel_url.query['workMinutes']
+	except:
+		workMinutes =''
+	try:
+		workHours	= request.rel_url.query['workHours']
+	except:
+		workHours	=''
+	try:
+		token	= request.rel_url.query['token']
+	except:
+		token	=''
 	
-	# content='''<html><body>
-		# <form method="get" action="http://10.2.4.87:8080/bidclose">
-		# <table>
-		  # <tr>
-			# <td>ID Заявки:</td>
-			# <td><input name="WORKORDERID"> *</td>
-		  # </tr>
-		  # <tr>
-			# <td>Тема:</td>
-			# <td><input name="SUBJECT" value="'''+SUBJECT+'''"> *</td>			
-		  # </tr>		  
-		  # <tr>
-			# <td>Исполнитель:</td>
-			# <td><input name="TECHNICIAN" value="'''+technician+'''"> *</td>
-		  # </tr>		  
-		  # <tr>
-			# <td>Заключение:</td>
-			# <td><input name="RESOLUTION" value="'''+RESOLUTION+'''"> *</td>
-		  # </tr>
-		  # <tr>
-			# <td>Минут:</td>
-			# <td><input name="WORKMINUTES" value="'''+workMinutes+'''"></td>
-		  # </tr>
-		  # <tr>
-			# <td>Часов:</td>
-			# <td><input name="WORKHOURS" value="'''+workHours+'''"></td>
-		  # </tr>
-		  # <tr>
-			# <td>Ключ:</td>
-			# <td><input name="TOKEN" value="'''+token+'''"></td>
-		  # </tr>
-		# </table>
-		# <br>		
-		# <input type="submit" value="Закрыть">
-		# </form>
-		# </body></html>'''
-	# return web.Response(text=content,content_type="text/html")
+	content='''<html><body>
+		<form method="get" action="http://10.2.4.87:8080/bidclose">
+		<table>
+		  <tr>
+			<td>ID Заявки:</td>
+			<td><input name="WORKORDERID"> *</td>
+		  </tr>
+		  <tr>
+			<td>Тема:</td>
+			<td><input name="SUBJECT" value="'''+SUBJECT+'''"> *</td>			
+		  </tr>		  
+		  <tr>
+			<td>Исполнитель:</td>
+			<td><input name="TECHNICIAN" value="'''+technician+'''"> *</td>
+		  </tr>		  
+		  <tr>
+			<td>Заключение:</td>
+			<td><input name="RESOLUTION" value="'''+RESOLUTION+'''"> *</td>
+		  </tr>
+		  <tr>
+			<td>Минут:</td>
+			<td><input name="WORKMINUTES" value="'''+workMinutes+'''"></td>
+		  </tr>
+		  <tr>
+			<td>Часов:</td>
+			<td><input name="WORKHOURS" value="'''+workHours+'''"></td>
+		  </tr>
+		  <tr>
+			<td>Ключ:</td>
+			<td><input name="TOKEN" value="'''+token+'''"></td>
+		  </tr>
+		</table>
+		<br>		
+		<input type="submit" value="Закрыть">
+		</form>
+		</body></html>'''
+	return web.Response(text=content,content_type="text/html")
 
-# async def bid_close(request):
+async def bid_close(request):
 	
-	# back_link='<br><input type="submit" value="Продолжить"><br><br>'
+	back_link='<br><input type="submit" value="Продолжить"><br><br>'
 	
-	# try:
-		# WORKORDERID = request.rel_url.query['WORKORDERID']
-	# except:
-		# print('Не заполнено поле ID Заявки'+back_link)
-		# return
+	try:
+		WORKORDERID = request.rel_url.query['WORKORDERID']
+	except:
+		print('Не заполнено поле ID Заявки'+back_link)
+		return
 		
-	# try:
-		# SUBJECT		= request.rel_url.query['SUBJECT']
-	# except:
-		# print('Не заполнено поле Тема'+back_link)
-		# return
+	try:
+		SUBJECT		= request.rel_url.query['SUBJECT']
+	except:
+		print('Не заполнено поле Тема'+back_link)
+		return
 	
-	# try:
-		# RESOLUTION	= request.rel_url.query['RESOLUTION']
-	# except:
-		# print('Не заполнено поле Заключение'+back_link)
-		# return
+	try:
+		RESOLUTION	= request.rel_url.query['RESOLUTION']
+	except:
+		print('Не заполнено поле Заключение'+back_link)
+		return
 	
-	# try:
-		# technician	= request.rel_url.query['TECHNICIAN']
-	# except:
-		# print('Не заполнено поле Исполнитель'+back_link)
-		# return
+	try:
+		technician	= request.rel_url.query['TECHNICIAN']
+	except:
+		print('Не заполнено поле Исполнитель'+back_link)
+		return
 		
-	# try:
-		# token	= request.rel_url.query['TOKEN']
-	# except:
-		# print('Не заполнено поле Ключ'+back_link)
-		# return
+	try:
+		token	= request.rel_url.query['TOKEN']
+	except:
+		print('Не заполнено поле Ключ'+back_link)
+		return
 	
-	# try:
-		# workMinutes = request.rel_url.query['WORKMINUTES']	
-	# except:
-		# workMinutes = ''
+	try:
+		workMinutes = request.rel_url.query['WORKMINUTES']	
+	except:
+		workMinutes = ''
 		
-	# try:
-		# workHours	= request.rel_url.query['WORKHOURS']
-	# except:
-		# workHours	=''
+	try:
+		workHours	= request.rel_url.query['WORKHOURS']
+	except:
+		workHours	=''
 	
-	# if workMinutes=='':
-		# workMinutes='0'
-	# if workHours=='':
-		# workHours='0'
+	if workMinutes=='':
+		workMinutes='0'
+	if workHours=='':
+		workHours='0'
 	
-	# edit_request_file='EDIT_REQUEST.xml'
-	# add_worklog_file='ADD_WORKLOG.xml'
+	edit_request_file='EDIT_REQUEST.xml'
+	add_worklog_file='ADD_WORKLOG.xml'
 	
-	# #responce = 'WORKORDERID'+'<br>'+SUBJECT+'<br>'+RESOLUTION+'<br>'+technician+'<br>'+workMinutes+'<br>'+workHours+'<br>'+requester'
-	# content='''<html><body>
-	# <form method="get" action="http://10.2.4.87:8080/bidedit">
-	# <input type="hidden" id="TECHNICIAN" name="TECHNICIAN" value="'''+technician+'''">
-	# <input type="hidden" id="SUBJECT" name="SUBJECT" value="'''+SUBJECT+'''">
-	# <input type="hidden" id="RESOLUTION" name="RESOLUTION" value="'''+RESOLUTION+'''">
-	# <input type="hidden" id="workMinutes" name="workMinutes" value="'''+workMinutes+'''">
-	# <input type="hidden" id="workHours" name="workHours" value="'''+workHours+'''">
-	# <input type="hidden" id="token" name="token" value="'''+token+'''">
-		# <table>
-		  # <tr>
-			# <td>ID Заявки:</td>
-			# <td>'''+WORKORDERID+'''</td>			
-		  # </tr>
-		  # <tr>
-			# <td>Тема:</td>
-			# <td>'''+SUBJECT+'''</td>			
-		  # </tr>
-		  # <tr>
-			# <td>Исполнитель:</td>
-			# <td>'''+technician+'''</td>
-		  # </tr>		  
-		  # <tr>
-			# <td>Заключение:</td>
-			# <td>'''+RESOLUTION+'''</td>
-		  # </tr>
-		  # <tr>
-			# <td>Минут:</td>
-			# <td>'''+workMinutes+'''</td>
-		  # </tr>
-		  # <tr>
-			# <td>Часов:</td>
-			# <td>'''+workHours+'''</td>
-		  # </tr>
-		# </table>
-		# <br>'''	
+	#responce = 'WORKORDERID'+'<br>'+SUBJECT+'<br>'+RESOLUTION+'<br>'+technician+'<br>'+workMinutes+'<br>'+workHours+'<br>'+requester'
+	content='''<html><body>
+	<form method="get" action="http://10.2.4.87:8080/bidedit">
+	<input type="hidden" id="TECHNICIAN" name="TECHNICIAN" value="'''+technician+'''">
+	<input type="hidden" id="SUBJECT" name="SUBJECT" value="'''+SUBJECT+'''">
+	<input type="hidden" id="RESOLUTION" name="RESOLUTION" value="'''+RESOLUTION+'''">
+	<input type="hidden" id="workMinutes" name="workMinutes" value="'''+workMinutes+'''">
+	<input type="hidden" id="workHours" name="workHours" value="'''+workHours+'''">
+	<input type="hidden" id="token" name="token" value="'''+token+'''">
+		<table>
+		  <tr>
+			<td>ID Заявки:</td>
+			<td>'''+WORKORDERID+'''</td>			
+		  </tr>
+		  <tr>
+			<td>Тема:</td>
+			<td>'''+SUBJECT+'''</td>			
+		  </tr>
+		  <tr>
+			<td>Исполнитель:</td>
+			<td>'''+technician+'''</td>
+		  </tr>		  
+		  <tr>
+			<td>Заключение:</td>
+			<td>'''+RESOLUTION+'''</td>
+		  </tr>
+		  <tr>
+			<td>Минут:</td>
+			<td>'''+workMinutes+'''</td>
+		  </tr>
+		  <tr>
+			<td>Часов:</td>
+			<td>'''+workHours+'''</td>
+		  </tr>
+		</table>
+		<br>'''	
 	
-	# with open(add_worklog_file,'rb') as fh:
-		# INPUT_DATA	= fh.read().decode("utf-8")
-		# INPUT_DATA = INPUT_DATA.replace("%technician%", technician)
-		# INPUT_DATA = INPUT_DATA.replace("%workMinutes%", workMinutes)
-		# INPUT_DATA = INPUT_DATA.replace("%workHours%", workHours)
-		# url='http://10.2.4.46/sdpapi/request/'+WORKORDERID+'/worklogs?OPERATION_NAME=ADD_WORKLOG&TECHNICIAN_KEY='+token+'&INPUT_DATA='+INPUT_DATA
-		# headers = {'Content-Type': 'application/xml'}	
-		# response = requests.post(url, headers=headers).text
-		# content	+='<br>'+response.replace('\n','<br>')+'<br>'
+	with open(add_worklog_file,'rb') as fh:
+		INPUT_DATA	= fh.read().decode("utf-8")
+		INPUT_DATA = INPUT_DATA.replace("%technician%", technician)
+		INPUT_DATA = INPUT_DATA.replace("%workMinutes%", workMinutes)
+		INPUT_DATA = INPUT_DATA.replace("%workHours%", workHours)
+		url='http://10.2.4.46/sdpapi/request/'+WORKORDERID+'/worklogs?OPERATION_NAME=ADD_WORKLOG&TECHNICIAN_KEY='+token+'&INPUT_DATA='+INPUT_DATA
+		headers = {'Content-Type': 'application/xml'}	
+		response = requests.post(url, headers=headers).text
+		content	+='<br>'+response.replace('\n','<br>')+'<br>'
 
-	# with open(edit_request_file,'rb') as fh:
-		# INPUT_DATA	= fh.read().decode("utf-8")
-		# INPUT_DATA = INPUT_DATA.replace("%Subject%", SUBJECT)
-		# INPUT_DATA = INPUT_DATA.replace("%Resolution%", RESOLUTION)
-		# #INPUT_DATA = INPUT_DATA.replace("%requester%", '' if requester=='' else '<parameter><name>requester</name><value>'+requester+'</value></parameter>')
-		# url='http://10.2.4.46/sdpapi/request/'+WORKORDERID+'?OPERATION_NAME=EDIT_REQUEST&TECHNICIAN_KEY='+token+'&INPUT_DATA='+INPUT_DATA
-		# headers = {'Content-Type': 'application/xml'}	
-		# response = requests.post(url, headers=headers).text
-		# content	+='<br>'+response.replace('\n','<br>')+'<br>'
+	with open(edit_request_file,'rb') as fh:
+		INPUT_DATA	= fh.read().decode("utf-8")
+		INPUT_DATA = INPUT_DATA.replace("%Subject%", SUBJECT)
+		INPUT_DATA = INPUT_DATA.replace("%Resolution%", RESOLUTION)
+		#INPUT_DATA = INPUT_DATA.replace("%requester%", '' if requester=='' else '<parameter><name>requester</name><value>'+requester+'</value></parameter>')
+		url='http://10.2.4.46/sdpapi/request/'+WORKORDERID+'?OPERATION_NAME=EDIT_REQUEST&TECHNICIAN_KEY='+token+'&INPUT_DATA='+INPUT_DATA
+		headers = {'Content-Type': 'application/xml'}	
+		response = requests.post(url, headers=headers).text
+		content	+='<br>'+response.replace('\n','<br>')+'<br>'
 
-	# content+=back_link
-	# content+='<p><tt>'
-	# content+='''
-	# <br>-------------------YAao,---------------------------
-	# <br>--------------------Y8888b,------------------------
-	# <br>------------------,oA8888888b,---------------------
-	# <br>------------,aaad8888888888888888bo,---------------
-	# <br>---------,d888888888888888888888888888b,-----------
-	# <br>-------,888888888888888888888888888888888b,--------
-	# <br>------d8888888888888888888888888888888888888,------
-	# <br>-----d888888888888888888888888888888888888888b-----
-	# <br>----d888888P'--------------------`Y888888888888,---
-	# <br>----88888P'--------------------Ybaaaa8888888888l---
-	# <br>---a8888'----------------------`Y8888P'-`V888888---
-	# <br>-d8888888a--------------------------------`Y8888---
-	# <br>AY/''-`\Y8b---------------------------------``Y8b--
-	# <br>Y'------`YP------------------------------------~~--'''
-	# content+='</tt></p>'
-	# content+='</form></body></html>'
-	# return web.Response(text=content,content_type="text/html")
+	content+=back_link
+	content+='<p><tt>'
+	content+='''
+	<br>-------------------YAao,---------------------------
+	<br>--------------------Y8888b,------------------------
+	<br>------------------,oA8888888b,---------------------
+	<br>------------,aaad8888888888888888bo,---------------
+	<br>---------,d888888888888888888888888888b,-----------
+	<br>-------,888888888888888888888888888888888b,--------
+	<br>------d8888888888888888888888888888888888888,------
+	<br>-----d888888888888888888888888888888888888888b-----
+	<br>----d888888P'--------------------`Y888888888888,---
+	<br>----88888P'--------------------Ybaaaa8888888888l---
+	<br>---a8888'----------------------`Y8888P'-`V888888---
+	<br>-d8888888a--------------------------------`Y8888---
+	<br>AY/''-`\Y8b---------------------------------``Y8b--
+	<br>Y'------`YP------------------------------------~~--'''
+	content+='</tt></p>'
+	content+='</form></body></html>'
+	return web.Response(text=content,content_type="text/html")
 
 async def sdp_bid_close(request):
 	print('\n======= sdp close by jira:',datetime.datetime.now())
@@ -209,6 +209,7 @@ async def sdp_bid_close(request):
 	WORKORDERID = request.rel_url.query['sdp_id']
 	SUBJECT		= request.rel_url.query['subject']
 	RESOLUTION	= request.rel_url.query['resolution']
+	ITEM	= request.rel_url.query['component']
 	user = request.rel_url.query['user']
 	token	= '76ED27EB-D26D-412A-8151-5A65A16198E7'
 	workHours	= '0'
@@ -216,9 +217,41 @@ async def sdp_bid_close(request):
 	add_worklog_file='ADD_WORKLOG.xml'
 	edit_request_file='EDIT_REQUEST.xml'
 	
+	print('item received:',ITEM)
+	
+	items =[
+		'1C-Сервис',
+		'МРМ',
+		'Бухгалтерия',
+		'МПК',
+		'Склады',
+		'Реклама',
+	]
+	if (ITEM in items)==False:
+		ITEM = '1C-Сервис'
+		print('item changed')
+	
+	print('item set:',ITEM)
+	
+	sub_cats = {
+		'1C-Сервис':'1С Cистемы',
+		'МРМ':'Мобильные приложения',
+		'МПК':'Мобильные приложения',
+		'Бухгалтерия':'1С Cистемы',
+		'Склады':'1С Cистемы',
+		'Реклама':'1С Cистемы',
+	}
+	
+	if ITEM in sub_cats.keys():
+		SUBCAT	= sub_cats[ITEM]
+	else:
+		SUBCAT = '1С Cистемы'
+	
+	print('Subcategory',SUBCAT)
 	print('sdp_id',WORKORDERID)
 	print('subject',SUBJECT)
 	print('resolution',RESOLUTION)
+	
 	
 	users={
 		'557058:fa79f484-a387-495b-9862-1af505d8d70a'	: 'Фролов Максим Евгеньевич',
@@ -250,15 +283,19 @@ async def sdp_bid_close(request):
 		INPUT_DATA	= fh.read().decode("utf-8")
 		INPUT_DATA = INPUT_DATA.replace("%Subject%", SUBJECT)
 		INPUT_DATA = INPUT_DATA.replace("%Resolution%", RESOLUTION)
+		INPUT_DATA = INPUT_DATA.replace("%Item%", ITEM)
+		INPUT_DATA = INPUT_DATA.replace("%Subcategory%", SUBCAT)
 		url='http://10.2.4.46/sdpapi/request/'+WORKORDERID+'?OPERATION_NAME=EDIT_REQUEST&TECHNICIAN_KEY='+token+'&INPUT_DATA='+INPUT_DATA
 		headers = {'Content-Type': 'application/xml'}	
 		response += requests.post(url, headers=headers).text
 
+	#print('INPUT_DATA:\n',INPUT_DATA)
+
 	return web.Response(text=response,content_type="text/html")
 
 app = web.Application()
-#app.router.add_route('GET', '/bidedit', bid_edit)
-#app.router.add_route('GET', '/bidclose', bid_close)
+app.router.add_route('GET', '/bidedit', bid_edit)
+app.router.add_route('GET', '/bidclose', bid_close)
 app.router.add_route('GET', '/bidcreate', sdp_bid_create)
 app.router.add_route('GET', '/bidclosebyjira', sdp_bid_close)
 
