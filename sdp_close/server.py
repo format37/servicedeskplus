@@ -207,7 +207,10 @@ async def sdp_bid_close(request):
 	print('\n======= sdp close by jira:',datetime.datetime.now())
 	#print(request.rel_url.query)
 	WORKORDERID = request.rel_url.query['sdp_id']
+	jira_type		= request.rel_url.query['jira_type']
 	SUBJECT		= request.rel_url.query['subject']
+	#description	= 'test'
+	description	= request.rel_url.query['description']
 	RESOLUTION	= request.rel_url.query['resolution']
 	ITEM	= request.rel_url.query['component']
 	user = request.rel_url.query['user']
@@ -246,12 +249,26 @@ async def sdp_bid_close(request):
 		SUBCAT	= sub_cats[ITEM]
 	else:
 		SUBCAT = '1С Cистемы'
+		
+	print('jira_type',jira_type)
+	
+	jira_sdp_types = {
+		'Task':'Изменение',
+		'Consultation':'Информация',
+		'Bug':'Инцидент',
+		'Service':'Обслуживание',
+		}
+		
+	if jira_type in jira_sdp_types.keys():
+		rtype = jira_sdp_types[jira_type]
+	else:
+		rtype = jira_sdp_types['Информация']
 	
 	print('Subcategory',SUBCAT)
 	print('sdp_id',WORKORDERID)
 	print('subject',SUBJECT)
-	print('resolution',RESOLUTION)
-	
+	print('description',description)
+	print('resolution',RESOLUTION)	
 	
 	users={
 		'557058:fa79f484-a387-495b-9862-1af505d8d70a'	: 'Фролов Максим Евгеньевич',
@@ -271,7 +288,7 @@ async def sdp_bid_close(request):
 	
 	response = ''
 	with open(add_worklog_file,'rb') as fh:
-		INPUT_DATA	= fh.read().decode("utf-8")
+		INPUT_DATA	= fh.read().decode("utf-8")		
 		INPUT_DATA = INPUT_DATA.replace("%technician%", technician)
 		INPUT_DATA = INPUT_DATA.replace("%workMinutes%", workMinutes)
 		INPUT_DATA = INPUT_DATA.replace("%workHours%", workHours)
@@ -281,6 +298,8 @@ async def sdp_bid_close(request):
 
 	with open(edit_request_file,'rb') as fh:
 		INPUT_DATA	= fh.read().decode("utf-8")
+		INPUT_DATA = INPUT_DATA.replace("%rtype%", rtype)
+		INPUT_DATA = INPUT_DATA.replace("%Description%", description)
 		INPUT_DATA = INPUT_DATA.replace("%Subject%", SUBJECT)
 		INPUT_DATA = INPUT_DATA.replace("%Resolution%", RESOLUTION)
 		INPUT_DATA = INPUT_DATA.replace("%Item%", ITEM)
@@ -293,11 +312,21 @@ async def sdp_bid_close(request):
 
 	return web.Response(text=response,content_type="text/html")
 
+# async def telegram(request):
+	# print('\n======= telegram:',datetime.datetime.now())
+	# chat	= request.rel_url.query['chat']
+	# message	= request.rel_url.query['message']
+	# print('chat',chat)
+	# print('message',message)
+	# response = 'ok'
+	# return web.Response(text=response,content_type="text/html")
+
 app = web.Application()
 app.router.add_route('GET', '/bidedit', bid_edit)
 app.router.add_route('GET', '/bidclose', bid_close)
 app.router.add_route('GET', '/bidcreate', sdp_bid_create)
 app.router.add_route('GET', '/bidclosebyjira', sdp_bid_close)
+#app.router.add_route('GET', '/telegram', telegram)
 
 loop = asyncio.get_event_loop()
 handler = app.make_handler()

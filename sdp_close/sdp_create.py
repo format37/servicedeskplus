@@ -10,6 +10,15 @@ import json
 from jira.utils import json_loads
 import urllib
 
+def send_to_telegram(chat,message):
+	headers = {
+    "Origin": "http://scriptlab.net",
+    "Referer": "http://scriptlab.net/telegram/bots/relaybot/",
+    'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/70.0.3538.110 Safari/537.36'}
+	
+	url	= "http://scriptlab.net/telegram/bots/relaybot/relaylocked.php?chat="+chat+"&text="+urllib.parse.quote_plus(message)
+	requests.get(url,headers = headers)
+
 def jira_datetime_format(dt):
     return str(dt.year)+'-'+str(dt.month).zfill(2)+'-'+str(dt.day).zfill(2)+'T'+str(dt.hour).zfill(2)+':'+str(dt.minute).zfill(2)+':'+str(dt.second).zfill(2)+'.'+str(int(dt.microsecond/1000)).zfill(3)+'+0300'
 
@@ -155,7 +164,7 @@ async def sdp_bid_create(request):
 			sdp_order=details[0].text
 		except:
 			print('unable to create new order')
-	
+	jira_issue=''
 	if sdp_order!='':
 		print('\n======= jira create by ats:',datetime.datetime.now())
 		#icebergproject.atlassian.net/jira/people/search
@@ -196,10 +205,20 @@ async def sdp_bid_create(request):
 				sdp_jira_issue_types['Информация'],
 				'1С-Сервис'
 				)
+			jira_issue='\nJira: https://icebergproject.atlassian.net/browse/'+str(issue)
 			issue.update({'customfield_10043':sdp_order})
 			#comment = jira.add_comment(str(issue), 'Created automatically from Service Desk Plus')
 			print('jira issue create succesfull')
 		else:
 			print(technican,'is not in sdp_jira_accounts')
+	
+	# send to telegram
+	with open('telegram.chat','r') as telegram_chat_file:
+		chat =telegram_chat_file.read()
+		message = str(datetime.datetime.now().strftime("%Y-%m-%d-%H:%M:%S"))+\
+			'\nЗвонок от '+caller_phone_number+' '+requester+' 74957770320,'+caller_phone_number+\
+			'\nПринял '+receiver_phone_number+' '+technican+\
+			'\nSdp: http://help.icecorp.ru/WorkOrder.do?woMode=viewWO&woID='+sdp_order+jira_issue
+		send_to_telegram(chat,message)
 	
 	return web.Response(text=response,content_type="text/html")
