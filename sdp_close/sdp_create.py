@@ -205,8 +205,12 @@ async def sdp_bid_create(request):
 				sdp_jira_issue_types['Информация'],
 				'1С-Сервис'
 				)
+			# custom felds list:
+			# https://icebergproject.atlassian.net/rest/api/3/issue/HELP1C-424
 			jira_issue='\nJira: https://icebergproject.atlassian.net/browse/'+str(issue)
-			issue.update({'customfield_10043':sdp_order})
+			issue.update({'customfield_10043':sdp_order}) # sdp_id
+			issue.update({'customfield_10044':requester}) # requester_name
+			issue.update({'customfield_10045':caller_phone_number}) # requester_phone
 			#comment = jira.add_comment(str(issue), 'Created automatically from Service Desk Plus')
 			print('jira issue create succesfull')
 		else:

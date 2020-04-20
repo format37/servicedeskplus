@@ -6,6 +6,9 @@ import multidict as MultiDict
 import requests
 from sdp_create import sdp_bid_create
 import datetime
+from time import strftime
+from time import gmtime
+from jira import JIRA
 
 #@asyncio.coroutine
 
@@ -211,9 +214,10 @@ async def sdp_bid_close(request):
 	SUBJECT		= request.rel_url.query['subject']
 	#description	= 'test'
 	description	= request.rel_url.query['description']
-	RESOLUTION	= request.rel_url.query['resolution']
+	RESOLUTION	= "Закрыто\n"+request.rel_url.query['resolution']
 	ITEM	= request.rel_url.query['component']
 	user = request.rel_url.query['user']
+	jira_issue = request.rel_url.query['issue_key']
 	token	= '76ED27EB-D26D-412A-8151-5A65A16198E7'
 	workHours	= '0'
 	workMinutes = '1'	
@@ -266,9 +270,10 @@ async def sdp_bid_close(request):
 	
 	print('Subcategory',SUBCAT)
 	print('sdp_id',WORKORDERID)
+	print('jira issue',jira_issue)
 	print('subject',SUBJECT)
 	print('description',description)
-	print('resolution',RESOLUTION)	
+	#print('resolution',RESOLUTION)
 	
 	users={
 		'557058:fa79f484-a387-495b-9862-1af505d8d70a'	: 'Фролов Максим Евгеньевич',
@@ -286,12 +291,45 @@ async def sdp_bid_close(request):
 	else:
 		print('technician not found:',user)
 	
+	sdp_tokens={
+		'Фролов Максим Евгеньевич'		: '210ECA4F-859F-45DE-9DDB-5AB19B9617A5',
+		'Сотников Артём Игоревич'		: '4CD78BFF-BFBA-4A00-A91C-2DF01EA12CAA',
+		'Семенов Олег Владимирович'		: 'CEB75C6A-1D07-411E-B34C-ECC6902AA1A0',
+		'Юрасов Алексей Александрович'	: '76ED27EB-D26D-412A-8151-5A65A16198E7',
+		'Полухин Владимир Геннадьевич'	: '5801D334-C5C3-4BEC-9209-309AFCA27DAE',
+		'Бывальцев Виктор Валентинович'	: '157D4CAC-6947-4F44-BCE7-BAF2E3ABF672',
+	}
+	token = sdp_tokens['Юрасов Алексей Александрович']
+	if technician in sdp_tokens.keys():
+		token = sdp_tokens[technician]
+		print('sdp token',token)
+	else:
+		print('sdp token for',technician,'not found. using default')
+	
 	response = ''
+	worklog_comments = ''
+	
 	with open(add_worklog_file,'rb') as fh:
-		INPUT_DATA	= fh.read().decode("utf-8")		
+		INPUT_DATA_ORIGINAL	= fh.read().decode("utf-8")
+		
+	jira_options = {'server': 'https://icebergproject.atlassian.net'}
+	with open('jira.key','r') as key_file:
+		jira_key = key_file.read()
+
+	jira = JIRA(options=jira_options, basic_auth=('yurasov@iceberg.ru', jira_key))
+	
+	worklogs = jira.worklogs(jira_issue)
+	for wl in worklogs:
+		spent_hours = int(strftime("%H", gmtime(wl.timeSpentSeconds)))
+		spent_minutes = int(strftime("%M", gmtime(wl.timeSpentSeconds)))
+		print(wl.timeSpent, wl.timeSpentSeconds, wl.comment)
+		
+		worklog_comments+=('' if worklog_comments=='' else '\n')+wl.comment
+		
+		INPUT_DATA = INPUT_DATA_ORIGINAL
 		INPUT_DATA = INPUT_DATA.replace("%technician%", technician)
-		INPUT_DATA = INPUT_DATA.replace("%workMinutes%", workMinutes)
-		INPUT_DATA = INPUT_DATA.replace("%workHours%", workHours)
+		INPUT_DATA = INPUT_DATA.replace("%workMinutes%", str(spent_minutes))
+		INPUT_DATA = INPUT_DATA.replace("%workHours%", str(spent_hours))
 		url='http://10.2.4.46/sdpapi/request/'+WORKORDERID+'/worklogs?OPERATION_NAME=ADD_WORKLOG&TECHNICIAN_KEY='+token+'&INPUT_DATA='+INPUT_DATA
 		headers = {'Content-Type': 'application/xml'}	
 		response += requests.post(url, headers=headers).text
@@ -301,7 +339,7 @@ async def sdp_bid_close(request):
 		INPUT_DATA = INPUT_DATA.replace("%rtype%", rtype)
 		INPUT_DATA = INPUT_DATA.replace("%Description%", description)
 		INPUT_DATA = INPUT_DATA.replace("%Subject%", SUBJECT)
-		INPUT_DATA = INPUT_DATA.replace("%Resolution%", RESOLUTION)
+		INPUT_DATA = INPUT_DATA.replace("%Resolution%", 'Закрыто' if worklog_comments=='' else worklog_comments)
 		INPUT_DATA = INPUT_DATA.replace("%Item%", ITEM)
 		INPUT_DATA = INPUT_DATA.replace("%Subcategory%", SUBCAT)
 		url='http://10.2.4.46/sdpapi/request/'+WORKORDERID+'?OPERATION_NAME=EDIT_REQUEST&TECHNICIAN_KEY='+token+'&INPUT_DATA='+INPUT_DATA
