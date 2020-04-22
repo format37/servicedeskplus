@@ -8,6 +8,7 @@ from sdp_create import sdp_bid_create
 import datetime
 from time import strftime
 from time import gmtime
+from time import sleep
 from jira import JIRA
 
 #@asyncio.coroutine
@@ -359,12 +360,52 @@ async def sdp_bid_close(request):
 	# response = 'ok'
 	# return web.Response(text=response,content_type="text/html")
 
+async def create_sdp_jira():
+	for i in range(3):
+		print(i)
+		sleep(2)
+	print('c')
+	
+
+async def test(request):
+	print('\n======= test:',datetime.datetime.now())
+	val = request.rel_url.query['val']
+	print('val',val)
+	#await create_sdp_jira()
+	#create_tasks = [create_sdp_jira()]
+	#asyncio.run(create_sdp_jira())
+	#task = asyncio.gather(create_sdp_jira())
+	#loop.run_until_complete(create_sdp_jira)
+	
+	#await asyncio.wait(create_tasks, timeout=0)
+	#asyncio.wait_for(await create_sdp_jira(), 1.0)
+	#await asyncio.wait_for(create_sdp_jira(), 1)
+	mytask = asyncio.create_task(create_sdp_jira())
+	
+	#tasks = [loop.create_task(create_sdp_jira())]
+	#print(type(loop))	
+	#ioloop = asyncio.get_event_loop()
+	#ioloop.run_until_complete(asynchronous(args.timeout))	
+	#tasks = [ioloop.create_task(create_sdp_jira())]
+	#wait_tasks = asyncio.wait(tasks, timeout=1)
+	#ioloop.run_until_complete(wait_tasks)	
+	#ioloop.close()	
+	
+	#futures = [fetch_ip(service) for service in SERVICES]
+    #done, pending = await asyncio.wait(
+    #    futures, timeout=timeout, return_when=FIRST_COMPLETED)
+	
+	response = 'ok2'
+	return web.Response(text=response,content_type="text/html")
+	await mytask
+
 app = web.Application()
 app.router.add_route('GET', '/bidedit', bid_edit)
 app.router.add_route('GET', '/bidclose', bid_close)
 app.router.add_route('GET', '/bidcreate', sdp_bid_create)
 app.router.add_route('GET', '/bidclosebyjira', sdp_bid_close)
 #app.router.add_route('GET', '/telegram', telegram)
+app.router.add_route('GET', '/test', test)
 
 loop = asyncio.get_event_loop()
 handler = app.make_handler()

@@ -11,24 +11,7 @@ from jira.utils import json_loads
 import urllib
 import pymssql
 import time
-
-def connect_sql():
-	sql_login='ICECORP\\1c_sql'
-	sql_pass='dpCEoF1e4A6XPOL'
-	print(sql_login)
-	print(sql_pass)
-	return pymssql.connect(server='10.2.4.124', user=sql_login, password=sql_pass, database='sdp')
-	
-# create table ats_requests( ID_column INT NOT NULL IDENTITY(1,1) PRIMARY KEY, created_by varchar(64), caller_phone_number varchar(16), department varchar(64), receiver_phone_number varchar(16), event_date DATETIME );
-
-def queue_create(created_by, caller_phone_number, department, receiver_phone_number):
-	event_date = time.strftime('%Y-%m-%d %H:%M:%S')
-	conn = connect_sql()
-	cursor = conn.cursor()
-	query	= "insert into ats_requests(created_by,caller_phone_number,department,receiver_phone_number,event_date) values ('"+created_by+"','"+caller_phone_number+"','"+department+"','"+receiver_phone_number+"','"+event_date+"');"
-	#query ="select * from ats_requests"
-	cursor.execute(query)
-	conn.commit()
+import asyncio
 
 def send_to_telegram(chat,message):
 	headers = {
@@ -64,21 +47,18 @@ def create_issue(jira, project,summary,description,accountId,issuetype,item):
 	}
 	return jira.create_issue(fields=issue_dict)
 
-async def sdp_bid_create(request):
+async def sdp_bid_create(created_by,caller_phone_number,department,receiver_phone_number):
 	
 	print('\n======= sdp create by ats:',datetime.datetime.now())
 	
-	#sdp_order=''
-	#technican=''
-	#category=''
-	created_by 				= request.rel_url.query['created_by']				# Петров М.В.
-	caller_phone_number		= request.rel_url.query['caller_phone_number']		# 2001 - имя хоста от Nagios	
-	department				= request.rel_url.query['department']				# MRM
-	receiver_phone_number	= request.rel_url.query['receiver_phone_number']	# SIP/1611 - звонок принят
+	sdp_order=''
+	technican=''
+	category=''
+	#created_by 				= request.rel_url.query['created_by']				# Петров М.В.
+	#caller_phone_number		= request.rel_url.query['caller_phone_number']		# 2001 - имя хоста от Nagios	
+	#department				= request.rel_url.query['department']				# MRM
+	#receiver_phone_number	= request.rel_url.query['receiver_phone_number']	# SIP/1611 - звонок принят
 	
-	queue_create(created_by, caller_phone_number, department, receiver_phone_number)
-	response = 'k'
-	return web.Response(text=response,content_type="text/html")
 	
 	#api_key					= request.rel_url.query['api_key']					# API Key sdp	
 	with open('token.key','r') as fh:
@@ -191,9 +171,9 @@ async def sdp_bid_create(request):
 		except:
 			print('unable to create new order')
 	
-	response ='k'
-	print('\nreturn',datetime.datetime.now())
-	return web.Response(text=response,content_type="text/html")
+	response =''
+	#print('\nreturn',datetime.datetime.now())
+	#return web.Response(text=response,content_type="text/html")
 	
 	jira_issue=''
 	if sdp_order!='':
@@ -256,4 +236,44 @@ async def sdp_bid_create(request):
 			'\nSdp: http://help.icecorp.ru/WorkOrder.do?woMode=viewWO&woID='+sdp_order+jira_issue
 		send_to_telegram(chat,message)
 	
-	return web.Response(text=response,content_type="text/html")
+	#return web.Response(text=response,content_type="text/html")
+
+def connect_sql():
+	sql_login='ICECORP\\1c_sql'
+	sql_pass='dpCEoF1e4A6XPOL'
+	return pymssql.connect(server='10.2.4.124', user=sql_login, password=sql_pass, database='sdp')
+
+async def main():
+
+	print(time.strftime('%Y-%m-%d %H:%M:%S'),'alive')
+	conn = connect_sql()
+	cursor = conn.cursor()
+
+	while True:
+
+		query ="select ID_column, created_by,caller_phone_number,department,receiver_phone_number from ats_requests order by event_date"
+		cursor.execute(query)
+		to_clean = []
+		tasks = []
+		for row in cursor.fetchall():
+			id						= row[0]
+			created_by				= row[1]
+			caller_phone_number		= row[2]
+			department				= row[3]
+			receiver_phone_number	= row[4]
+			print(time.strftime('%Y-%m-%d %H:%M:%S'),'received',id, created_by,caller_phone_number,department,receiver_phone_number)
+			to_clean.append(id)
+			tasks.append( asyncio.create_task(sdp_bid_create(created_by,caller_phone_number,department,receiver_phone_number)) )
+		
+		for task in tasks:
+			await task
+						
+		for id in to_clean:
+			query ="delete from ats_requests where ID_column="+str(id)+";"
+			cursor.execute(query)
+			conn.commit()
+		
+		if len(tasks)>0:	
+			time.sleep(1)
+	
+asyncio.run(main())
