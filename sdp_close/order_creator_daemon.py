@@ -1,7 +1,6 @@
 import requests
 import xml.etree.cElementTree as ET
 import urllib.parse
-from jira.utils import json_loads
 from aiohttp import web
 import datetime
 import sys
