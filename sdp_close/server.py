@@ -1,6 +1,8 @@
-#!/usr/bin/env python3
+#!/usr/bin/env python
 import asyncio
 from aiohttp import web
+import urllib
+import urllib.parse
 from urllib.parse import urlparse, parse_qsl
 import multidict as MultiDict
 import requests
@@ -10,6 +12,8 @@ from time import strftime
 from time import gmtime
 from time import sleep
 from jira import JIRA
+import time
+
 
 async def bid_edit(request):
 	try:
@@ -124,8 +128,8 @@ async def bid_close(request):
 	if workHours=='':
 		workHours='0'
 	
-	edit_request_file='EDIT_REQUEST.xml'
-	add_worklog_file='ADD_WORKLOG.xml'
+	edit_request_file='/home/alex/projects/servicedeskplus/sdp_close/EDIT_REQUEST.xml'
+	add_worklog_file='/home/alex/projects/servicedeskplus/sdp_close/ADD_WORKLOG.xml'
 	
 	#responce = 'WORKORDERID'+'<br>'+SUBJECT+'<br>'+RESOLUTION+'<br>'+technician+'<br>'+workMinutes+'<br>'+workHours+'<br>'+requester'
 	content='''<html><body>
@@ -312,7 +316,7 @@ async def sdp_bid_close(request):
 		INPUT_DATA_ORIGINAL	= fh.read().decode("utf-8")
 		
 	jira_options = {'server': 'https://icebergproject.atlassian.net'}
-	with open('jira.key','r') as key_file:
+	with open('/home/alex/projects/servicedeskplus/sdp_close/jira.key','r') as key_file:
 		jira_key = key_file.read()
 
 	jira = JIRA(options=jira_options, basic_auth=('yurasov@iceberg.ru', jira_key))
@@ -363,6 +367,15 @@ async def create_sdp_jira():
 		print(i)
 		sleep(2)
 	print('c')
+	
+def send_to_telegram(chat,message):
+	headers = {
+		"Origin": "http://scriptlab.net",
+		"Referer": "http://scriptlab.net/telegram/bots/relaybot/",
+		'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/70.0.3538.110 Safari/537.36'
+		}
+	url     = "http://scriptlab.net/telegram/bots/relaybot/relaylocked.php?chat="+chat+"&text="+urllib.parse.quote_plus(message)
+	return requests.get(url,headers = headers)
 
 app = web.Application()
 app.router.add_route('GET', '/bidedit', bid_edit)
@@ -371,10 +384,16 @@ app.router.add_route('GET', '/bidcreate', sdp_bid_create)
 app.router.add_route('GET', '/bidclosebyjira', sdp_bid_close)
 #app.router.add_route('GET', '/telegram', telegram)
 
+with open('/home/alex/projects/servicedeskplus/sdp_close/telegram.chat','r') as fh:
+	telegram_group=fh.read()
+	fh.close()
+send_to_telegram(telegram_group,str(datetime.datetime.now())+' server started')
+
 loop = asyncio.get_event_loop()
 handler = app.make_handler()
 f = loop.create_server(handler, port='8080')
 srv = loop.run_until_complete(f)
+
 print('serving on', srv.sockets[0].getsockname())
 try:
 	loop.run_forever()

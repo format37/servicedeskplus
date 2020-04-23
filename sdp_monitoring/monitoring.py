@@ -1,3 +1,4 @@
+#!/usr/bin/env python
 # -*- coding: utf-8 -*-
 import requests
 import json
@@ -7,15 +8,15 @@ import time
 import urllib
 import urllib.parse
 
-with open('token.key','r') as fh:
+with open('/home/alex/projects/servicedeskplus/sdp_monitoring/token.key','r') as fh:
 	token=fh.read()
 	fh.close()
 
-with open('telegram.group','r') as fh:
+with open('/home/alex/projects/servicedeskplus/sdp_monitoring/telegram.group','r') as fh:
 	telegram_group=fh.read()
 	fh.close()
 
-get_requests_file='GET_REQUESTS.xml'
+get_requests_file='/home/alex/projects/servicedeskplus/sdp_monitoring/GET_REQUESTS.xml'
 alert_minutes_limit	= 30
 check_minutes_interval = 10
 check_hour_start	= 7
@@ -132,6 +133,8 @@ def check():
 			return('ok')
 		else:
 			return('sent '+str(event_count)+' events')
+
+send_to_telegram(telegram_group,str(datetime.datetime.now())+' monitoring started')
 
 while True:
 	

@@ -1,3 +1,4 @@
+#!/usr/bin/env python
 import requests
 import xml.etree.cElementTree as ET
 import urllib.parse
@@ -60,7 +61,7 @@ async def sdp_bid_create(created_by,caller_phone_number,department,receiver_phon
 	
 	
 	#api_key					= request.rel_url.query['api_key']					# API Key sdp	
-	with open('token.key','r') as fh:
+	with open('/home/alex/projects/servicedeskplus/sdp_close/token.key','r') as fh:
 		api_key=fh.read()
 		fh.close()
 	technicans={
@@ -84,7 +85,7 @@ async def sdp_bid_create(created_by,caller_phone_number,department,receiver_phon
 	
 	subject		= created_by+' '+caller_phone_number+' Оставил Заявку '+department
 	description = subject+' Звонок принят '+receiver_phone_number+' '+technican
-	create_request_file='CREATE_REQUEST.xml'
+	create_request_file='/home/alex/projects/servicedeskplus/sdp_close/CREATE_REQUEST.xml'
 	
 	response = '0'
 	requester	= 'RoboTechnician'
@@ -197,7 +198,7 @@ async def sdp_bid_create(created_by,caller_phone_number,department,receiver_phon
 		}
 
 		jira_options = {'server': 'https://icebergproject.atlassian.net'}
-		with open('jira.key','r') as key_file:
+		with open('/home/alex/projects/servicedeskplus/sdp_close/jira.key','r') as key_file:
 			jira_key = key_file.read()
 
 		jira = JIRA(options=jira_options, basic_auth=('yurasov@iceberg.ru', jira_key))
@@ -227,7 +228,7 @@ async def sdp_bid_create(created_by,caller_phone_number,department,receiver_phon
 			print(technican,'is not in sdp_jira_accounts')
 	
 	# send to telegram
-	with open('telegram.chat','r') as telegram_chat_file:
+	with open('/home/alex/projects/servicedeskplus/sdp_close/telegram.chat','r') as telegram_chat_file:
 		chat =telegram_chat_file.read()
 		message = str(datetime.datetime.now().strftime("%Y-%m-%d-%H:%M:%S"))+\
 			'\nЗвонок от '+caller_phone_number+' '+requester+' 74957770320,'+caller_phone_number+\
@@ -243,7 +244,9 @@ def connect_sql():
 	return pymssql.connect(server='10.2.4.124', user=sql_login, password=sql_pass, database='sdp')
 
 async def main():
-
+	with open('/home/alex/projects/servicedeskplus/sdp_close/telegram.chat','r') as telegram_chat_file:
+		chat =telegram_chat_file.read()
+	send_to_telegram(chat,str(datetime.datetime.now())+' daemon started')
 	print(time.strftime('%Y-%m-%d %H:%M:%S'),'alive')
 	conn = connect_sql()
 	cursor = conn.cursor()
