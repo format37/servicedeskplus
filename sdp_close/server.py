@@ -224,8 +224,8 @@ async def sdp_bid_close(request):
 	token	= '76ED27EB-D26D-412A-8151-5A65A16198E7'
 	workHours	= '0'
 	workMinutes = '1'	
-	add_worklog_file='ADD_WORKLOG.xml'
-	edit_request_file='EDIT_REQUEST.xml'
+	add_worklog_file='/home/alex/projects/servicedeskplus/sdp_close/ADD_WORKLOG.xml'
+	edit_request_file='/home/alex/projects/servicedeskplus/sdp_close/EDIT_REQUEST.xml'
 	
 	print('item received:',ITEM)
 	
@@ -288,11 +288,14 @@ async def sdp_bid_close(request):
 		'5dfb2741eaf5880cad03b10f'						: 'Васильченко Евгения Алексеевна'
 	}
 	technician = 'Юрасов Алексей Александрович'		
+	
+	
 	if user in users.keys():
 		technician = users[user]
 		print('technician',technician)
 	else:
 		print('technician not found:',user)
+		
 	
 	sdp_tokens={
 		'Фролов Максим Евгеньевич'		: '210ECA4F-859F-45DE-9DDB-5AB19B9617A5',
@@ -325,7 +328,7 @@ async def sdp_bid_close(request):
 	for wl in worklogs:
 		spent_hours = int(strftime("%H", gmtime(wl.timeSpentSeconds)))
 		spent_minutes = int(strftime("%M", gmtime(wl.timeSpentSeconds)))
-		print(wl.timeSpent, wl.timeSpentSeconds, wl.comment)
+		#print(wl.timeSpent, wl.timeSpentSeconds, wl.comment)
 		
 		worklog_comments+=('' if worklog_comments=='' else '\n')+wl.comment
 		
@@ -343,6 +346,7 @@ async def sdp_bid_close(request):
 		INPUT_DATA = INPUT_DATA.replace("%Description%", description)
 		INPUT_DATA = INPUT_DATA.replace("%Subject%", SUBJECT)
 		INPUT_DATA = INPUT_DATA.replace("%Resolution%", 'Закрыто' if worklog_comments=='' else worklog_comments)
+		INPUT_DATA = INPUT_DATA.replace("%Technician%", technician)
 		INPUT_DATA = INPUT_DATA.replace("%Item%", ITEM)
 		INPUT_DATA = INPUT_DATA.replace("%Subcategory%", SUBCAT)
 		url='http://10.2.4.46/sdpapi/request/'+WORKORDERID+'?OPERATION_NAME=EDIT_REQUEST&TECHNICIAN_KEY='+token+'&INPUT_DATA='+INPUT_DATA

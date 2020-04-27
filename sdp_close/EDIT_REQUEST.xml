@@ -3,6 +3,7 @@
 <parameter><name>Group</name><value>Программное обеспечение</value></parameter>
 <parameter><name>Category</name><value>Программное обеспечение</value></parameter>
 <parameter><name>Subcategory</name><value>%Subcategory%</value></parameter>
+<parameter><name>Technician</name><value>%Technician%</value></parameter>
 <parameter><name>Item</name><value>%Item%</value></parameter>
 <parameter><name>Subject</name><value>%Subject%</value></parameter>
 <parameter><name>Description</name><value>%Description%</value></parameter>
