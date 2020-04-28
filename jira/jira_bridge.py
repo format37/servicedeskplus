@@ -1,31 +1,43 @@
+## -*- coding: utf-8 -*-
+
 import sys
 from jira import JIRA
 import json
 from jira.utils import json_loads
-
+import urllib
+import requests
+import time
 
 def get_api_key():
 	with open('api.key','r') as key_file:
 		return key_file.read()
-
 		
 def issue_assignee(jira,issue,accountId):
 	url = jira._options['server'] + '/rest/api/latest/issue/' + issue + '/assignee'
 	payload = {'accountId': accountId}
 	return jira._session.put(url, data=json.dumps(payload))
-
 	
-def create_issue(project,summary,description,accountId,issuetype):
+def create_issue(project,summary,description,accountId,issuetype,item):
+	if '-Сервис' in item:
+		item='1С-Сервис'
+	
 	issue_dict={
 		'project': project,
 		'issuetype': issuetype,
-		'components': [{'name': 'Jira'}],
+		#'components': [{'name': urllib.parse.quote_plus(item)}],
+		#'components': [{'name': item.encode("cp1251")}],
+		'components': [{'name': item}],
 		'summary': summary,
 		'description': description,
 		'assignee': {'accountId': accountId}
 	}
 	return jira.create_issue(fields=issue_dict)
 
+def save_log(message):
+	with open('log.txt','a') as log_file:
+		log_file.write('\n'+time.strftime('%Y-%m-%d %H:%M:%S')+' '+message)
+		log_file.close()
+	
 #icebergproject.atlassian.net/jira/people/search
 #select an account and copypaste id from adress after people/
 sdp_jira_accounts={	
@@ -52,19 +64,35 @@ param=sys.argv[1]
 file_name=param[param.rfind('/')+1:]
 json_path='request\\'+file_name
 with open(json_path, encoding='utf-8') as json_file:
+#with open(json_path, encoding='cp1251') as json_file:
 	json_data=json.loads(json_file.read())
 	request=json_data['request']
 
 #issue=jira.issue('PRJ1C-324')
 #issue.update({'Epic_link':'PRJ1C-5'})
 
-if request['TECHNICIAN'] in sdp_jira_accounts.keys():	
+if request['TECHNICIAN'] in sdp_jira_accounts.keys():
+	save_log(request['WORKORDERID']+' for '+request['TECHNICIAN']+' send to jira')
 	issue=create_issue(
 		'HELP1C',
 		request['WORKORDERID']+' '+request['SUBJECT'],
 		request['DESCRIPTION'],
 		sdp_jira_accounts[request['TECHNICIAN']],
 		sdp_jira_issue_types[request['REQUESTTYPE']],
+		request['ITEM']
 		)
 	issue.update({'customfield_10043':request['WORKORDERID']})
 	#comment = jira.add_comment(str(issue), 'Created automatically from Service Desk Plus')
+else:
+	save_log(request['TECHNICIAN']+' is not in white list. '+request['WORKORDERID']+' stay only in sdp')
+# chat='106129214'
+# message='message'
+# #requests.get('http://10.2.4.87:8080/telegram?chat='+chat+'&message='+message)
+# headers = {
+		# "Origin": "http://10.2.4.87",
+		# "Referer": "http://10.2.4.87",
+		# 'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/70.0.3538.110 Safari/537.36'
+		# }
+# #url     = "http://scriptlab.net/telegram/bots/relaybot/relaylocked.php?chat="+chat+"&text="+urllib.parse.quote_plus(message)
+# url		= "http://10.2.4.87:8080/telegram?chat="+chat+"&message="+message
+# requests.get(url,headers = headers)
