@@ -7,13 +7,14 @@ from urllib.parse import urlparse, parse_qsl
 import multidict as MultiDict
 import requests
 from sdp_create import sdp_bid_create
+from jira_pause import set_pause as jira_set_pause
 import datetime
 from time import strftime
 from time import gmtime
 from time import sleep
 from jira import JIRA
-import time
 
+import time
 
 async def bid_edit(request):
 	try:
@@ -330,7 +331,10 @@ async def sdp_bid_close(request):
 		spent_minutes = int(strftime("%M", gmtime(wl.timeSpentSeconds)))
 		#print(wl.timeSpent, wl.timeSpentSeconds, wl.comment)
 		
-		worklog_comments+=('' if worklog_comments=='' else '\n')+wl.comment
+		try:
+			worklog_comments+=('' if worklog_comments=='' else '\n')+wl.comment
+		except:
+			print('no comments')
 		
 		INPUT_DATA = INPUT_DATA_ORIGINAL
 		INPUT_DATA = INPUT_DATA.replace("%technician%", technician)
@@ -365,12 +369,11 @@ async def sdp_bid_close(request):
 	# print('message',message)
 	# response = 'ok'
 	# return web.Response(text=response,content_type="text/html")
-
-async def create_sdp_jira():
-	for i in range(3):
-		print(i)
-		sleep(2)
-	print('c')
+	
+async def call_jira_pause(request):
+	assignee	= request.rel_url.query['assignee']
+	issuekey	= request.rel_url.query['issuekey']
+	jira_set_pause(assignee,issuekey)
 	
 def send_to_telegram(chat,message):
 	headers = {
@@ -387,6 +390,7 @@ app.router.add_route('GET', '/bidclose', bid_close)
 app.router.add_route('GET', '/bidcreate', sdp_bid_create)
 app.router.add_route('GET', '/bidclosebyjira', sdp_bid_close)
 #app.router.add_route('GET', '/telegram', telegram)
+app.router.add_route('GET', '/jirapause', call_jira_pause)
 
 with open('/home/alex/projects/servicedeskplus/sdp_close/telegram.chat','r') as fh:
 	telegram_group=fh.read()
