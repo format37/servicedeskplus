@@ -79,7 +79,7 @@ async def sdp_bid_create(created_by,caller_phone_number,department,receiver_phon
 		'1608':'Головин Олег Дмитриевич',
 		'1519':'Бойко Илья Вадимович',
 	}
-	receiver_four_digit_phone=receiver_phone_number[4:]
+	receiver_four_digit_phone=receiver_phone_number[-4:]
 	if receiver_four_digit_phone in technicans.keys():
 		technican = technicans[receiver_four_digit_phone]
 	
@@ -200,8 +200,12 @@ async def sdp_bid_create(created_by,caller_phone_number,department,receiver_phon
 		jira_options = {'server': 'https://icebergproject.atlassian.net'}
 		with open('/home/alex/projects/servicedeskplus/sdp_close/jira.key','r') as key_file:
 			jira_key = key_file.read()
+			jira_user = 'yurasov@iceberg.ru'
+		
+		#jira_key = '5d514886c4be040db2d5108c'		
+		#jira_user = 'm.frolov@iceberg.ru'
 
-		jira = JIRA(options=jira_options, basic_auth=('yurasov@iceberg.ru', jira_key))
+		jira = JIRA(options=jira_options, basic_auth=(jira_user, jira_key))
 
 		#issue=jira.issue('PRJ1C-324')
 		#issue.update({'Epic_link':'PRJ1C-5'})
