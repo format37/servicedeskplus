@@ -1,5 +1,9 @@
 ## -*- coding: utf-8 -*-
 
+#import pip
+#pip.main(['install', '--proxy=user:password@proxy:port', 'packagename'])
+#pip.main(['install', '--proxy=http://10.0.4.222:3128', 'html2text'])
+
 import sys
 from jira import JIRA
 import json
@@ -7,6 +11,7 @@ from jira.utils import json_loads
 import urllib
 import requests
 import time
+import html2text
 
 def get_api_key():
 	with open('api.key','r') as key_file:
@@ -28,7 +33,7 @@ def create_issue(project,summary,description,accountId,issuetype,item):
 		#'components': [{'name': item.encode("cp1251")}],
 		'components': [{'name': item}],
 		'summary': summary,
-		'description': description,
+		'description': html2text.html2text(description),
 		'assignee': {'accountId': accountId}
 	}
 	return jira.create_issue(fields=issue_dict)
@@ -85,14 +90,3 @@ if request['TECHNICIAN'] in sdp_jira_accounts.keys():
 	#comment = jira.add_comment(str(issue), 'Created automatically from Service Desk Plus')
 else:
 	save_log(request['TECHNICIAN']+' is not in white list. '+request['WORKORDERID']+' stay only in sdp')
-# chat='106129214'
-# message='message'
-# #requests.get('http://10.2.4.87:8080/telegram?chat='+chat+'&message='+message)
-# headers = {
-		# "Origin": "http://10.2.4.87",
-		# "Referer": "http://10.2.4.87",
-		# 'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/70.0.3538.110 Safari/537.36'
-		# }
-# #url     = "http://scriptlab.net/telegram/bots/relaybot/relaylocked.php?chat="+chat+"&text="+urllib.parse.quote_plus(message)
-# url		= "http://10.2.4.87:8080/telegram?chat="+chat+"&message="+message
-# requests.get(url,headers = headers)
