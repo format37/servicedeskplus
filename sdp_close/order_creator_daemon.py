@@ -83,7 +83,7 @@ async def sdp_bid_create(created_by,caller_phone_number,department,receiver_phon
 	if receiver_four_digit_phone in technicans.keys():
 		technican = technicans[receiver_four_digit_phone]
 	
-	subject		= created_by+' '+caller_phone_number+' Оставил Заявку '+department
+	subject		= created_by+' '+caller_phone_number+' '+department
 	description = subject+' Звонок принят '+receiver_phone_number+' '+technican
 	create_request_file='/home/alex/projects/servicedeskplus/sdp_close/CREATE_REQUEST.xml'
 	
