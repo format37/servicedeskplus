@@ -297,6 +297,7 @@ async def sdp_bid_close(request):
 			print('technician',technician)
 		else:
 			print('technician not found:',user)
+			send_to_telegram('-7022979',str(datetime.datetime.now())+' technician not found:'+str(user) )
 
 
 		sdp_tokens={
@@ -313,6 +314,7 @@ async def sdp_bid_close(request):
 			print('sdp token',token)
 		else:
 			print('sdp token for',technician,'not found. using default')
+			send_to_telegram('-7022979',str(datetime.datetime.now())+' sdp token for '+str(technician)+' not found. using default' )
 
 		response = ''
 		worklog_comments = ''
@@ -394,7 +396,7 @@ def send_to_telegram(chat,message):
 
 app = web.Application()
 app.router.add_route('GET', '/bidedit', bid_edit)
-app.router.add_route('GET', '/check', call_check)
+app.router.add_route('GET', '/', call_check)
 app.router.add_route('GET', '/bidclose', bid_close)
 app.router.add_route('GET', '/bidcreate', sdp_bid_create)
 app.router.add_route('GET', '/bidclosebyjira', sdp_bid_close)
