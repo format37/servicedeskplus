@@ -271,7 +271,7 @@ async def sdp_bid_close(request):
 		if jira_type in jira_sdp_types.keys():
 			rtype = jira_sdp_types[jira_type]
 		else:
-			rtype = jira_sdp_types['Информация']
+			rtype = jira_sdp_types['Consultation']
 
 		print('Subcategory',SUBCAT)
 		print('sdp_id',WORKORDERID)
