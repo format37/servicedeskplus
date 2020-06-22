@@ -366,6 +366,9 @@ async def sdp_bid_close(request):
 
 	return web.Response(text=response,content_type="text/html")
 
+async def call_check(request):
+	return web.Response(text='ok',content_type="text/html")
+
 # async def telegram(request):
 	# print('\n======= telegram:',datetime.datetime.now())
 	# chat	= request.rel_url.query['chat']
@@ -391,6 +394,7 @@ def send_to_telegram(chat,message):
 
 app = web.Application()
 app.router.add_route('GET', '/bidedit', bid_edit)
+app.router.add_route('GET', '/check', call_check)
 app.router.add_route('GET', '/bidclose', bid_close)
 app.router.add_route('GET', '/bidcreate', sdp_bid_create)
 app.router.add_route('GET', '/bidclosebyjira', sdp_bid_close)
