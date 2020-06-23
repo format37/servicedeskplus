@@ -350,7 +350,7 @@ async def sdp_bid_close(request):
 		with open(edit_request_file,'rb') as fh:
 			INPUT_DATA	= fh.read().decode("utf-8")
 			INPUT_DATA = INPUT_DATA.replace("%rtype%", rtype)
-			INPUT_DATA = INPUT_DATA.replace("%Description%", description)
+			#INPUT_DATA = INPUT_DATA.replace("%Description%", description) #<parameter><name>Description</name><value>%Description%</value></parameter>
 			INPUT_DATA = INPUT_DATA.replace("%Subject%", SUBJECT)
 			INPUT_DATA = INPUT_DATA.replace("%Resolution%", 'Закрыто' if worklog_comments=='' else worklog_comments)
 			INPUT_DATA = INPUT_DATA.replace("%Technician%", technician)
