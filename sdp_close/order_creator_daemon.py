@@ -230,10 +230,11 @@ async def sdp_bid_create(created_by,caller_phone_number,department,receiver_phon
 				print('jira issue create succesfull')
 			else:
 				print(technican,'is not in sdp_jira_accounts')
-				chat =telegram_chat_file.read()
-				message = str(datetime.datetime.now().strftime("%Y-%m-%d-%H:%M:%S"))+\
-					'\n'+str(technican)+' is not in sdp_jira_accounts'
-				send_to_telegram(chat,message)
+				with open('/home/alex/projects/servicedeskplus/sdp_close/telegram.chat','r') as telegram_chat_file:
+					chat =telegram_chat_file.read()
+					message = str(datetime.datetime.now().strftime("%Y-%m-%d-%H:%M:%S"))+\
+						'\n'+str(technican)+' is not in sdp_jira_accounts'
+					send_to_telegram(chat,message)
 		
 		# send to telegram
 		with open('/home/alex/projects/servicedeskplus/sdp_close/telegram.chat','r') as telegram_chat_file:
@@ -261,7 +262,7 @@ def connect_sql():
 async def main():
 	with open('/home/alex/projects/servicedeskplus/sdp_close/telegram.chat','r') as telegram_chat_file:
 		chat =telegram_chat_file.read()
-	send_to_telegram(chat,str(datetime.datetime.now())+' daemon started')
+		send_to_telegram(chat,str(datetime.datetime.now())+' daemon started')
 	print(time.strftime('%Y-%m-%d %H:%M:%S'),'alive')
 	conn = connect_sql()
 	cursor = conn.cursor()
