@@ -218,8 +218,9 @@ async def sdp_bid_close(request):
 		jira_type		= request.rel_url.query['jira_type']
 		SUBJECT		= request.rel_url.query['subject']
 		#description	= 'test'
-		description	= request.rel_url.query['description']
-		RESOLUTION	= "Закрыто\n"+request.rel_url.query['resolution']
+		#description	= request.rel_url.query['description']
+		#RESOLUTION	= "Закрыто\n"+request.rel_url.query['resolution']
+		RESOLUTION	= "Закрыто\n"
 		ITEM	= request.rel_url.query['component']
 		user = request.rel_url.query['user']
 		jira_issue = request.rel_url.query['issue_key']
@@ -277,7 +278,7 @@ async def sdp_bid_close(request):
 		print('sdp_id',WORKORDERID)
 		print('jira issue',jira_issue)
 		print('subject',SUBJECT)
-		print('description',description)
+		#print('description',description)
 		#print('resolution',RESOLUTION)
 
 		users={
