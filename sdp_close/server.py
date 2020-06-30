@@ -223,7 +223,8 @@ async def sdp_bid_close(request):
 		RESOLUTION	= "Закрыто\n"
 		ITEM	= request.rel_url.query['component']
 		user = request.rel_url.query['user']
-		jira_issue = request.rel_url.query['issue_key']
+		jira_issue = request.rel_url.query['issue_key']			
+		
 		token	= '76ED27EB-D26D-412A-8151-5A65A16198E7'
 		workHours	= '0'
 		workMinutes = '1'	
@@ -304,7 +305,8 @@ async def sdp_bid_close(request):
 		sdp_tokens={
 			'Фролов Максим Евгеньевич'		: '210ECA4F-859F-45DE-9DDB-5AB19B9617A5',
 			'Сотников Артём Игоревич'		: '4CD78BFF-BFBA-4A00-A91C-2DF01EA12CAA',
-			'Семенов Олег Владимирович'		: 'CEB75C6A-1D07-411E-B34C-ECC6902AA1A0',
+			#'Семенов Олег Владимирович'		: 'CEB75C6A-1D07-411E-B34C-ECC6902AA1A0',
+			'Семенов Олег Владимирович'		: '5CACD30F-793A-411B-BAFA-B01F57D225C9',
 			'Юрасов Алексей Александрович'	: '76ED27EB-D26D-412A-8151-5A65A16198E7',
 			'Полухин Владимир Геннадьевич'	: '5801D334-C5C3-4BEC-9209-309AFCA27DAE',
 			'Бывальцев Виктор Валентинович'	: '157D4CAC-6947-4F44-BCE7-BAF2E3ABF672',
@@ -330,6 +332,8 @@ async def sdp_bid_close(request):
 		jira = JIRA(options=jira_options, basic_auth=('yurasov@iceberg.ru', jira_key))
 
 		worklogs = jira.worklogs(jira_issue)
+		spent_hours = 0
+		spent_minutes =0
 		for wl in worklogs:
 			spent_hours = int(strftime("%H", gmtime(wl.timeSpentSeconds)))
 			spent_minutes = int(strftime("%M", gmtime(wl.timeSpentSeconds)))
@@ -339,30 +343,45 @@ async def sdp_bid_close(request):
 				worklog_comments+=('' if worklog_comments=='' else '\n')+wl.comment
 			except:
 				print('no comments')
-
+			worklog_comments = 'Закрыто' if worklog_comments.replace('_n','')=='' else worklog_comments
+			
 			INPUT_DATA = INPUT_DATA_ORIGINAL
 			INPUT_DATA = INPUT_DATA.replace("%technician%", technician)
 			INPUT_DATA = INPUT_DATA.replace("%workMinutes%", str(spent_minutes))
 			INPUT_DATA = INPUT_DATA.replace("%workHours%", str(spent_hours))
 			url='http://10.2.4.46/sdpapi/request/'+WORKORDERID+'/worklogs?OPERATION_NAME=ADD_WORKLOG&TECHNICIAN_KEY='+token+'&INPUT_DATA='+INPUT_DATA
 			headers = {'Content-Type': 'application/xml'}	
-			response += requests.post(url, headers=headers).text
+			response += requests.post(url, headers=headers).text		
 
 		with open(edit_request_file,'rb') as fh:
 			INPUT_DATA	= fh.read().decode("utf-8")
 			INPUT_DATA = INPUT_DATA.replace("%rtype%", rtype)
 			#INPUT_DATA = INPUT_DATA.replace("%Description%", description) #<parameter><name>Description</name><value>%Description%</value></parameter>
 			INPUT_DATA = INPUT_DATA.replace("%Subject%", SUBJECT)
-			INPUT_DATA = INPUT_DATA.replace("%Resolution%", 'Закрыто' if worklog_comments=='' else worklog_comments)
+			INPUT_DATA = INPUT_DATA.replace("%Resolution%", worklog_comments)
 			INPUT_DATA = INPUT_DATA.replace("%Technician%", technician)
 			INPUT_DATA = INPUT_DATA.replace("%Item%", ITEM)
 			INPUT_DATA = INPUT_DATA.replace("%Subcategory%", SUBCAT)
 			url='http://10.2.4.46/sdpapi/request/'+WORKORDERID+'?OPERATION_NAME=EDIT_REQUEST&TECHNICIAN_KEY='+token+'&INPUT_DATA='+INPUT_DATA
 			headers = {'Content-Type': 'application/xml'}	
 			response += requests.post(url, headers=headers).text
-
-		#print('INPUT_DATA:\n',INPUT_DATA)
-		
+			
+			#DEBUG ++
+			'''
+			send_to_telegram('-7022979',str(datetime.datetime.now())+' Close by jira [2]:\n\
+				sdp_id: '+str(WORKORDERID)+'\n\
+				issue_key: '+str(jira_issue)+'\n\
+				component: '+str(ITEM)+'\n\
+				jira_type: '+str(jira_type)+'\n\
+				user: '+str(user)+'\n\
+				subject: '+str(SUBJECT)+'\n\
+				worklog_comments ('+str(len(worklogs))+'): ['+str(worklog_comments)+']\n\
+				spent_hours: '+str(spent_hours)+'\n\
+				spent_minutes: '+str(spent_minutes)+'\n\
+				response: '+response )
+			'''
+			#DEBUG --
+			
 	except Exception as e:
 		response	= 'error'
 		send_to_telegram('-7022979',str(datetime.datetime.now())+' sdp close by jira error: '+str(e))
