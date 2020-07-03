@@ -5,6 +5,7 @@
 <parameter><name>Subcategory</name><value>%Subcategory%</value></parameter>
 <parameter><name>Technician</name><value>%Technician%</value></parameter>
 <parameter><name>Item</name><value>%Item%</value></parameter>
+<parameter><name>Description</name><value>%Description%</value></parameter>
 <parameter><name>Subject</name><value>%Subject%</value></parameter>
 <parameter><name>Resolution</name><value>%Resolution%</value></parameter>
 <parameter><name>Level</name><value>Обычная заявка</value></parameter>

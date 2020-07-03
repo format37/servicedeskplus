@@ -218,13 +218,26 @@ async def sdp_bid_close(request):
 		jira_type		= request.rel_url.query['jira_type']
 		SUBJECT		= request.rel_url.query['subject']
 		#description	= 'test'
-		#description	= request.rel_url.query['description']
+		description	= request.rel_url.query['description']
 		#RESOLUTION	= "Закрыто\n"+request.rel_url.query['resolution']
 		RESOLUTION	= "Закрыто\n"
 		ITEM	= request.rel_url.query['component']
 		user = request.rel_url.query['user']
-		jira_issue = request.rel_url.query['issue_key']			
+		jira_issue = request.rel_url.query['issue_key']	
+		'''
+		#DEBUG ++
+			
+		send_to_telegram('-7022979',str(datetime.datetime.now())+' Close by jira [1.5]:\n\
+			sdp_id: '+str(WORKORDERID)+'\n\
+			issue_key: '+str(jira_issue)+'\n\
+			component: '+str(ITEM)+'\n\
+			jira_type: '+str(jira_type)+'\n\
+			user: '+str(user)+'\n\
+			subject: '+str(SUBJECT)+'\n\
+			description: '+str(description) )
 		
+		#DEBUG --
+		'''
 		token	= '76ED27EB-D26D-412A-8151-5A65A16198E7'
 		workHours	= '0'
 		workMinutes = '1'	
@@ -279,7 +292,7 @@ async def sdp_bid_close(request):
 		print('sdp_id',WORKORDERID)
 		print('jira issue',jira_issue)
 		print('subject',SUBJECT)
-		#print('description',description)
+		print('description',description)
 		#print('resolution',RESOLUTION)
 
 		users={
@@ -305,7 +318,6 @@ async def sdp_bid_close(request):
 		sdp_tokens={
 			'Фролов Максим Евгеньевич'		: '210ECA4F-859F-45DE-9DDB-5AB19B9617A5',
 			'Сотников Артём Игоревич'		: '4CD78BFF-BFBA-4A00-A91C-2DF01EA12CAA',
-			#'Семенов Олег Владимирович'		: 'CEB75C6A-1D07-411E-B34C-ECC6902AA1A0',
 			'Семенов Олег Владимирович'		: '5CACD30F-793A-411B-BAFA-B01F57D225C9',
 			'Юрасов Алексей Александрович'	: '76ED27EB-D26D-412A-8151-5A65A16198E7',
 			'Полухин Владимир Геннадьевич'	: '5801D334-C5C3-4BEC-9209-309AFCA27DAE',
@@ -320,7 +332,7 @@ async def sdp_bid_close(request):
 			send_to_telegram('-7022979',str(datetime.datetime.now())+' sdp token for '+str(technician)+' not found. using default' )
 
 		response = ''
-		worklog_comments = ''
+		worklog_comments = '.'
 
 		with open(add_worklog_file,'rb') as fh:
 			INPUT_DATA_ORIGINAL	= fh.read().decode("utf-8")
@@ -333,7 +345,7 @@ async def sdp_bid_close(request):
 
 		worklogs = jira.worklogs(jira_issue)
 		spent_hours = 0
-		spent_minutes =0
+		spent_minutes = 1
 		for wl in worklogs:
 			spent_hours = int(strftime("%H", gmtime(wl.timeSpentSeconds)))
 			spent_minutes = int(strftime("%M", gmtime(wl.timeSpentSeconds)))
@@ -356,7 +368,7 @@ async def sdp_bid_close(request):
 		with open(edit_request_file,'rb') as fh:
 			INPUT_DATA	= fh.read().decode("utf-8")
 			INPUT_DATA = INPUT_DATA.replace("%rtype%", rtype)
-			#INPUT_DATA = INPUT_DATA.replace("%Description%", description) #<parameter><name>Description</name><value>%Description%</value></parameter>
+			INPUT_DATA = INPUT_DATA.replace("%Description%", description) #
 			INPUT_DATA = INPUT_DATA.replace("%Subject%", SUBJECT)
 			INPUT_DATA = INPUT_DATA.replace("%Resolution%", worklog_comments)
 			INPUT_DATA = INPUT_DATA.replace("%Technician%", technician)
@@ -365,9 +377,9 @@ async def sdp_bid_close(request):
 			url='http://10.2.4.46/sdpapi/request/'+WORKORDERID+'?OPERATION_NAME=EDIT_REQUEST&TECHNICIAN_KEY='+token+'&INPUT_DATA='+INPUT_DATA
 			headers = {'Content-Type': 'application/xml'}	
 			response += requests.post(url, headers=headers).text
-			
-			#DEBUG ++
 			'''
+			#DEBUG ++
+			
 			send_to_telegram('-7022979',str(datetime.datetime.now())+' Close by jira [2]:\n\
 				sdp_id: '+str(WORKORDERID)+'\n\
 				issue_key: '+str(jira_issue)+'\n\
@@ -375,13 +387,14 @@ async def sdp_bid_close(request):
 				jira_type: '+str(jira_type)+'\n\
 				user: '+str(user)+'\n\
 				subject: '+str(SUBJECT)+'\n\
+				description: '+str(description)+'\n\
 				worklog_comments ('+str(len(worklogs))+'): ['+str(worklog_comments)+']\n\
 				spent_hours: '+str(spent_hours)+'\n\
 				spent_minutes: '+str(spent_minutes)+'\n\
 				response: '+response )
-			'''
-			#DEBUG --
 			
+			#DEBUG --
+			'''
 	except Exception as e:
 		response	= 'error'
 		send_to_telegram('-7022979',str(datetime.datetime.now())+' sdp close by jira error: '+str(e))
