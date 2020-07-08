@@ -14,6 +14,8 @@ from jira import JIRA
 
 import time
 
+script_path = '/home/dvasilev/projects/servicedeskplus/'
+
 async def sdp_bid_close(request):
 	try:
 		WORKORDERID = request.rel_url.query['sdp_id']
@@ -27,8 +29,8 @@ async def sdp_bid_close(request):
 		token	= '76ED27EB-D26D-412A-8151-5A65A16198E7'
 		workHours	= '0'
 		workMinutes = '1'	
-		add_worklog_file='/home/alex/projects/servicedeskplus/sdp_close/ADD_WORKLOG.xml'
-		edit_request_file='/home/alex/projects/servicedeskplus/sdp_close/EDIT_REQUEST.xml'
+		add_worklog_file=script_path+'sdp_server/ADD_WORKLOG.xml'
+		edit_request_file=script_path+'sdp_server/EDIT_REQUEST.xml'
 
 		print('item received:',ITEM)
 
@@ -123,7 +125,7 @@ async def sdp_bid_close(request):
 			INPUT_DATA_ORIGINAL	= fh.read().decode("utf-8")
 
 		jira_options = {'server': 'https://icebergproject.atlassian.net'}
-		with open('/home/alex/projects/servicedeskplus/sdp_close/jira.key','r') as key_file:
+		with open(script_path+'sdp_server/jira.key','r') as key_file:
 			jira_key = key_file.read()
 
 		jira = JIRA(options=jira_options, basic_auth=('yurasov@iceberg.ru', jira_key))
@@ -186,7 +188,7 @@ app = web.Application()
 app.router.add_route('GET', '/check', call_check)
 app.router.add_route('GET', '/bidclosebyjira', sdp_bid_close)
 
-with open('/home/alex/projects/servicedeskplus/sdp_close/telegram.chat','r') as fh:
+with open(script_path+'telegram.chat','r') as fh:
 	telegram_group=fh.read()
 	fh.close()
 send_to_telegram(telegram_group,str(datetime.datetime.now())+' server started')
