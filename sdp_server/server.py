@@ -175,14 +175,12 @@ def issue_assignee(jira,issue,accountId):
 	payload = {'accountId': accountId}
 	return jira._session.put(url, data=json.dumps(payload))
 
-def create_issue(jira,project,summary,description,accountId,issuetype,item):
-	if '-Сервис' in item:
-		item='1С-Сервис'
+def create_issue(jira,project,summary,description,accountId,issuetype,component):
 	
 	issue_dict={
 		'project': project,
 		'issuetype': issuetype,
-		'components': [{'name': item}],
+		'components': [{'name': component}],
 		'summary': summary,
 		'description': html2text.html2text(description),
 		'assignee': {'accountId': accountId}
@@ -192,11 +190,18 @@ def create_issue(jira,project,summary,description,accountId,issuetype,item):
 async def jira_create_issue(request):
 	try:
 		response='ok'
+		
 		jira_api_key	= request.rel_url.query['jira_api_key']
-		user			= request.rel_url.query['user']
+		project			= request.rel_url.query['project']
+		summary			= request.rel_url.query['summary']
 		description		= request.rel_url.query['description']
+		accountId		= request.rel_url.query['accountId']
+		issuetype		= request.rel_url.query['issuetype']
+		component		= request.rel_url.query['component']
+		
 		jira_options	= {'server': 'https://icebergproject.atlassian.net'}
 		jira = JIRA(options=jira_options, basic_auth=('yurasov@iceberg.ru', jira_api_key))
+		'''
 		item = 'МРМ'
 		
 		sdp_jira_accounts={	
@@ -215,15 +220,15 @@ async def jira_create_issue(request):
 			'Инцидент':'Bug',
 			'Обслуживание':'Service',
 		}
-		
+		'''
 		issue=create_issue(
 			jira,
-			'DEV1CMRM10',
-			'1С запрос от пользователя: '+user,
+			project,
+			summary,
 			description,
-			sdp_jira_accounts['Юрасов Алексей Александрович'],
-			sdp_jira_issue_types['Обслуживание'],
-			item
+			accountId,
+			issuetype,
+			component
 		)
 		
 	except Exception as e:
