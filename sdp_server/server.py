@@ -212,7 +212,7 @@ async def jira_create_issue(request):
 			component
 		)
 		
-		response = issue;
+		response = issue.key;
 		
 	except Exception as e:
 		response	= 'error'
