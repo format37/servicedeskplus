@@ -182,14 +182,14 @@ def create_issue(jira,project,summary,description,accountId,issuetype,component)
 		'issuetype': issuetype,
 		'components': [{'name': component}],
 		'summary': summary,
-		'description': html2text.html2text(description),
+		#'description': html2text.html2text(description),
+		'description': description,
 		'assignee': {'accountId': accountId}
 	}
 	return jira.create_issue(fields=issue_dict)
 
 async def jira_create_issue(request):
 	try:
-		response='ok'
 		
 		jira_api_key	= request.rel_url.query['jira_api_key']
 		project			= request.rel_url.query['project']
@@ -201,26 +201,7 @@ async def jira_create_issue(request):
 		
 		jira_options	= {'server': 'https://icebergproject.atlassian.net'}
 		jira = JIRA(options=jira_options, basic_auth=('yurasov@iceberg.ru', jira_api_key))
-		'''
-		item = 'МРМ'
-		
-		sdp_jira_accounts={	
-			'Сотников Артём Игоревич':'5de505aa22389c0d118c3eaf',
-			'Семенов Олег Владимирович':'5dfb26b2588f6e0cb033698e',
-			'Полухин Владимир Геннадьевич':'5dfb273f9422830cacaa5c02',
-			'Бывальцев Виктор Валентинович':'5dfb26b35697460cb3d98780',
-			'Васильченко Евгения Алексеевна':'5dfb2741eaf5880cad03b10f',
-			'Фролов Максим Евгеньевич':'557058:fa79f484-a387-495b-9862-1af505d8d70a',
-			'Юрасов Алексей Александрович':'557058:f0548e8f-6a09-44bd-bfb5-43a0a40531bb',
-		}
-		
-		sdp_jira_issue_types={
-			'Изменение':'Task',
-			'Информация':'Consultation',
-			'Инцидент':'Bug',
-			'Обслуживание':'Service',
-		}
-		'''
+
 		issue=create_issue(
 			jira,
 			project,
@@ -230,6 +211,8 @@ async def jira_create_issue(request):
 			issuetype,
 			component
 		)
+		
+		response = issue;
 		
 	except Exception as e:
 		response	= 'error'
