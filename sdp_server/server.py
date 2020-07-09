@@ -175,7 +175,7 @@ def issue_assignee(jira,issue,accountId):
 	payload = {'accountId': accountId}
 	return jira._session.put(url, data=json.dumps(payload))
 
-def create_issue(project,summary,description,accountId,issuetype,item):
+def create_issue(jira,project,summary,description,accountId,issuetype,item):
 	if '-Сервис' in item:
 		item='1С-Сервис'
 	
@@ -217,6 +217,7 @@ async def jira_create_issue(request):
 		}
 		
 		issue=create_issue(
+			jira,
 			'DEV1CMRM10',
 			'1С запрос от пользователя: '+user,
 			description,
