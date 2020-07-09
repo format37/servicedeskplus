@@ -11,6 +11,7 @@ from time import strftime
 from time import gmtime
 from time import sleep
 from jira import JIRA
+import html2text
 
 import time
 
@@ -167,6 +168,71 @@ async def sdp_bid_close(request):
 
 	return web.Response(text=response,content_type="text/html")
 
+# JIRA CREATE++
+
+def issue_assignee(jira,issue,accountId):
+	url = jira._options['server'] + '/rest/api/latest/issue/' + issue + '/assignee'
+	payload = {'accountId': accountId}
+	return jira._session.put(url, data=json.dumps(payload))
+
+def create_issue(project,summary,description,accountId,issuetype,item):
+	if '-Сервис' in item:
+		item='1С-Сервис'
+	
+	issue_dict={
+		'project': project,
+		'issuetype': issuetype,
+		'components': [{'name': item}],
+		'summary': summary,
+		'description': html2text.html2text(description),
+		'assignee': {'accountId': accountId}
+	}
+	return jira.create_issue(fields=issue_dict)
+
+async def jira_create_issue(request):
+	try:
+		response='ok'
+		jira_api_key	= request.rel_url.query['jira_api_key']
+		user			= request.rel_url.query['user']
+		description		= request.rel_url.query['description']
+		jira_options	= {'server': 'https://icebergproject.atlassian.net'}
+		jira = JIRA(options=jira_options, basic_auth=('yurasov@iceberg.ru', jira_api_key))
+		item = 'МРМ'
+		
+		sdp_jira_accounts={	
+			'Сотников Артём Игоревич':'5de505aa22389c0d118c3eaf',
+			'Семенов Олег Владимирович':'5dfb26b2588f6e0cb033698e',
+			'Полухин Владимир Геннадьевич':'5dfb273f9422830cacaa5c02',
+			'Бывальцев Виктор Валентинович':'5dfb26b35697460cb3d98780',
+			'Васильченко Евгения Алексеевна':'5dfb2741eaf5880cad03b10f',
+			'Фролов Максим Евгеньевич':'557058:fa79f484-a387-495b-9862-1af505d8d70a',
+			'Юрасов Алексей Александрович':'557058:f0548e8f-6a09-44bd-bfb5-43a0a40531bb',
+		}
+		
+		sdp_jira_issue_types={
+			'Изменение':'Task',
+			'Информация':'Consultation',
+			'Инцидент':'Bug',
+			'Обслуживание':'Service',
+		}
+		
+		issue=create_issue(
+			'DEV1CMRM10',
+			'1С запрос от пользователя: '+user,
+			description,
+			sdp_jira_accounts['Юрасов Алексей Александрович'],
+			sdp_jira_issue_types['Обслуживание'],
+			item
+		)
+		
+	except Exception as e:
+		response	= 'error'
+		send_to_telegram('-7022979',str(datetime.datetime.now())+' 1C - Jira create error: '+str(e))
+
+	return web.Response(text=response,content_type="text/html")
+
+# JIRA CREATE --
+
 async def call_check(request):
 	return web.Response(text='ok',content_type="text/html")
 	
@@ -187,6 +253,7 @@ def send_to_telegram(chat,message):
 app = web.Application()
 app.router.add_route('GET', '/check', call_check)
 app.router.add_route('GET', '/bidclosebyjira', sdp_bid_close)
+app.router.add_route('GET', '/jiracreate', jira_create_issue)
 
 with open(script_path+'telegram.chat','r') as fh:
 	telegram_group=fh.read()
