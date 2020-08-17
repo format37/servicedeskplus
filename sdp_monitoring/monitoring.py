@@ -53,6 +53,7 @@ def today_is_holiday():
 
 def send_to_telegram(chat,message):
 	try:
+		print('Telegram:',message)
 		headers = {
 			"Origin": "http://scriptlab.net",
 			"Referer": "http://scriptlab.net/telegram/bots/relaybot/",
