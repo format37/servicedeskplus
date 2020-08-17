@@ -14,13 +14,16 @@ import time
 import asyncio
 
 def send_to_telegram(chat,message):
-	headers = {
-    "Origin": "http://scriptlab.net",
-    "Referer": "http://scriptlab.net/telegram/bots/relaybot/",
-    'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/70.0.3538.110 Safari/537.36'}
-	
-	url	= "http://scriptlab.net/telegram/bots/relaybot/relaylocked.php?chat="+chat+"&text="+urllib.parse.quote_plus(message)
-	requests.get(url,headers = headers)
+	try:
+		headers = {
+	    "Origin": "http://scriptlab.net",
+	    "Referer": "http://scriptlab.net/telegram/bots/relaybot/",
+	    'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/70.0.3538.110 Safari/537.36'}
+
+		url	= "http://scriptlab.net/telegram/bots/relaybot/relaylocked.php?chat="+chat+"&text="+urllib.parse.quote_plus(message)
+		requests.get(url,headers = headers)
+	except Exception as e:
+		print(e)
 
 def jira_datetime_format(dt):
     return str(dt.year)+'-'+str(dt.month).zfill(2)+'-'+str(dt.day).zfill(2)+'T'+str(dt.hour).zfill(2)+':'+str(dt.minute).zfill(2)+':'+str(dt.second).zfill(2)+'.'+str(int(dt.microsecond/1000)).zfill(3)+'+0300'
