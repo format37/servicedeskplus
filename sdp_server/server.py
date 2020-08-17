@@ -13,7 +13,7 @@ from time import sleep
 from jira import JIRA
 import html2text
 import time
-
+import ssl
 
 WEBHOOK_PORT = 8080
 WEBHOOK_LISTEN = '0.0.0.0'  # In some VPS you may need to put here the IP addr
