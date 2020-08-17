@@ -132,7 +132,7 @@ async def sdp_bid_close(request):
 
 		jira_options = {'server': 'https://icebergproject.atlassian.net'}
 		with open(script_path+'sdp_server/jira.key','r') as key_file:
-			jira_key = key_file.read()
+			jira_key = key_file.read().replace('\n', '')
 		print('jira_key',jira_key)
 		jira = JIRA(options=jira_options, basic_auth=('yurasov@iceberg.ru', jira_key))
 		print('connected to jira',jira)
