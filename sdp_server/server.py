@@ -12,10 +12,13 @@ from time import gmtime
 from time import sleep
 from jira import JIRA
 import html2text
-
 import time
 
-script_path = '/home/dvasilev/projects/servicedeskplus/'
+
+WEBHOOK_PORT = 8080
+WEBHOOK_LISTEN = '0.0.0.0'  # In some VPS you may need to put here the IP addr
+script_path	= '/home/dvasilev/projects/servicedeskplus/'
+cert_path	= '/home/dvasilev/cert/'
 
 async def sdp_bid_close(request):
 	try:
@@ -252,9 +255,22 @@ with open(script_path+'telegram.chat','r') as fh:
 	fh.close()
 send_to_telegram(telegram_group,str(datetime.datetime.now())+' server started')
 
+# Build ssl context
+context = ssl.SSLContext(ssl.PROTOCOL_TLSv1_2)
+context.load_cert_chain(WEBHOOK_SSL_CERT, WEBHOOK_SSL_PRIV)
+
+# Start aiohttp server
+web.run_app(
+    app,
+    host=WEBHOOK_LISTEN,
+    port=WEBHOOK_PORT,
+    ssl_context=context,
+)
+
+'''
 loop = asyncio.get_event_loop()
 handler = app.make_handler()
-f = loop.create_server(handler, port='8080')
+f = loop.create_server(handler, port=PORT)
 srv = loop.run_until_complete(f)
 
 print('serving on', srv.sockets[0].getsockname())
@@ -265,3 +281,4 @@ except KeyboardInterrupt:
 finally:
 	loop.run_until_complete(handler.finish_connections(1.0))
 	srv.close()
+'''
