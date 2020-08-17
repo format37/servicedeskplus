@@ -9,11 +9,11 @@ import urllib
 import urllib.parse
 
 with open('/home/alex/projects/servicedeskplus/sdp_monitoring/token.key','r') as fh:
-	token=fh.read()
+	token=fh.read().replace('\n', '')
 	fh.close()
 
 with open('/home/alex/projects/servicedeskplus/sdp_monitoring/telegram.group','r') as fh:
-	telegram_group=fh.read()
+	telegram_group=fh.read().replace('\n', '')
 	fh.close()
 
 get_requests_file='/home/alex/projects/servicedeskplus/sdp_monitoring/GET_REQUESTS.xml'
@@ -52,13 +52,16 @@ def today_is_holiday():
 	return False	
 
 def send_to_telegram(chat,message):
-	headers = {
-		"Origin": "http://scriptlab.net",
-		"Referer": "http://scriptlab.net/telegram/bots/relaybot/",
-		'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/70.0.3538.110 Safari/537.36'
-		}
-	url     = "http://scriptlab.net/telegram/bots/relaybot/relaylocked.php?chat="+chat+"&text="+urllib.parse.quote_plus(message)
-	return requests.get(url,headers = headers)
+	try:
+		headers = {
+			"Origin": "http://scriptlab.net",
+			"Referer": "http://scriptlab.net/telegram/bots/relaybot/",
+			'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/70.0.3538.110 Safari/537.36'
+			}
+		url     = "http://scriptlab.net/telegram/bots/relaybot/relaylocked.php?chat="+chat+"&text="+urllib.parse.quote_plus(message)
+		return requests.get(url,headers = headers)
+	except Exception as e:
+		return str(e)
 
 def dt(u):
 	return datetime.datetime.utcfromtimestamp(int(u)+60*60*3)
