@@ -38,7 +38,7 @@ async def sdp_bid_close(request):
 		add_worklog_file=script_path+'sdp_server/ADD_WORKLOG.xml'
 		edit_request_file=script_path+'sdp_server/EDIT_REQUEST.xml'
 
-		print('item received:',ITEM)
+		#print('item received:',ITEM)
 
 		items =[
 			'1C-Сервис',
@@ -50,9 +50,9 @@ async def sdp_bid_close(request):
 		]
 		if (ITEM in items)==False:
 			ITEM = '1C-Сервис'
-			print('item changed')
+			#print('item changed')
 
-		print('item set:',ITEM)
+		#print('item set:',ITEM)
 
 		sub_cats = {
 			'1C-Сервис':'1С Cистемы',
@@ -68,7 +68,7 @@ async def sdp_bid_close(request):
 		else:
 			SUBCAT = '1С Cистемы'
 
-		print('jira_type',jira_type)
+		#print('jira_type',jira_type)
 
 		jira_sdp_types = {
 			'Task':'Изменение',
@@ -81,13 +81,13 @@ async def sdp_bid_close(request):
 			rtype = jira_sdp_types[jira_type]
 		else:
 			rtype = jira_sdp_types['Consultation']
-
+		'''
 		print('Subcategory',SUBCAT)
 		print('sdp_id',WORKORDERID)
 		print('jira issue',jira_issue)
 		print('subject',SUBJECT)
 		print('description',description)
-
+		'''
 		users={
 			'557058:fa79f484-a387-495b-9862-1af505d8d70a'	: 'Фролов Максим Евгеньевич',
 			'5de505aa22389c0d118c3eaf'						: 'Сотников Артём Игоревич',
@@ -102,9 +102,9 @@ async def sdp_bid_close(request):
 
 		if user in users.keys():
 			technician = users[user]
-			print('technician',technician)
+			#print('technician',technician)
 		else:
-			print('technician not found:',user)
+			#print('technician not found:',user)
 			send_to_telegram('-7022979',str(datetime.datetime.now())+' technician not found:'+str(user) )
 
 
@@ -119,9 +119,9 @@ async def sdp_bid_close(request):
 		token = sdp_tokens['Юрасов Алексей Александрович']
 		if technician in sdp_tokens.keys():
 			token = sdp_tokens[technician]
-			print('sdp token',token)
+			#print('sdp token',token)
 		else:
-			print('sdp token for',technician,'not found. using default')
+			#print('sdp token for',technician,'not found. using default')
 			send_to_telegram('-7022979',str(datetime.datetime.now())+' sdp token for '+str(technician)+' not found. using default' )
 
 		response = ''
@@ -133,9 +133,9 @@ async def sdp_bid_close(request):
 		jira_options = {'server': 'https://icebergproject.atlassian.net'}
 		with open(script_path+'sdp_server/jira.key','r') as key_file:
 			jira_key = key_file.read().replace('\n', '')
-		print('jira_key',jira_key)
+		#print('jira_key',jira_key)
 		jira = JIRA(options=jira_options, basic_auth=('yurasov@iceberg.ru', jira_key))
-		print('connected to jira',jira)
+		#print('connected to jira',jira)
 		worklogs = jira.worklogs(jira_issue)
 		for wl in worklogs:
 			spent_hours = int(strftime("%H", gmtime(wl.timeSpentSeconds)))
@@ -169,7 +169,7 @@ async def sdp_bid_close(request):
 		
 	except Exception as e:
 		response	= 'error'
-		print(str(datetime.datetime.now())+' sdp close by jira error: '+str(e))
+		#print(str(datetime.datetime.now())+' sdp close by jira error: '+str(e))
 		send_to_telegram('-7022979',str(datetime.datetime.now())+' sdp close by jira error: '+str(e))
 
 	return web.Response(text=response,content_type="text/html")
@@ -269,19 +269,3 @@ web.run_app(
     port=WEBHOOK_PORT,
     ssl_context=context,
 )
-
-'''
-loop = asyncio.get_event_loop()
-handler = app.make_handler()
-f = loop.create_server(handler, port=PORT)
-srv = loop.run_until_complete(f)
-
-print('serving on', srv.sockets[0].getsockname())
-try:
-	loop.run_forever()
-except KeyboardInterrupt:
-	print("serving off...")
-finally:
-	loop.run_until_complete(handler.finish_connections(1.0))
-	srv.close()
-'''
