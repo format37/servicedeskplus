@@ -15,6 +15,7 @@ import asyncio
 
 def send_to_telegram(chat,message):
 	try:
+		print('Telegram:',message)
 		headers = {
 	    "Origin": "http://scriptlab.net",
 	    "Referer": "http://scriptlab.net/telegram/bots/relaybot/",
@@ -65,7 +66,7 @@ async def sdp_bid_create(created_by,caller_phone_number,department,receiver_phon
 	
 	#api_key					= request.rel_url.query['api_key']					# API Key sdp	
 	with open('/home/alex/projects/servicedeskplus/sdp_close/token.key','r') as fh:
-		api_key=fh.read()
+		api_key=fh.read().replace('\n', '')
 		fh.close()
 	technicans={
 		'1611':'Сотников Артём Игоревич',
@@ -204,7 +205,7 @@ async def sdp_bid_create(created_by,caller_phone_number,department,receiver_phon
 
 			jira_options = {'server': 'https://icebergproject.atlassian.net'}
 			with open('/home/alex/projects/servicedeskplus/sdp_close/jira.key','r') as key_file:
-				jira_key = key_file.read()
+				jira_key = key_file.read().replace('\n', '')
 				jira_user = 'yurasov@iceberg.ru'
 				#jira_user = 'frolov@iceberg.ru'
 
@@ -234,14 +235,14 @@ async def sdp_bid_create(created_by,caller_phone_number,department,receiver_phon
 			else:
 				print(technican,'is not in sdp_jira_accounts')
 				with open('/home/alex/projects/servicedeskplus/sdp_close/telegram.chat','r') as telegram_chat_file:
-					chat =telegram_chat_file.read()
+					chat =telegram_chat_file.read().replace('\n', '')
 					message = str(datetime.datetime.now().strftime("%Y-%m-%d-%H:%M:%S"))+\
 						'\n'+str(technican)+' is not in sdp_jira_accounts'
 					send_to_telegram(chat,message)
 		
 		# send to telegram
 		with open('/home/alex/projects/servicedeskplus/sdp_close/telegram.chat','r') as telegram_chat_file:
-			chat =telegram_chat_file.read()
+			chat =telegram_chat_file.read().replace('\n', '')
 			message = str(datetime.datetime.now().strftime("%Y-%m-%d-%H:%M:%S"))+\
 				'\nЗвонок от '+caller_phone_number+' '+requester+' 74957770320,'+caller_phone_number+\
 				'\nПринял '+receiver_phone_number+' '+technican+\
@@ -252,7 +253,7 @@ async def sdp_bid_create(created_by,caller_phone_number,department,receiver_phon
 	
 	except Exception as e:
 		with open('/home/alex/projects/servicedeskplus/sdp_close/telegram.chat','r') as telegram_chat_file:
-			chat =telegram_chat_file.read()
+			chat =telegram_chat_file.read().replace('\n', '')
 			message = str(datetime.datetime.now().strftime("%Y-%m-%d-%H:%M:%S"))+\
 				'\njira daemon error: '+str(e)
 			send_to_telegram(chat,message)
@@ -264,7 +265,7 @@ def connect_sql():
 
 async def main():
 	with open('/home/alex/projects/servicedeskplus/sdp_close/telegram.chat','r') as telegram_chat_file:
-		chat =telegram_chat_file.read()
+		chat =telegram_chat_file.read().replace('\n', '')
 		send_to_telegram(chat,str(datetime.datetime.now())+' daemon started')
 	print(time.strftime('%Y-%m-%d %H:%M:%S'),'alive')
 	conn = connect_sql()
