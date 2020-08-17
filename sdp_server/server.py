@@ -169,6 +169,7 @@ async def sdp_bid_close(request):
 		
 	except Exception as e:
 		response	= 'error'
+		print(str(datetime.datetime.now())+' sdp close by jira error: '+str(e))
 		send_to_telegram('-7022979',str(datetime.datetime.now())+' sdp close by jira error: '+str(e))
 
 	return web.Response(text=response,content_type="text/html")
