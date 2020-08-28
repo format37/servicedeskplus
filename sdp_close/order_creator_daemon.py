@@ -201,6 +201,7 @@ async def sdp_bid_create(created_by,caller_phone_number,department,receiver_phon
 				'Васильченко Евгения Алексеевна':'5dfb2741eaf5880cad03b10f',
 				'Фролов Максим Евгеньевич':'557058:fa79f484-a387-495b-9862-1af505d8d70a',
 				'Юрасов Алексей Александрович':'557058:f0548e8f-6a09-44bd-bfb5-43a0a40531bb',
+				'Титов Иван Сергеевич':'5f3a2c5d3e9e2e004dd3bf1c',
 				}
 				
 			sdp_jira_issue_types={
