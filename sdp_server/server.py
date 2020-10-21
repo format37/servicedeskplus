@@ -15,10 +15,11 @@ import html2text
 import time
 import ssl
 
-WEBHOOK_PORT = 443
+WEBHOOK_PORT = 8080
 WEBHOOK_LISTEN = '0.0.0.0'  # In some VPS you may need to put here the IP addr
 script_path	= '/home/dvasilev/projects/servicedeskplus/'
-CERT_PATH	= '/home/dvasilev/cert/'
+#CERT_PATH	= '/home/dvasilev/cert/'
+CERT_PATH	= '/etc/letsencrypt/live/service.icecorp.ru/'
 WEBHOOK_SSL_CERT = CERT_PATH+'fullchain.pem'  # Path to the ssl certificate
 WEBHOOK_SSL_PRIV = CERT_PATH+'privkey.pem'  # Path to the ssl private key
 
