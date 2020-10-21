@@ -15,7 +15,7 @@ import html2text
 import time
 import ssl
 
-WEBHOOK_PORT = 8080
+WEBHOOK_PORT = 443
 WEBHOOK_LISTEN = '0.0.0.0'  # In some VPS you may need to put here the IP addr
 script_path	= '/home/dvasilev/projects/servicedeskplus/'
 CERT_PATH	= '/home/dvasilev/cert/'
