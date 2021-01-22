@@ -13,9 +13,20 @@ import pymssql
 import time
 import asyncio
 
+
+def send_to_telegram(chat_id, message):
+	with open('/home/alex/projects/servicedeskplus/telegram_token.key', 'r') as file:
+		token = file.read().replace('\n', '')
+		file.close()
+	session = requests.Session()
+	session.get('https://api.telegram.org/bot'+token+'/sendMessage?chat_id='+chat_id+'&text='+urllib.parse.quote_plus(message))
+
+"""
 def send_to_telegram(chat,message):
 	try:
 		print('Telegram:',message)
+		chat_id = '-1001370338827' # Телефон
+		token = ''
 		headers = {
 	    "Origin": "http://scriptlab.net",
 	    "Referer": "http://scriptlab.net/telegram/bots/relaybot/",
@@ -25,7 +36,7 @@ def send_to_telegram(chat,message):
 		requests.get(url,headers = headers)
 	except Exception as e:
 		print(e)
-
+"""
 def jira_datetime_format(dt):
     return str(dt.year)+'-'+str(dt.month).zfill(2)+'-'+str(dt.day).zfill(2)+'T'+str(dt.hour).zfill(2)+':'+str(dt.minute).zfill(2)+':'+str(dt.second).zfill(2)+'.'+str(int(dt.microsecond/1000)).zfill(3)+'+0300'
 

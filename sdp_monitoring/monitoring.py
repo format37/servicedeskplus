@@ -22,6 +22,13 @@ check_minutes_interval = 10
 check_hour_start	= 7
 check_hour_end		= 19
 
+def send_to_telegram(chat_id, message):
+        with open('/home/alex/projects/servicedeskplus/telegram_token.key', 'r') as file:
+                token = file.read().replace('\n', '')
+                file.close()
+        session = requests.Session()
+        session.get('https://api.telegram.org/bot'+token+'/sendMessage?chat_id='+chat_id+'&text='+urllib.parse.quote_plus(message))
+
 def today_is_holiday():
 	week_day	= datetime.datetime.today().weekday()
 	now = datetime.datetime.now()
@@ -50,7 +57,7 @@ def today_is_holiday():
 		return True
 	
 	return False	
-
+"""
 def send_to_telegram(chat,message):
 	try:
 		print('Telegram:',message)
@@ -63,7 +70,7 @@ def send_to_telegram(chat,message):
 		return requests.get(url,headers = headers)
 	except Exception as e:
 		return str(e)
-
+"""
 def dt(u):
 	return datetime.datetime.utcfromtimestamp(int(u)+60*60*3)
 
