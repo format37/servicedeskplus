@@ -92,6 +92,7 @@ async def sdp_bid_create(created_by,caller_phone_number,department,receiver_phon
 			'1519':'Бойко Илья Вадимович',
 			'1607':'Титов Иван Сергеевич',
 			'2202':'Севрюкова Анна Юрьевна',
+			'1621':'Песоцкий Константин Вячеславович',
 		}
 		receiver_four_digit_phone=receiver_phone_number[-4:]
 		if receiver_four_digit_phone in technicans.keys():
@@ -133,7 +134,7 @@ async def sdp_bid_create(created_by,caller_phone_number,department,receiver_phon
 			'1572':'Леонова Марина Анатольевна',
 			'1548':'Симанова Екатерина Юрьевна',
 			'1523':'Апряткин Александр Васильевич',
-			'1676':'Слободенюк Оксана Юрьевна',
+			'1676':'Сионская Галина Андреевна',
 			'2004':'Самохин Олег Игоревич',
 			'1584':'Авдеева Валентина Валерьевна',
 			'1617':'Акинфиева Евгения Валерьевна',
@@ -208,6 +209,7 @@ async def sdp_bid_create(created_by,caller_phone_number,department,receiver_phon
 				'Юрасов Алексей Александрович':'557058:f0548e8f-6a09-44bd-bfb5-43a0a40531bb',
 				'Титов Иван Сергеевич':'5f3a2c5d3e9e2e004dd3bf1c',
 				'Севрюкова Анна Юрьевна':'5f6c3d20f0d40100704c2a57',
+				#'Песоцкий Константин Вячеславович':'',
 				}
 				
 			sdp_jira_issue_types={
