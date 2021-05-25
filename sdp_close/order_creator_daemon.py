@@ -277,7 +277,7 @@ async def sdp_bid_create(created_by,caller_phone_number,department,receiver_phon
 def connect_sql():
 	sql_login='ICECORP\\1c_sql'
 	sql_pass='dpCEoF1e4A6XPOL'
-	return pymssql.connect(server='10.2.4.124', user=sql_login, password=sql_pass, database='sdp')
+	return pymssql.connect(server='10.2.4.128', user=sql_login, password=sql_pass, database='sdp')
 
 async def main():
 	with open('/home/alex/projects/servicedeskplus/sdp_close/telegram.chat','r') as telegram_chat_file:
