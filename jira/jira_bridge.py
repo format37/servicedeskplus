@@ -53,6 +53,9 @@ sdp_jira_accounts={
 	'Васильченко Евгения Алексеевна':'5dfb2741eaf5880cad03b10f',
 	'Фролов Максим Евгеньевич':'557058:fa79f484-a387-495b-9862-1af505d8d70a',
 	'Юрасов Алексей Александрович':'557058:f0548e8f-6a09-44bd-bfb5-43a0a40531bb',
+	'Титов Иван Сергеевич':'5f3a2c5d3e9e2e004dd3bf1c',
+	'Севрюкова Анна Юрьевна':'5f6c3d20f0d40100704c2a57',
+	'Песоцкий Константин Вячеславович':'603652b125b84e00694657ab',
 	}
 	
 sdp_jira_issue_types={
@@ -70,8 +73,12 @@ file_name=param[param.rfind('/')+1:]
 json_path='request\\'+file_name
 with open(json_path, encoding='utf-8') as json_file:
 #with open(json_path, encoding='cp1251') as json_file:
-	json_data=json.loads(json_file.read())
+	json_text	= json_file.read()
+	json_data=json.loads(json_text)
 	request=json_data['request']
+	
+with open('log.json','w') as json_log:
+	json_log.write(json_text)
 
 #issue=jira.issue('PRJ1C-324')
 #issue.update({'Epic_link':'PRJ1C-5'})

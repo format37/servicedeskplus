@@ -419,13 +419,16 @@ async def call_jira_pause(request):
 	jira_set_pause(assignee,issuekey)
 	
 def send_to_telegram(chat,message):
-	headers = {
-		"Origin": "http://scriptlab.net",
-		"Referer": "http://scriptlab.net/telegram/bots/relaybot/",
-		'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/70.0.3538.110 Safari/537.36'
-		}
-	url     = "http://scriptlab.net/telegram/bots/relaybot/relaylocked.php?chat="+chat+"&text="+urllib.parse.quote_plus(message)
-	return requests.get(url,headers = headers)
+	try:
+		headers = {
+			"Origin": "http://scriptlab.net",
+			"Referer": "http://scriptlab.net/telegram/bots/relaybot/",
+			'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/70.0.3538.110 Safari/537.36'
+			}
+		url     = "http://scriptlab.net/telegram/bots/relaybot/relaylocked.php?chat="+chat+"&text="+urllib.parse.quote_plus(message)
+		return requests.get(url,headers = headers)
+	except Exception as e:
+		return str(e)
 
 app = web.Application()
 app.router.add_route('GET', '/bidedit', bid_edit)

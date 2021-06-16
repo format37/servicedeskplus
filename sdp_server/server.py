@@ -12,10 +12,16 @@ from time import gmtime
 from time import sleep
 from jira import JIRA
 import html2text
-
 import time
+import ssl
 
-script_path = '/home/dvasilev/projects/servicedeskplus/'
+WEBHOOK_PORT = 8080
+WEBHOOK_LISTEN = '0.0.0.0'  # In some VPS you may need to put here the IP addr
+script_path	= '/home/dvasilev/projects/servicedeskplus/'
+#CERT_PATH	= '/home/dvasilev/cert/'
+CERT_PATH	= '/etc/letsencrypt/live/service.icecorp.ru/'
+WEBHOOK_SSL_CERT = CERT_PATH+'fullchain.pem'  # Path to the ssl certificate
+WEBHOOK_SSL_PRIV = CERT_PATH+'privkey.pem'  # Path to the ssl private key
 
 async def sdp_bid_close(request):
 	try:
@@ -33,7 +39,7 @@ async def sdp_bid_close(request):
 		add_worklog_file=script_path+'sdp_server/ADD_WORKLOG.xml'
 		edit_request_file=script_path+'sdp_server/EDIT_REQUEST.xml'
 
-		print('item received:',ITEM)
+		#print('item received:',ITEM)
 
 		items =[
 			'1C-Сервис',
@@ -45,9 +51,9 @@ async def sdp_bid_close(request):
 		]
 		if (ITEM in items)==False:
 			ITEM = '1C-Сервис'
-			print('item changed')
+			#print('item changed')
 
-		print('item set:',ITEM)
+		#print('item set:',ITEM)
 
 		sub_cats = {
 			'1C-Сервис':'1С Cистемы',
@@ -63,7 +69,7 @@ async def sdp_bid_close(request):
 		else:
 			SUBCAT = '1С Cистемы'
 
-		print('jira_type',jira_type)
+		#print('jira_type',jira_type)
 
 		jira_sdp_types = {
 			'Task':'Изменение',
@@ -76,37 +82,39 @@ async def sdp_bid_close(request):
 			rtype = jira_sdp_types[jira_type]
 		else:
 			rtype = jira_sdp_types['Consultation']
-
+		'''
 		print('Subcategory',SUBCAT)
 		print('sdp_id',WORKORDERID)
 		print('jira issue',jira_issue)
 		print('subject',SUBJECT)
 		print('description',description)
-
+		'''
 		users={
-			'557058:fa79f484-a387-495b-9862-1af505d8d70a'	: 'Фролов Максим Евгеньевич',
+			'557058:fa79f484-a387-495b-9862-1af505d8d70a'				: 'Фролов Максим Евгеньевич',
 			'5de505aa22389c0d118c3eaf'						: 'Сотников Артём Игоревич',
 			'5dfb26b2588f6e0cb033698e'						: 'Семенов Олег Владимирович',
-			'557058:f0548e8f-6a09-44bd-bfb5-43a0a40531bb'	: 'Юрасов Алексей Александрович',
+			'557058:f0548e8f-6a09-44bd-bfb5-43a0a40531bb'				: 'Юрасов Алексей Александрович',
 			'5dfb273f9422830cacaa5c02'						: 'Полухин Владимир Геннадьевич',
 			'5dfb26b35697460cb3d98780'						: 'Бывальцев Виктор Валентинович',
-			'5dfb2741eaf5880cad03b10f'						: 'Васильченко Евгения Алексеевна'
+			'5dfb2741eaf5880cad03b10f'						: 'Васильченко Евгения Алексеевна',
+			'5f3a2c5d3e9e2e004dd3bf1c'						: 'Титов Иван Сергеевич'
 		}
 		technician = 'Юрасов Алексей Александрович'		
 
 
 		if user in users.keys():
 			technician = users[user]
-			print('technician',technician)
+			#print('technician',technician)
 		else:
-			print('technician not found:',user)
+			#print('technician not found:',user)
 			send_to_telegram('-7022979',str(datetime.datetime.now())+' technician not found:'+str(user) )
 
 
 		sdp_tokens={
-			'Фролов Максим Евгеньевич'		: '210ECA4F-859F-45DE-9DDB-5AB19B9617A5',
-			'Сотников Артём Игоревич'		: '4CD78BFF-BFBA-4A00-A91C-2DF01EA12CAA',
-			'Семенов Олег Владимирович'		: 'CEB75C6A-1D07-411E-B34C-ECC6902AA1A0',
+			'Фролов Максим Евгеньевич'	: '210ECA4F-859F-45DE-9DDB-5AB19B9617A5',
+			'Сотников Артём Игоревич'	: '4CD78BFF-BFBA-4A00-A91C-2DF01EA12CAA',
+			'Титов Иван Сергеевич'		: '53A9ED31-00AB-4FCB-8E97-FF523E781281',
+			'Семенов Олег Владимирович'	: 'EAD9415C-BDA9-43BF-BFFF-3ED2DFCDD14A',
 			'Юрасов Алексей Александрович'	: '76ED27EB-D26D-412A-8151-5A65A16198E7',
 			'Полухин Владимир Геннадьевич'	: '5801D334-C5C3-4BEC-9209-309AFCA27DAE',
 			'Бывальцев Виктор Валентинович'	: '157D4CAC-6947-4F44-BCE7-BAF2E3ABF672',
@@ -114,9 +122,9 @@ async def sdp_bid_close(request):
 		token = sdp_tokens['Юрасов Алексей Александрович']
 		if technician in sdp_tokens.keys():
 			token = sdp_tokens[technician]
-			print('sdp token',token)
+			#print('sdp token',token)
 		else:
-			print('sdp token for',technician,'not found. using default')
+			#print('sdp token for',technician,'not found. using default')
 			send_to_telegram('-7022979',str(datetime.datetime.now())+' sdp token for '+str(technician)+' not found. using default' )
 
 		response = ''
@@ -127,10 +135,10 @@ async def sdp_bid_close(request):
 
 		jira_options = {'server': 'https://icebergproject.atlassian.net'}
 		with open(script_path+'sdp_server/jira.key','r') as key_file:
-			jira_key = key_file.read()
-
+			jira_key = key_file.read().replace('\n', '')
+		#print('jira_key',jira_key)
 		jira = JIRA(options=jira_options, basic_auth=('yurasov@iceberg.ru', jira_key))
-
+		#print('connected to jira',jira)
 		worklogs = jira.worklogs(jira_issue)
 		for wl in worklogs:
 			spent_hours = int(strftime("%H", gmtime(wl.timeSpentSeconds)))
@@ -164,6 +172,7 @@ async def sdp_bid_close(request):
 		
 	except Exception as e:
 		response	= 'error'
+		#print(str(datetime.datetime.now())+' sdp close by jira error: '+str(e))
 		send_to_telegram('-7022979',str(datetime.datetime.now())+' sdp close by jira error: '+str(e))
 
 	return web.Response(text=response,content_type="text/html")
@@ -231,13 +240,17 @@ async def call_jira_pause(request):
 	jira_set_pause(assignee,issuekey)
 	
 def send_to_telegram(chat,message):
-	headers = {
-		"Origin": "http://scriptlab.net",
-		"Referer": "http://scriptlab.net/telegram/bots/relaybot/",
-		'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/70.0.3538.110 Safari/537.36'
-		}
-	url     = "http://scriptlab.net/telegram/bots/relaybot/relaylocked.php?chat="+chat+"&text="+urllib.parse.quote_plus(message)
-	return requests.get(url,headers = headers)
+	try:
+		#print('Telegram:',message)
+		headers = {
+			"Origin": "http://scriptlab.net",
+			"Referer": "http://scriptlab.net/telegram/bots/relaybot/",
+			'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/70.0.3538.110 Safari/537.36'
+			}
+		url     = "http://scriptlab.net/telegram/bots/relaybot/relaylocked.php?chat="+chat+"&text="+urllib.parse.quote_plus(message)
+		return requests.get(url,headers = headers)
+	except Exception as e:
+		return str(e)
 
 app = web.Application()
 app.router.add_route('GET', '/check', call_check)
@@ -249,16 +262,14 @@ with open(script_path+'telegram.chat','r') as fh:
 	fh.close()
 send_to_telegram(telegram_group,str(datetime.datetime.now())+' server started')
 
-loop = asyncio.get_event_loop()
-handler = app.make_handler()
-f = loop.create_server(handler, port='8080')
-srv = loop.run_until_complete(f)
+# Build ssl context
+context = ssl.SSLContext(ssl.PROTOCOL_TLSv1_2)
+context.load_cert_chain(WEBHOOK_SSL_CERT, WEBHOOK_SSL_PRIV)
 
-print('serving on', srv.sockets[0].getsockname())
-try:
-	loop.run_forever()
-except KeyboardInterrupt:
-	print("serving off...")
-finally:
-	loop.run_until_complete(handler.finish_connections(1.0))
-	srv.close()
+# Start aiohttp server
+web.run_app(
+    app,
+    host=WEBHOOK_LISTEN,
+    port=WEBHOOK_PORT,
+    ssl_context=context,
+)
