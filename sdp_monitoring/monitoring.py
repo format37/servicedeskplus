@@ -7,6 +7,7 @@ import datetime
 import time
 import urllib
 import urllib.parse
+import urllib3
 
 with open('/home/alex/projects/servicedeskplus/sdp_monitoring/token.key','r') as fh:
 	token=fh.read().replace('\n', '')
@@ -87,21 +88,10 @@ def check():
 		
 		current_time	= time.time()
 		
-		telegram_users={
-			'Фролов Максим Евгеньевич':'@FrolovMaxim',
-			'Сотников Артём Игоревич':'@vindento',
-			'Семенов Олег Владимирович':'@SemyonovOleg',		
-			'Юрасов Алексей Александрович':'@format37',
-			'Полухин Владимир Геннадьевич':'@Polukhin_Vladimir',
-			'Бывальцев Виктор Валентинович':'@I23vitiaz321',
-			'Кузьмин Евгений Андреевич':'@SummerDevil',
-			'Дрожжин Николай Сергеевич':'@nikolay3697',
-			'Мизякин Антон Сергеевич':'@MadMizyaka',
-			'Васильев Дмитрий Александрович':'@DVasilev',
-			'Головин Олег Дмитриевич':'@Enaleven',
-			'Бойко Илья Вадимович':'@IlyaBoiko',
-			'Васильченко Евгения Алексеевна':'@Vasilcka',
-			}
+		http = urllib3.PoolManager()
+		url = 'https://raw.githubusercontent.com/format37/servicedeskplus/master/sdp_monitoring/users.txt'
+		response = http.request('GET', url)
+		telegram_users = eval(response.data.decode('utf-8'))
 		
 		message = ''
 		event_count=0
