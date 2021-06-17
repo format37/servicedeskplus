@@ -88,10 +88,26 @@ def check():
 		
 		current_time	= time.time()
 		
-		http = urllib3.PoolManager()
-		url = 'https://raw.githubusercontent.com/format37/servicedeskplus/master/sdp_monitoring/users.txt'
-		response = http.request('GET', url)
-		telegram_users = eval(response.data.decode('utf-8'))
+		try:
+			http = urllib3.PoolManager()
+			url = 'https://raw.githubusercontent.com/format37/servicedeskplus/master/sdp_monitoring/users.txt'
+			response = http.request('GET', url)
+			telegram_users = eval(response.data.decode('utf-8'))
+		except Exception as e:
+			print('Telegram users request error: '+str(e))
+			telegram_users = {
+				'Песоцкий Константин Вячеславович': '@Komandorr', 
+				'Сотников Артём Игоревич': '@vindento', 
+				'Севрюкова Анна Юрьевна': '@AnnaSY64', 
+				'Юрасов Алексей Александрович': '@format37', 
+				'Титов Иван Сергеевич': '@ibrogim66', 
+				'Бывальцев Виктор Валентинович': '@I23vitiaz321', 
+				'Кузьмин Евгений Андреевич': '@SummerDevil', 
+				'Дрожжин Николай Сергеевич': '@nikolay3697', 
+				'Васильев Дмитрий Александрович': '@DVasilev', 
+				'Головин Олег Дмитриевич': '@Enaleven', 
+				'Бойко Илья Вадимович': '@IlyaBoiko'
+			}
 		
 		message = ''
 		event_count=0
