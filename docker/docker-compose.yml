@@ -12,4 +12,6 @@ services:
     environment:
       - TELEGRAM_BOT_TOKEN=1257968138:AAECy2F0n8fLTM8qqwTMGbzuot1piL1gKTM
       - TELEGRAM_CHAT=-1001347504766
+      - API_KEY=76ED27EB-D26D-412A-8151-5A65A16198E7
+      - JIRA_KEY=cowyndLTsATr5xBrh3pJ2161
     build: jira_issue_creator

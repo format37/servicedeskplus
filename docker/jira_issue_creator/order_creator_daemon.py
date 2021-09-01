@@ -53,7 +53,6 @@ async def sdp_bid_create(created_by,caller_phone_number,department,receiver_phon
 	
 	try:
 		print('\n======= sdp create by ats:',datetime.datetime.now())
-
 		sdp_order=''
 		technican=''
 		category=''
@@ -61,12 +60,11 @@ async def sdp_bid_create(created_by,caller_phone_number,department,receiver_phon
 		#caller_phone_number		= request.rel_url.query['caller_phone_number']		# 2001 - имя хоста от Nagios	
 		#department				= request.rel_url.query['department']				# MRM
 		#receiver_phone_number	= request.rel_url.query['receiver_phone_number']	# SIP/1611 - звонок принят
-
-
 		#api_key					= request.rel_url.query['api_key']					# API Key sdp
-		with open('/home/alex/projects/servicedeskplus/sdp_close/token.key','r') as fh:
+		"""with open('/home/alex/projects/servicedeskplus/sdp_close/token.key','r') as fh:
 			api_key=fh.read().replace('\n', '')
-			fh.close()
+			fh.close()"""
+		api_key = os.environ.get('API_KEY', '')
 		technicans={
 			'1611':'Сотников Артём Игоревич',
 			'1613':'Юрасов Алексей Александрович',
@@ -87,7 +85,8 @@ async def sdp_bid_create(created_by,caller_phone_number,department,receiver_phon
 
 		subject		= created_by+' '+caller_phone_number+' '+department
 		description = subject+' Звонок принят '+receiver_phone_number+' '+technican
-		create_request_file='/home/alex/projects/servicedeskplus/sdp_close/CREATE_REQUEST.xml'
+		# create_request_file='/home/alex/projects/servicedeskplus/sdp_close/CREATE_REQUEST.xml'
+		create_request_file='CREATE_REQUEST.xml'
 
 		response = '0'
 		requester	= 'RoboTechnician'
@@ -203,10 +202,11 @@ async def sdp_bid_create(created_by,caller_phone_number,department,receiver_phon
 			}
 
 			jira_options = {'server': 'https://icebergproject.atlassian.net'}
-			with open('/home/alex/projects/servicedeskplus/sdp_close/jira.key','r') as key_file:
-				jira_key = key_file.read().replace('\n', '')
-				jira_user = 'yurasov@iceberg.ru'
-				#jira_user = 'frolov@iceberg.ru'
+			#with open('/home/alex/projects/servicedeskplus/sdp_close/jira.key','r') as key_file:
+			#	jira_key = key_file.read().replace('\n', '')
+			jira_key = os.environ.get('JIRA_KEY', '')
+			jira_user = 'yurasov@iceberg.ru'
+			#jira_user = 'frolov@iceberg.ru'
 
 			jira = JIRA(options=jira_options, basic_auth=(jira_user, jira_key))
 
