@@ -13,6 +13,8 @@ from time import strftime
 from time import gmtime
 from time import sleep
 from jira import JIRA
+import os
+import socket
 
 import time
 
@@ -224,25 +226,12 @@ async def sdp_bid_close(request):
 		ITEM	= request.rel_url.query['component']
 		user = request.rel_url.query['user']
 		jira_issue = request.rel_url.query['issue_key']	
-		'''
-		#DEBUG ++
-			
-		send_to_telegram('-7022979',str(datetime.datetime.now())+' Close by jira [1.5]:\n\
-			sdp_id: '+str(WORKORDERID)+'\n\
-			issue_key: '+str(jira_issue)+'\n\
-			component: '+str(ITEM)+'\n\
-			jira_type: '+str(jira_type)+'\n\
-			user: '+str(user)+'\n\
-			subject: '+str(SUBJECT)+'\n\
-			description: '+str(description) )
-		
-		#DEBUG --
-		'''
-		token	= '76ED27EB-D26D-412A-8151-5A65A16198E7'
+
+		token	= os.environ.get('SDP_USER_TOKEN', '')
 		workHours	= '0'
 		workMinutes = '1'	
-		add_worklog_file='/home/alex/projects/servicedeskplus/sdp_close/ADD_WORKLOG.xml'
-		edit_request_file='/home/alex/projects/servicedeskplus/sdp_close/EDIT_REQUEST.xml'
+		add_worklog_file='ADD_WORKLOG.xml'
+		edit_request_file='EDIT_REQUEST.xml'
 
 		print('item received:',ITEM)
 
@@ -312,7 +301,7 @@ async def sdp_bid_close(request):
 			print('technician',technician)
 		else:
 			print('technician not found:',user)
-			send_to_telegram('-7022979',str(datetime.datetime.now())+' technician not found:'+str(user) )
+			send_to_telegram(str(datetime.datetime.now())+' technician not found:'+str(user) )
 
 
 		sdp_tokens={
@@ -329,7 +318,7 @@ async def sdp_bid_close(request):
 			print('sdp token',token)
 		else:
 			print('sdp token for',technician,'not found. using default')
-			send_to_telegram('-7022979',str(datetime.datetime.now())+' sdp token for '+str(technician)+' not found. using default' )
+			send_to_telegram(str(datetime.datetime.now())+' sdp token for '+str(technician)+' not found. using default' )
 
 		response = ''
 		worklog_comments = '.'
@@ -377,11 +366,51 @@ async def sdp_bid_close(request):
 			url='http://10.2.4.46/sdpapi/request/'+WORKORDERID+'?OPERATION_NAME=EDIT_REQUEST&TECHNICIAN_KEY='+token+'&INPUT_DATA='+INPUT_DATA
 			headers = {'Content-Type': 'application/xml'}	
 			response += requests.post(url, headers=headers).text
-			'''
-			#DEBUG ++
-			
-			send_to_telegram('-7022979',str(datetime.datetime.now())+' Close by jira [2]:\n\
-				sdp_id: '+str(WORKORDERID)+'\n\
-				issue_key: '+str(jira_issue)+'\n\
-				component: '+str(ITEM)+'\n\
-				jira_type: '+str(jira_type)+
+
+	except Exception as e:
+		response	= 'error'
+		send_to_telegram(str(datetime.datetime.now())+' sdp close by jira error: '+str(e))
+
+	return web.Response(text=response,content_type="text/html")
+
+async def call_check(request):
+	return web.Response(text='ok',content_type="text/html")
+	
+async def call_jira_pause(request):
+	assignee	= request.rel_url.query['assignee']
+	issuekey	= request.rel_url.query['issuekey']
+	jira_set_pause(assignee,issuekey)
+	
+def send_to_telegram(message):
+	token = os.environ.get('TELEGRAM_BOT_TOKEN', '')
+	chat_id = os.environ.get('TELEGRAM_CHAT', '')
+	session = requests.Session()
+	get_request = 'https://api.telegram.org/bot' + token	
+	get_request += '/sendMessage?chat_id=' + chat_id
+	get_request += '&text=' + urllib.parse.quote_plus(message)
+	session.get(get_request)
+
+app = web.Application()
+app.router.add_route('GET', '/bidedit', bid_edit)
+app.router.add_route('GET', '/', call_check)
+app.router.add_route('GET', '/bidclose', bid_close)
+app.router.add_route('GET', '/bidcreate', sdp_bid_create)
+app.router.add_route('GET', '/bidclosebyjira', sdp_bid_close)
+#app.router.add_route('GET', '/telegram', telegram)
+app.router.add_route('GET', '/jirapause', call_jira_pause)
+
+send_to_telegram(str(datetime.datetime.now())+' sdp order creator server started on ' + str(socket.gethostname()))
+
+loop = asyncio.get_event_loop()
+handler = app.make_handler()
+f = loop.create_server(handler, port='8080')
+srv = loop.run_until_complete(f)
+
+print('serving on', srv.sockets[0].getsockname())
+try:
+	loop.run_forever()
+except KeyboardInterrupt:
+	print("serving off...")
+finally:
+	loop.run_until_complete(handler.finish_connections(1.0))
+	srv.close()
