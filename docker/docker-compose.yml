@@ -3,7 +3,7 @@ services:
   nagios_sdp_creator_service:
     environment:
       - TELEGRAM_BOT_TOKEN=1257968138:AAECy2F0n8fLTM8qqwTMGbzuot1piL1gKTM
-      - TELEGRAM_CHAT=-1001370338827
+      - TELEGRAM_CHAT=-1001347504766
       - SDP_USER_TOKEN=76ED27EB-D26D-412A-8151-5A65A16198E7
     build: nagios_sdp_creator
     ports:
@@ -11,7 +11,13 @@ services:
   jira_issue_creator_service:
     environment:
       - TELEGRAM_BOT_TOKEN=1257968138:AAECy2F0n8fLTM8qqwTMGbzuot1piL1gKTM
-      - TELEGRAM_CHAT=-1001347504766
+      - TELEGRAM_CHAT=-1001370338827
       - API_KEY=76ED27EB-D26D-412A-8151-5A65A16198E7
       - JIRA_KEY=cowyndLTsATr5xBrh3pJ2161
     build: jira_issue_creator
+  sdp_monitoring_service:
+    environment:
+      - TELEGRAM_BOT_TOKEN=1257968138:AAECy2F0n8fLTM8qqwTMGbzuot1piL1gKTM
+      - TELEGRAM_CHAT=-1001347504766
+      - SDP_KEY=76ED27EB-D26D-412A-8151-5A65A16198E7
+    build: sdp_monitoring

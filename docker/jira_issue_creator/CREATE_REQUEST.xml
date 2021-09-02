@@ -1,0 +1,15 @@
+<Details>
+<parameter><name>Requester</name>		<value>%Requester%</value></parameter>
+<parameter><name>Mode</name>			<value>Телефон</value></parameter>
+<parameter><name>Subject</name>			<value>%Subject%</value></parameter>
+<parameter><name>Request Type</name>	<value>Инцидент</value></parameter>
+<parameter><name>Technician</name>		<value>%Technician%</value></parameter>
+<parameter><name>Category</name>		<value>%Category%</value></parameter>
+<parameter><name>Subcategory</name>		<value></value></parameter>
+<parameter><name>Description</name>		<value>%Description%</value></parameter>
+<parameter><name>Group</name>			<value></value></parameter>
+<parameter><name>Impact</name>			<value>0.Низкое</value></parameter>
+<parameter><name>Urgency</name>			<value>0.Низкая</value></parameter>
+<parameter><name>Priority</name>		<value>Низкий</value></parameter>
+<parameter><name>Level</name>			<value>Легкая заявка</value></parameter>
+</Details>

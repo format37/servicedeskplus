@@ -171,6 +171,8 @@ async def sdp_bid_create(created_by,caller_phone_number,department,receiver_phon
 			sdp_order=details[0].text
 			
 	except Exception as e:
+		message = str(datetime.datetime.now().strftime("%Y-%m-%d-%H:%M:%S"))+\
+		'\njira order_creator_daemon error: '+str(e)
 		send_to_telegram(message)
 	
 	try:
