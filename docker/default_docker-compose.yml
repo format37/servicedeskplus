@@ -1,0 +1,23 @@
+version: '3.8'
+services:
+  nagios_sdp_creator_service:
+    environment:
+      - TELEGRAM_BOT_TOKEN=telegram_bot_token
+      - TELEGRAM_CHAT=telegram_chat
+      - SDP_USER_TOKEN=sdp_key
+    build: nagios_sdp_creator
+    ports:
+      - 8080:8080
+  jira_issue_creator_service:
+    environment:
+      - TELEGRAM_BOT_TOKEN=telegram_bot_token
+      - TELEGRAM_CHAT=telegram_chat
+      - API_KEY=sdp_key
+      - JIRA_KEY=jira_key
+    build: jira_issue_creator
+  sdp_monitoring_service:
+    environment:
+      - TELEGRAM_BOT_TOKEN=telegram_bot_token
+      - TELEGRAM_CHAT=telegram_chat
+      - SDP_KEY=sdp_key
+    build: sdp_monitoring
