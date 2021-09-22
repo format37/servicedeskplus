@@ -1,23 +1,35 @@
 version: '3.8'
 services:
   nagios_sdp_creator_service:
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+      - /etc/timezone:/etc/timezone:ro
     environment:
-      - TELEGRAM_BOT_TOKEN=telegram_bot_token
-      - TELEGRAM_CHAT=telegram_chat
-      - SDP_USER_TOKEN=sdp_key
+      - TZ=Europe/Moscow
+      - TELEGRAM_BOT_TOKEN=
+      - TELEGRAM_CHAT=
+      - SDP_USER_TOKEN=
     build: nagios_sdp_creator
     ports:
       - 8080:8080
   jira_issue_creator_service:
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+      - /etc/timezone:/etc/timezone:ro
     environment:
-      - TELEGRAM_BOT_TOKEN=telegram_bot_token
-      - TELEGRAM_CHAT=telegram_chat
-      - API_KEY=sdp_key
-      - JIRA_KEY=jira_key
+      - TZ=Europe/Moscow
+      - TELEGRAM_BOT_TOKEN=
+      - TELEGRAM_CHAT=
+      - API_KEY=
+      - JIRA_KEY=
     build: jira_issue_creator
   sdp_monitoring_service:
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+      - /etc/timezone:/etc/timezone:ro
     environment:
-      - TELEGRAM_BOT_TOKEN=telegram_bot_token
-      - TELEGRAM_CHAT=telegram_chat
-      - SDP_KEY=sdp_key
+      - TZ=Europe/Moscow
+      - TELEGRAM_BOT_TOKEN=
+      - TELEGRAM_CHAT=
+      - SDP_KEY=
     build: sdp_monitoring

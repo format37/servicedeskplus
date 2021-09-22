@@ -21,8 +21,8 @@ import os
 get_requests_file='GET_REQUESTS.xml'
 alert_minutes_limit	= 30
 check_minutes_interval = 10
-check_hour_start	= 7
-check_hour_end		= 19
+check_hour_start	= 8
+check_hour_end		= 18
 
 def send_to_telegram(message):
 	token = os.environ.get('TELEGRAM_BOT_TOKEN', '')
