@@ -81,7 +81,7 @@ def check():
 		
 		try:
 			http = urllib3.PoolManager()
-			url = 'https://raw.githubusercontent.com/format37/servicedeskplus/master/sdp_monitoring/users.txt'
+			url = 'https://raw.githubusercontent.com/format37/servicedeskplus/master/docker/sdp_monitoring/users.txt'
 			response = http.request('GET', url)
 			telegram_users = eval(response.data.decode('utf-8'))
 		except Exception as e:
