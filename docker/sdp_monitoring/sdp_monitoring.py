@@ -70,7 +70,7 @@ def check():
 		token = os.environ.get('SDP_KEY', '')
 		url='http://10.2.4.46/sdpapi/request/?OPERATION_NAME=GET_REQUESTS&TECHNICIAN_KEY='+token+'&INPUT_DATA='+fh.read().decode("utf-8")
 		headers = {'Content-Type': 'application/xml'}	
-		xmlData = requests.post(url, headers=headers).text
+		xmlData = requests.post(url, headers=headers).text		
 		API = ET.fromstring(xmlData)
 		
 		responce	= API[0]
@@ -88,7 +88,7 @@ def check():
 			print('Telegram users request error: '+str(e))
 			telegram_users = {
 				'Песоцкий Константин Вячеславович': '@Komandorr', 
-				'Сотников Артём Игоревич': '@vindento', 
+				#'Сотников Артём Игоревич': '@vindento', 
 				'Севрюкова Анна Юрьевна': '@AnnaSY64', 
 				'Юрасов Алексей Александрович': '@format37', 
 				'Титов Иван Сергеевич': '@ibrogim66', 
