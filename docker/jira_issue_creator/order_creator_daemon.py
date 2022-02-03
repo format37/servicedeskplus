@@ -271,7 +271,7 @@ async def sdp_bid_create(created_by,caller_phone_number,department,receiver_phon
 def connect_sql():
 	sql_login='ICECORP\\1c_sql'
 	sql_pass='dpCEoF1e4A6XPOL'
-	return pymssql.connect(server='10.2.4.124', user=sql_login, password=sql_pass, database='sdp')
+	return pymssql.connect(server='10.2.4.124', user=sql_login, password=sql_pass, database='sdp', autocommit=True)
 
 async def main():
 	send_to_telegram(str(datetime.datetime.now())+' jira issue creator daemon started')
