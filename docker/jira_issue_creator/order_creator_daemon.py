@@ -14,6 +14,7 @@ import time
 import asyncio
 import os
 import urllib3
+import pandas as pd
 
 
 def send_to_telegram(message):
@@ -62,8 +63,8 @@ async def sdp_bid_create(created_by,caller_phone_number,department,receiver_phon
 		#department				= request.rel_url.query['department']				# MRM
 		#receiver_phone_number	= request.rel_url.query['receiver_phone_number']	# SIP/1611 - звонок принят
 		#api_key					= request.rel_url.query['api_key']					# API Key sdp
-		#api_key = os.environ.get('API_KEY', '')
-		sdp_key = os.environ.get('SDP_KEY', '')
+		api_key = os.environ.get('API_KEY', '')
+		#sdp_key = os.environ.get('SDP_KEY', '')
 		
 		try:
 			http = urllib3.PoolManager()
@@ -154,7 +155,7 @@ async def sdp_bid_create(created_by,caller_phone_number,department,receiver_phon
 		print('requester',requester)
 		print('technican:',technican)
 		print('caller_phone_number:',caller_phone_number)
-		print('sdp_key:',sdp_key)
+		print('sdp_key:',api_key)
 		print('department:',department)
 		print('receiver_phone_number:',receiver_phone_number)
 		print('subject:',subject)
@@ -166,7 +167,7 @@ async def sdp_bid_create(created_by,caller_phone_number,department,receiver_phon
 			INPUT_DATA = INPUT_DATA.replace("%Category%",	category)
 			INPUT_DATA = INPUT_DATA.replace("%Description%",description)
 			INPUT_DATA = INPUT_DATA.replace("%Requester%",requester)
-			url='http://10.2.4.46/sdpapi/request/?OPERATION_NAME=ADD_REQUEST&TECHNICIAN_KEY='+sdp_key+'&INPUT_DATA='+urllib.parse.quote_plus(INPUT_DATA)
+			url='http://10.2.4.46/sdpapi/request/?OPERATION_NAME=ADD_REQUEST&TECHNICIAN_KEY='+api_key+'&INPUT_DATA='+urllib.parse.quote_plus(INPUT_DATA)
 			#print(INPUT_DATA)
 			headers = {'Content-Type': 'application/xml'}		
 			xmlData = requests.post(url, headers=headers).text
@@ -282,11 +283,17 @@ async def main():
 
 	while True:
 
-		query ="select ID_column, created_by,caller_phone_number,department,receiver_phone_number from ats_requests order by event_date"
+		query = "select"
+		query += " ID_column as id,"
+		query += " created_by,"
+		query += " caller_phone_number,"
+		query += " department,"
+		query += " receiver_phone_number"
+		query += " from ats_requests order by event_date"
 		cursor.execute(query)
 		to_clean = []
 		tasks = []
-		for row in cursor.fetchall():
+		"""for row in cursor.fetchall():
 			id						= row[0]
 			created_by				= row[1]
 			caller_phone_number		= row[2]
@@ -294,13 +301,32 @@ async def main():
 			receiver_phone_number	= row[4]
 			print(time.strftime('%Y-%m-%d %H:%M:%S'),'received',id, created_by,caller_phone_number,department,receiver_phone_number)
 			to_clean.append(id)
-			tasks.append( asyncio.create_task(sdp_bid_create(created_by,caller_phone_number,department,receiver_phone_number)) )
+			tasks.append( asyncio.create_task(sdp_bid_create(created_by,caller_phone_number,department,receiver_phone_number)) )"""
+		df = pd.read_sql(query, con = conn)
+		for idx, row in df.iterrows():
+			print(
+				time.strftime('%Y-%m-%d %H:%M:%S'),
+				'received',
+				row.id,
+				row.created_by,
+				row.caller_phone_number,
+				row.department,
+				row.receiver_phone_number
+			)
+			to_clean.append(row.id)
+			tasks.append( asyncio.create_task(sdp_bid_create(
+				row.created_by,
+				row.caller_phone_number,
+				row.department,
+				row.receiver_phone_number
+			)) )
 		
 		for task in tasks:
 			await task
-						
+
 		for id in to_clean:
 			query ="delete from ats_requests where ID_column="+str(id)+";"
+			print(query)
 			cursor.execute(query)
 			conn.commit()
 		
