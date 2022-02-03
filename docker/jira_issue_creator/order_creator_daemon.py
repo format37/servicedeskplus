@@ -62,7 +62,8 @@ async def sdp_bid_create(created_by,caller_phone_number,department,receiver_phon
 		#department				= request.rel_url.query['department']				# MRM
 		#receiver_phone_number	= request.rel_url.query['receiver_phone_number']	# SIP/1611 - звонок принят
 		#api_key					= request.rel_url.query['api_key']					# API Key sdp
-		api_key = os.environ.get('API_KEY', '')
+		#api_key = os.environ.get('API_KEY', '')
+		sdp_key = os.environ.get('SDP_KEY', '')
 		
 		try:
 			http = urllib3.PoolManager()
@@ -153,7 +154,7 @@ async def sdp_bid_create(created_by,caller_phone_number,department,receiver_phon
 		print('requester',requester)
 		print('technican:',technican)
 		print('caller_phone_number:',caller_phone_number)
-		print('api_key:',api_key)
+		print('sdp_key:',sdp_key)
 		print('department:',department)
 		print('receiver_phone_number:',receiver_phone_number)
 		print('subject:',subject)
@@ -165,7 +166,7 @@ async def sdp_bid_create(created_by,caller_phone_number,department,receiver_phon
 			INPUT_DATA = INPUT_DATA.replace("%Category%",	category)
 			INPUT_DATA = INPUT_DATA.replace("%Description%",description)
 			INPUT_DATA = INPUT_DATA.replace("%Requester%",requester)
-			url='http://10.2.4.46/sdpapi/request/?OPERATION_NAME=ADD_REQUEST&TECHNICIAN_KEY='+api_key+'&INPUT_DATA='+urllib.parse.quote_plus(INPUT_DATA)
+			url='http://10.2.4.46/sdpapi/request/?OPERATION_NAME=ADD_REQUEST&TECHNICIAN_KEY='+sdp_key+'&INPUT_DATA='+urllib.parse.quote_plus(INPUT_DATA)
 			#print(INPUT_DATA)
 			headers = {'Content-Type': 'application/xml'}		
 			xmlData = requests.post(url, headers=headers).text
