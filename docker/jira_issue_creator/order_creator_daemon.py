@@ -223,7 +223,8 @@ async def sdp_bid_create(created_by,caller_phone_number,department,receiver_phon
 				'Обслуживание':'Service',
 			}
 
-			jira_options = {'server': 'https://icebergproject.atlassian.net'}
+			#jira_options = {'server': 'https://icebergproject.atlassian.net'}
+			jira_options = {'server': 'http://10.2.4.14'}
 			#with open('/home/alex/projects/servicedeskplus/sdp_close/jira.key','r') as key_file:
 			#	jira_key = key_file.read().replace('\n', '')
 			jira_key = os.environ.get('JIRA_KEY', '')
