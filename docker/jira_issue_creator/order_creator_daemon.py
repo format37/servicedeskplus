@@ -46,7 +46,11 @@ def create_issue(jira, project,summary,description,accountId,issuetype,item):
 		'components': [{'name': item}],
 		'summary': summary,
 		'description': description,
-		'assignee': {'accountId': accountId},
+		#'assignee': {'accountId': accountId},
+		'assignee': { # v2
+            'accountId': accountId,
+            'name': accountId
+        },
 		'duedate': jira_datetime_format(datetime.datetime.now()),
 	}
 	return jira.create_issue(fields=issue_dict)
