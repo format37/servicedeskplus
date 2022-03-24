@@ -257,7 +257,7 @@ async def sdp_bid_create(created_by,caller_phone_number,department,receiver_phon
 				# custom felds list:
 				# https://icebergproject.atlassian.net/rest/api/3/issue/HELP1C-424
 				#jira_issue='\nJira: https://icebergproject.atlassian.net/browse/'+str(issue)
-				jira_issue='\nJira: https://10.2.4.14/browse/'+str(issue)
+				jira_issue='\nJira: http://10.2.4.14/browse/'+str(issue)
 				issue.update({'customfield_10043':sdp_order}) # sdp_id
 				issue.update({'customfield_10044':requester}) # requester_name
 				issue.update({'customfield_10045':caller_phone_number}) # requester_phone
