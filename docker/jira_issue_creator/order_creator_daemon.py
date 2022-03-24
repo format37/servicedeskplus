@@ -206,7 +206,7 @@ async def sdp_bid_create(created_by,caller_phone_number,department,receiver_phon
 			print('\n======= jira create by ats:',datetime.datetime.now())
 			#icebergproject.atlassian.net/jira/people/search
 			#select an account and copypaste id from adress after people/
-			sdp_jira_accounts={	
+			"""sdp_jira_accounts={	
 				'Сотников Артём Игоревич':'5de505aa22389c0d118c3eaf',
 				'Семенов Олег Владимирович':'5dfb26b2588f6e0cb033698e',				
 				'Бывальцев Виктор Валентинович':'5dfb26b35697460cb3d98780',
@@ -214,6 +214,14 @@ async def sdp_bid_create(created_by,caller_phone_number,department,receiver_phon
 				'Титов Иван Сергеевич':'5f3a2c5d3e9e2e004dd3bf1c',
 				'Севрюкова Анна Юрьевна':'5f6c3d20f0d40100704c2a57',
 				'Песоцкий Константин Вячеславович':'603652b125b84e00694657ab',
+				}"""
+			sdp_jira_accounts={	
+				'Сотников Артём Игоревич':'a.sotnikov@iceberg.ru',
+				'Бывальцев Виктор Валентинович':'v.byvaltsev@iceberg.ru',
+				'Титов Иван Сергеевич':'i.titov@iceberg.ru',
+				'Юрасов Алексей Александрович':'yurasov@iceberg.ru',
+				'Севрюкова Анна Юрьевна':'a.sevrjukova@iceberg.ru',
+				'Песоцкий Константин Вячеславович':'k.pesotskii@iceberg.ru',
 				}
 				
 			sdp_jira_issue_types={
