@@ -326,7 +326,8 @@ async def sdp_bid_close(request):
 		with open(add_worklog_file,'rb') as fh:
 			INPUT_DATA_ORIGINAL	= fh.read().decode("utf-8")
 
-		jira_options = {'server': 'https://icebergproject.atlassian.net'}
+		#jira_options = {'server': 'https://icebergproject.atlassian.net'}
+		jira_options = {'server': 'http://10.2.4.14'}
 		with open('/home/alex/projects/servicedeskplus/sdp_close/jira.key','r') as key_file:
 			jira_key = key_file.read()
 

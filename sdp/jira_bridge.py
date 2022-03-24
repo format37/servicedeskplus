@@ -34,7 +34,11 @@ def create_issue(project,summary,description,accountId,issuetype,item):
 		'components': [{'name': item}],
 		'summary': summary,
 		'description': html2text.html2text(description),
-		'assignee': {'accountId': accountId}
+		#'assignee': {'accountId': accountId} # v3
+		'assignee': { # v2
+            'accountId': accountId,
+            'name': accountId
+        },
 	}
 	return jira.create_issue(fields=issue_dict)
 
@@ -46,16 +50,12 @@ def save_log(message):
 #icebergproject.atlassian.net/jira/people/search
 #select an account and copypaste id from adress after people/
 sdp_jira_accounts={	
-	'Сотников Артём Игоревич':'5de505aa22389c0d118c3eaf',
-	'Семенов Олег Владимирович':'5dfb26b2588f6e0cb033698e',
-	'Полухин Владимир Геннадьевич':'5dfb273f9422830cacaa5c02',
-	'Бывальцев Виктор Валентинович':'5dfb26b35697460cb3d98780',
-	'Васильченко Евгения Алексеевна':'5dfb2741eaf5880cad03b10f',
-	'Фролов Максим Евгеньевич':'557058:fa79f484-a387-495b-9862-1af505d8d70a',
-	'Юрасов Алексей Александрович':'557058:f0548e8f-6a09-44bd-bfb5-43a0a40531bb',
-	'Титов Иван Сергеевич':'5f3a2c5d3e9e2e004dd3bf1c',
-	'Севрюкова Анна Юрьевна':'5f6c3d20f0d40100704c2a57',
-	'Песоцкий Константин Вячеславович':'603652b125b84e00694657ab',
+	'Сотников Артём Игоревич':'a.sotnikov@iceberg.ru',
+	'Бывальцев Виктор Валентинович':'v.byvaltsev@iceberg.ru',
+	'Титов Иван Сергеевич':'i.titov@iceberg.ru',
+	'Юрасов Алексей Александрович':'yurasov@iceberg.ru',
+	'Севрюкова Анна Юрьевна':'a.sevrjukova@iceberg.ru',
+	'Песоцкий Константин Вячеславович':'k.pesotskii@iceberg.ru',
 	}
 	
 sdp_jira_issue_types={
@@ -65,7 +65,8 @@ sdp_jira_issue_types={
 	'Обслуживание':'Service',
 }
 	
-jira_options = {'server': 'https://icebergproject.atlassian.net'}
+#jira_options = {'server': 'https://icebergproject.atlassian.net'}
+jira_options = {'server': 'http://10.2.4.14'}
 jira = JIRA(options=jira_options, basic_auth=('yurasov@iceberg.ru', get_api_key()))
 
 param=sys.argv[1]
