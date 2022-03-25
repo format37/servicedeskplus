@@ -225,10 +225,10 @@ async def sdp_bid_create(created_by,caller_phone_number,department,receiver_phon
 				}
 				
 			sdp_jira_issue_types={
-				'Изменение':'Task',
-				'Информация':'Consultation',
-				'Инцидент':'Bug',
-				'Обслуживание':'Service',
+				'Изменение':'Задача',
+				'Информация':'Консультация',
+				'Инцидент':'Баг',
+				'Обслуживание':'Обслуживание',
 			}
 
 			#jira_options = {'server': 'https://icebergproject.atlassian.net'}
@@ -236,8 +236,7 @@ async def sdp_bid_create(created_by,caller_phone_number,department,receiver_phon
 			#with open('/home/alex/projects/servicedeskplus/sdp_close/jira.key','r') as key_file:
 			#	jira_key = key_file.read().replace('\n', '')
 			jira_key = os.environ.get('JIRA_KEY', '')
-			jira_user = 'yurasov@iceberg.ru'
-			#jira_user = 'frolov@iceberg.ru'
+			jira_user = 'ServiceDesk'
 
 			jira = JIRA(options=jira_options, basic_auth=(jira_user, jira_key))
 

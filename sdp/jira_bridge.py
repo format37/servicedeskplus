@@ -59,15 +59,15 @@ sdp_jira_accounts={
 	}
 	
 sdp_jira_issue_types={
-	'Изменение':'Task',
-	'Информация':'Consultation',
-	'Инцидент':'Bug',
-	'Обслуживание':'Service',
+    'Изменение':'Задача',
+    'Информация':'Консультация',
+    'Инцидент':'Баг',
+    'Обслуживание':'Обслуживание',
 }
 	
 #jira_options = {'server': 'https://icebergproject.atlassian.net'}
 jira_options = {'server': 'http://10.2.4.14'}
-jira = JIRA(options=jira_options, basic_auth=('yurasov@iceberg.ru', get_api_key()))
+jira = JIRA(options=jira_options, basic_auth=('ServiceDesk', get_api_key()))
 
 param=sys.argv[1]
 file_name=param[param.rfind('/')+1:]
