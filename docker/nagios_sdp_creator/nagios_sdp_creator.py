@@ -265,11 +265,18 @@ async def sdp_bid_close(request):
 
 		print('jira_type',jira_type)
 
-		sdp_jira_issue_types={
-			'Изменение':'Задача',
-			'Информация':'Консультация',
-			'Инцидент':'Баг',
-			'Обслуживание':'Обслуживание',
+		"""jira_sdp_types = {
+			'Task':'Изменение',
+			'Consultation':'Информация',
+			'Bug':'Инцидент',
+			'Service':'Обслуживание',
+			}"""
+
+		jira_sdp_types={
+			'Task':'Задача',
+			'Consultation':'Консультация',
+			'Bug':'Баг',
+			'Service':'Обслуживание',
 		}
 
 		if jira_type in jira_sdp_types.keys():
@@ -328,10 +335,9 @@ async def sdp_bid_close(request):
 
 		#jira_options = {'server': 'https://icebergproject.atlassian.net'}
 		jira_options = {'server': 'http://10.2.4.14'}
-		#with open('/home/alex/projects/servicedeskplus/sdp_close/jira.key','r') as key_file:
-		#with open('jira.key','r') as key_file:
-		#	jira_key = key_file.read()
 		jira_key = os.environ.get('JIRA_KEY', '')
+		#with open('/home/alex/projects/servicedeskplus/sdp_close/jira.key','r') as key_file:
+		#	jira_key = key_file.read()
 
 		jira = JIRA(options=jira_options, basic_auth=('ServiceDesk', jira_key))
 
