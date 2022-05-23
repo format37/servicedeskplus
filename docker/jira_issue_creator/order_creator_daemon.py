@@ -16,6 +16,8 @@ import os
 import urllib3
 import pandas as pd
 
+while (1):
+	pass
 
 def send_to_telegram(message):
 	token = os.environ.get('TELEGRAM_BOT_TOKEN', '')
