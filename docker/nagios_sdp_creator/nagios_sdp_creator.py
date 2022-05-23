@@ -224,7 +224,7 @@ async def sdp_bid_close(request):
 		#RESOLUTION	= "Закрыто\n"+request.rel_url.query['resolution']
 		RESOLUTION	= "Закрыто\n"
 		ITEM	= request.rel_url.query['component']
-		in_user = request.rel_url.query['user']
+		user = request.rel_url.query['user']
 		jira_issue = request.rel_url.query['issue_key']	
 
 		token	= os.environ.get('SDP_USER_TOKEN', '')
@@ -299,7 +299,7 @@ async def sdp_bid_close(request):
 		}
 		technician = 'Юрасов Алексей Александрович'		
 
-		if in_user in users.keys():
+		if user in users.keys():
 			technician = users[user]
 			print('technician',technician)
 		else:
