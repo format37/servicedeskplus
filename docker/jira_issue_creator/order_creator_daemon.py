@@ -11,12 +11,10 @@ from jira.utils import json_loads
 import urllib
 import pymssql
 import time
-import asyncio
+#import asyncio
 import os
 import urllib3
 import pandas as pd
-#from sqlalchemy.engine import URL
-#from sqlalchemy import create_engine
 
 
 def send_to_telegram(message):
@@ -311,16 +309,7 @@ async def main():
 		query += " from ats_requests order by event_date"
 		cursor.execute(query)
 		to_clean = []
-		tasks = []
-		"""for row in cursor.fetchall():
-			id						= row[0]
-			created_by				= row[1]
-			caller_phone_number		= row[2]
-			department				= row[3]
-			receiver_phone_number	= row[4]
-			print(time.strftime('%Y-%m-%d %H:%M:%S'),'received',id, created_by,caller_phone_number,department,receiver_phone_number)
-			to_clean.append(id)
-			tasks.append( asyncio.create_task(sdp_bid_create(created_by,caller_phone_number,department,receiver_phone_number)) )"""
+		tasks = 0
 		df = pd.read_sql(query, con = conn)
 		for idx, row in df.iterrows():
 			print(
@@ -333,23 +322,21 @@ async def main():
 				row.receiver_phone_number
 			)
 			to_clean.append(row.id)
-			tasks.append( asyncio.create_task(sdp_bid_create(
+			sdp_bid_create(
 				row.created_by,
 				row.caller_phone_number,
 				row.department,
 				row.receiver_phone_number
-			)) )
-		
-		for task in tasks:
-			await task
-			
+			)
+			tasks+=1
+					
 		for id in to_clean:
 			query ="delete from ats_requests where ID_column="+str(id)+";"
 			print(query)
 			cursor.execute(query)
 			conn.commit()
 		
-		if len(tasks)>0:	
+		if len(tasks)==0:	
 			time.sleep(1)
+		tasks = 0
 	
-asyncio.run(main())
