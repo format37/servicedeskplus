@@ -338,7 +338,7 @@ def main():
 			cursor.execute(query)
 			conn.commit()
 		
-		if len(tasks)==0:	
+		if tasks == 0:
 			time.sleep(1)
 		tasks = 0
 	
