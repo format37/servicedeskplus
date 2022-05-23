@@ -4,3 +4,4 @@ pymssql
 jira
 pandas
 SQLAlchemy
+pyodbc
