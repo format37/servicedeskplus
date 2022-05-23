@@ -57,7 +57,7 @@ def create_issue(jira, project,summary,description,accountId,issuetype,item):
 	}
 	return jira.create_issue(fields=issue_dict)
 
-async def sdp_bid_create(created_by,caller_phone_number,department,receiver_phone_number):
+def sdp_bid_create(created_by,caller_phone_number,department,receiver_phone_number):
 	
 	#try:
 	print('\n======= sdp create by ats:',datetime.datetime.now())
@@ -294,7 +294,7 @@ def connect_sql():
 	#return create_engine(connection_url)
 
 
-async def main():
+def main():
 	send_to_telegram(str(datetime.datetime.now())+' jira issue creator daemon started')
 	print(time.strftime('%Y-%m-%d %H:%M:%S'),'alive')
 	conn = connect_sql()
@@ -342,3 +342,6 @@ async def main():
 			time.sleep(1)
 		tasks = 0
 	
+
+if __name__ == '__main__':
+    main()
