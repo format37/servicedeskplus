@@ -15,8 +15,8 @@ import asyncio
 import os
 import urllib3
 import pandas as pd
-from sqlalchemy.engine import URL
-from sqlalchemy import create_engine
+#from sqlalchemy.engine import URL
+#from sqlalchemy import create_engine
 
 
 def send_to_telegram(message):
@@ -288,10 +288,10 @@ def connect_sql():
 	sql_login='ICECORP\\1c_sql'
 	sql_pass='dpCEoF1e4A6XPOL'
 	#return pymssql.connect(server='10.2.4.124', user=sql_login, password=sql_pass, database='sdp', autocommit=True)
-	#return pymssql.connect(server='10.2.4.124', user=sql_login, password=sql_pass, database='sdp')
-	connection_string = "DRIVER={ODBC Driver 17 for SQL Server};SERVER=10.2.4.124;DATABASE=sdp;UID="+sql_login+";PWD="+sql_pass
-	connection_url = URL.create("mssql+pyodbc" , query={"odbc_connect": connection_string})    
-	return create_engine(connection_url)
+	return pymssql.connect(server='10.2.4.124', user=sql_login, password=sql_pass, database='sdp')
+	#connection_string = "DRIVER={ODBC Driver 17 for SQL Server};SERVER=10.2.4.124;DATABASE=sdp;UID="+sql_login+";PWD="+sql_pass
+	#connection_url = URL.create("mssql+pyodbc" , query={"odbc_connect": connection_string})    
+	#return create_engine(connection_url)
 
 
 async def main():
