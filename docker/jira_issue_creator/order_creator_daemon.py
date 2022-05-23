@@ -15,6 +15,8 @@ import asyncio
 import os
 import urllib3
 import pandas as pd
+from sqlalchemy.engine import URL
+from sqlalchemy import create_engine
 
 
 def send_to_telegram(message):
@@ -27,7 +29,7 @@ def send_to_telegram(message):
 	session.get(get_request)
 
 def jira_datetime_format(dt):
-    return str(dt.year)+'-'+str(dt.month).zfill(2)+'-'+str(dt.day).zfill(2)+'T'+str(dt.hour).zfill(2)+':'+str(dt.minute).zfill(2)+':'+str(dt.second).zfill(2)+'.'+str(int(dt.microsecond/1000)).zfill(3)+'+0300'
+	return str(dt.year)+'-'+str(dt.month).zfill(2)+'-'+str(dt.day).zfill(2)+'T'+str(dt.hour).zfill(2)+':'+str(dt.minute).zfill(2)+':'+str(dt.second).zfill(2)+'.'+str(int(dt.microsecond/1000)).zfill(3)+'+0300'
 
 def issue_assignee(jira,issue,accountId):
 	url = jira._options['server'] + '/rest/api/latest/issue/' + issue + '/assignee'
@@ -48,9 +50,9 @@ def create_issue(jira, project,summary,description,accountId,issuetype,item):
 		'description': description,
 		#'assignee': {'accountId': accountId},
 		'assignee': { # v2
-            'accountId': accountId,
-            'name': accountId
-        },
+			'accountId': accountId,
+			'name': accountId
+		},
 		'duedate': jira_datetime_format(datetime.datetime.now()),
 	}
 	return jira.create_issue(fields=issue_dict)
@@ -286,7 +288,11 @@ def connect_sql():
 	sql_login='ICECORP\\1c_sql'
 	sql_pass='dpCEoF1e4A6XPOL'
 	#return pymssql.connect(server='10.2.4.124', user=sql_login, password=sql_pass, database='sdp', autocommit=True)
-	return pymssql.connect(server='10.2.4.124', user=sql_login, password=sql_pass, database='sdp')
+	#return pymssql.connect(server='10.2.4.124', user=sql_login, password=sql_pass, database='sdp')
+	connection_string = "DRIVER={ODBC Driver 17 for SQL Server};SERVER=10.2.4.124;DATABASE=sdp;UID="+sql_login+";PWD="+sql_pass
+	connection_url = URL.create("mssql+pyodbc" , query={"odbc_connect": connection_string})    
+	return create_engine(connection_url)
+
 
 async def main():
 	send_to_telegram(str(datetime.datetime.now())+' jira issue creator daemon started')
@@ -336,7 +342,7 @@ async def main():
 		
 		for task in tasks:
 			await task
-
+			
 		for id in to_clean:
 			query ="delete from ats_requests where ID_column="+str(id)+";"
 			print(query)
