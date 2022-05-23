@@ -224,7 +224,7 @@ async def sdp_bid_close(request):
 		#RESOLUTION	= "Закрыто\n"+request.rel_url.query['resolution']
 		RESOLUTION	= "Закрыто\n"
 		ITEM	= request.rel_url.query['component']
-		user = request.rel_url.query['user']
+		in_user = request.rel_url.query['user']
 		jira_issue = request.rel_url.query['issue_key']	
 
 		token	= os.environ.get('SDP_USER_TOKEN', '')
@@ -292,18 +292,14 @@ async def sdp_bid_close(request):
 		#print('resolution',RESOLUTION)
 
 		users={
-			'557058:fa79f484-a387-495b-9862-1af505d8d70a'	: 'Фролов Максим Евгеньевич',
-			'5de505aa22389c0d118c3eaf'						: 'Сотников Артём Игоревич',
-			'5dfb26b2588f6e0cb033698e'						: 'Семенов Олег Владимирович',
-			'557058:f0548e8f-6a09-44bd-bfb5-43a0a40531bb'	: 'Юрасов Алексей Александрович',
-			'5dfb273f9422830cacaa5c02'						: 'Полухин Владимир Геннадьевич',
-			'5dfb26b35697460cb3d98780'						: 'Бывальцев Виктор Валентинович',
-			'5dfb2741eaf5880cad03b10f'						: 'Васильченко Евгения Алексеевна'
+			'5de505aa22389c0d118c3eaf' : 'Сотников Артём Игоревич',
+			#'557058:f0548e8f-6a09-44bd-bfb5-43a0a40531bb' : 'Юрасов Алексей Александрович',
+			'yurasov@iceberg.ru' : 'Юрасов Алексей Александрович',
+			'5dfb26b35697460cb3d98780' : 'Бывальцев Виктор Валентинович',
 		}
 		technician = 'Юрасов Алексей Александрович'		
 
-
-		if user in users.keys():
+		if in_user in users.keys():
 			technician = users[user]
 			print('technician',technician)
 		else:
@@ -312,12 +308,12 @@ async def sdp_bid_close(request):
 
 
 		sdp_tokens={
-			'Фролов Максим Евгеньевич'		: '210ECA4F-859F-45DE-9DDB-5AB19B9617A5',
-			'Сотников Артём Игоревич'		: '4CD78BFF-BFBA-4A00-A91C-2DF01EA12CAA',
-			'Семенов Олег Владимирович'		: '5CACD30F-793A-411B-BAFA-B01F57D225C9',
-			'Юрасов Алексей Александрович'	: '76ED27EB-D26D-412A-8151-5A65A16198E7',
-			'Полухин Владимир Геннадьевич'	: '5801D334-C5C3-4BEC-9209-309AFCA27DAE',
-			'Бывальцев Виктор Валентинович'	: '157D4CAC-6947-4F44-BCE7-BAF2E3ABF672',
+			'Фролов Максим Евгеньевич' : '210ECA4F-859F-45DE-9DDB-5AB19B9617A5',
+			'Сотников Артём Игоревич' : '4CD78BFF-BFBA-4A00-A91C-2DF01EA12CAA',
+			'Семенов Олег Владимирович' : '5CACD30F-793A-411B-BAFA-B01F57D225C9',
+			'Юрасов Алексей Александрович' : '76ED27EB-D26D-412A-8151-5A65A16198E7',
+			'Полухин Владимир Геннадьевич' : '5801D334-C5C3-4BEC-9209-309AFCA27DAE',
+			'Бывальцев Виктор Валентинович' : '157D4CAC-6947-4F44-BCE7-BAF2E3ABF672',
 		}
 		token = sdp_tokens['Юрасов Алексей Александрович']
 		if technician in sdp_tokens.keys():
