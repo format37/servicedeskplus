@@ -402,8 +402,8 @@ def send_to_telegram(message):
 
 def main():
 
-	while(1):
-		pass
+	#while(1):
+	#	pass
 
 	app = web.Application()
 	app.router.add_route('GET', '/bidedit', bid_edit)
