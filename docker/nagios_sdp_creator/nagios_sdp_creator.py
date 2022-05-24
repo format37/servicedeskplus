@@ -3,20 +3,20 @@ import asyncio
 from aiohttp import web
 import urllib
 import urllib.parse
-from urllib.parse import urlparse, parse_qsl
-import multidict as MultiDict
+#from urllib.parse import urlparse, parse_qsl
+i#mport multidict as MultiDict
 import requests
 from sdp_create import sdp_bid_create
 from jira_pause import set_pause as jira_set_pause
 import datetime
 from time import strftime
 from time import gmtime
-from time import sleep
+#from time import sleep
 from jira import JIRA
 import os
 import socket
+#import time
 
-import time
 
 async def bid_edit(request):
 	try:
@@ -212,11 +212,9 @@ async def bid_close(request):
 	content+='</form></body></html>'
 	return web.Response(text=content,content_type="text/html")
 
+
 async def sdp_bid_close(request):
 	#try:
-	while(1):
-		pass
-	
 	print('\n======= sdp close by jira:',datetime.datetime.now())
 	#print(request.rel_url.query)
 	WORKORDERID = request.rel_url.query['sdp_id']
@@ -381,14 +379,17 @@ async def sdp_bid_close(request):
 
 	return web.Response(text=response,content_type="text/html")
 
+
 async def call_check(request):
 	return web.Response(text='ok',content_type="text/html")
 	
+
 async def call_jira_pause(request):
 	assignee	= request.rel_url.query['assignee']
 	issuekey	= request.rel_url.query['issuekey']
 	jira_set_pause(assignee,issuekey)
 	
+
 def send_to_telegram(message):
 	token = os.environ.get('TELEGRAM_BOT_TOKEN', '')
 	chat_id = os.environ.get('TELEGRAM_CHAT', '')
@@ -398,27 +399,37 @@ def send_to_telegram(message):
 	get_request += '&text=' + urllib.parse.quote_plus(message)
 	session.get(get_request)
 
-app = web.Application()
-app.router.add_route('GET', '/bidedit', bid_edit)
-app.router.add_route('GET', '/', call_check)
-app.router.add_route('GET', '/bidclose', bid_close)
-app.router.add_route('GET', '/bidcreate', sdp_bid_create)
-app.router.add_route('GET', '/bidclosebyjira', sdp_bid_close)
-#app.router.add_route('GET', '/telegram', telegram)
-app.router.add_route('GET', '/jirapause', call_jira_pause)
 
-send_to_telegram(str(datetime.datetime.now())+' sdp order creator server started on ' + str(socket.gethostname()))
+def main():
 
-loop = asyncio.get_event_loop()
-handler = app.make_handler()
-f = loop.create_server(handler, port='8080')
-srv = loop.run_until_complete(f)
+	while(1):
+		pass
 
-print('serving on', srv.sockets[0].getsockname())
-try:
-	loop.run_forever()
-except KeyboardInterrupt:
-	print("serving off...")
-finally:
-	loop.run_until_complete(handler.finish_connections(1.0))
-	srv.close()
+	app = web.Application()
+	app.router.add_route('GET', '/bidedit', bid_edit)
+	app.router.add_route('GET', '/', call_check)
+	app.router.add_route('GET', '/bidclose', bid_close)
+	app.router.add_route('GET', '/bidcreate', sdp_bid_create)
+	app.router.add_route('GET', '/bidclosebyjira', sdp_bid_close)
+	#app.router.add_route('GET', '/telegram', telegram)
+	app.router.add_route('GET', '/jirapause', call_jira_pause)
+
+	send_to_telegram(str(datetime.datetime.now())+' sdp order creator server started on ' + str(socket.gethostname()))
+
+	loop = asyncio.get_event_loop()
+	handler = app.make_handler()
+	f = loop.create_server(handler, port='8080')
+	srv = loop.run_until_complete(f)
+
+	print('serving on', srv.sockets[0].getsockname())
+	try:
+		loop.run_forever()
+	except KeyboardInterrupt:
+		print("serving off...")
+	finally:
+		loop.run_until_complete(handler.finish_connections(1.0))
+		srv.close()
+
+
+if __name__ == '__main__':
+    main()
