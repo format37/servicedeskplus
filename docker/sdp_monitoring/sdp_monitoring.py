@@ -117,8 +117,8 @@ def check():
 			duebytime_difference_m		= (duebytime-current_time)/60
 			createdtime_difference_m	= (current_time-createdtime)/60
 			
-			#if duebytime_difference_m<alert_minutes_limit and duebytime_difference_m>-31 and 'technician' in workorder.keys() and workorder['technician'] in telegram_users.keys():
-			if duebytime_difference_m<alert_minutes_limit and 'technician' in workorder.keys() and workorder['technician'] in telegram_users.keys():
+			if duebytime_difference_m<alert_minutes_limit and duebytime_difference_m>-31 and 'technician' in workorder.keys() and workorder['technician'] in telegram_users.keys():
+			#if duebytime_difference_m<alert_minutes_limit and 'technician' in workorder.keys() and workorder['technician'] in telegram_users.keys():
 				message='Заявка: '+workorder['workorderid']+ \
 					'\n'+workorder['subject']+ \
 					'\n'+'http://help.icecorp.ru/WorkOrder.do?woMode=viewWO&woID='+workorder['workorderid'] +\
