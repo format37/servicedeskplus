@@ -332,10 +332,10 @@ async def sdp_bid_close(request):
 
 	#jira_options = {'server': 'https://icebergproject.atlassian.net'}
 	jira_options = {'server': 'http://jira.iceberg.ru'}
-	jira_key = os.environ.get('JIRA_KEY', '')
+	jira_key = os.environ.get('JIRA_KEY', '')	
+
 	#with open('/home/alex/projects/servicedeskplus/sdp_close/jira.key','r') as key_file:
 	#	jira_key = key_file.read()
-
 	jira = JIRA(options=jira_options, basic_auth=('ServiceDesk', jira_key))
 
 	worklogs = jira.worklogs(jira_issue)
