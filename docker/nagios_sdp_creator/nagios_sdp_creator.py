@@ -214,168 +214,168 @@ async def bid_close(request):
 
 
 async def sdp_bid_close(request):
-	#try:
-	print('\n======= sdp close by jira:',datetime.datetime.now())
-	#print(request.rel_url.query)
-	WORKORDERID = request.rel_url.query['sdp_id']
-	jira_type		= request.rel_url.query['jira_type']
-	SUBJECT		= request.rel_url.query['subject']
-	#description	= 'test'
-	description	= request.rel_url.query['description']
-	#RESOLUTION	= "Закрыто\n"+request.rel_url.query['resolution']
-	RESOLUTION	= "Закрыто\n"
-	ITEM	= request.rel_url.query['component']
-	user = request.rel_url.query['user']
-	jira_issue = request.rel_url.query['issue_key']	
+	try:
+		print('\n======= sdp close by jira:',datetime.datetime.now())
+		#print(request.rel_url.query)
+		WORKORDERID = request.rel_url.query['sdp_id']
+		jira_type		= request.rel_url.query['jira_type']
+		SUBJECT		= request.rel_url.query['subject']
+		#description	= 'test'
+		description	= request.rel_url.query['description']
+		#RESOLUTION	= "Закрыто\n"+request.rel_url.query['resolution']
+		RESOLUTION	= "Закрыто\n"
+		ITEM	= request.rel_url.query['component']
+		user = request.rel_url.query['user']
+		jira_issue = request.rel_url.query['issue_key']	
 
-	token	= os.environ.get('SDP_USER_TOKEN', '')
-	workHours	= '0'
-	workMinutes = '1'	
-	add_worklog_file='ADD_WORKLOG.xml'
-	edit_request_file='EDIT_REQUEST.xml'
+		token	= os.environ.get('SDP_USER_TOKEN', '')
+		workHours	= '0'
+		workMinutes = '1'	
+		add_worklog_file='ADD_WORKLOG.xml'
+		edit_request_file='EDIT_REQUEST.xml'
 
-	print('item received:',ITEM)
+		print('item received:',ITEM)
 
-	items =[
-		'1C-Сервис',
-		'МРМ',
-		'Бухгалтерия',
-		'МПК',
-		'Склады',
-		'Реклама',
-	]
-	if (ITEM in items)==False:
-		ITEM = '1C-Сервис'
-		print('item changed')
+		items =[
+			'1C-Сервис',
+			'МРМ',
+			'Бухгалтерия',
+			'МПК',
+			'Склады',
+			'Реклама',
+		]
+		if (ITEM in items)==False:
+			ITEM = '1C-Сервис'
+			print('item changed')
 
-	print('item set:',ITEM)
+		print('item set:',ITEM)
 
-	sub_cats = {
-		'1C-Сервис':'1С Cистемы',
-		'МРМ':'Мобильные приложения',
-		'МПК':'Мобильные приложения',
-		'Бухгалтерия':'1С Cистемы',
-		'Склады':'1С Cистемы',
-		'Реклама':'1С Cистемы',
-	}
+		sub_cats = {
+			'1C-Сервис':'1С Cистемы',
+			'МРМ':'Мобильные приложения',
+			'МПК':'Мобильные приложения',
+			'Бухгалтерия':'1С Cистемы',
+			'Склады':'1С Cистемы',
+			'Реклама':'1С Cистемы',
+		}
 
-	if ITEM in sub_cats.keys():
-		SUBCAT	= sub_cats[ITEM]
-	else:
-		SUBCAT = '1С Cистемы'
+		if ITEM in sub_cats.keys():
+			SUBCAT	= sub_cats[ITEM]
+		else:
+			SUBCAT = '1С Cистемы'
 
-	print('jira_type',jira_type)
+		print('jira_type',jira_type)
 
-	"""jira_sdp_types = {
-		'Task':'Изменение',
-		'Consultation':'Информация',
-		'Bug':'Инцидент',
-		'Service':'Обслуживание',
-		}"""
+		"""jira_sdp_types = {
+			'Task':'Изменение',
+			'Consultation':'Информация',
+			'Bug':'Инцидент',
+			'Service':'Обслуживание',
+			}"""
 
-	jira_sdp_types={
-		'Task':'Задача',
-		'Consultation':'Консультация',
-		'Bug':'Баг',
-		'Service':'Обслуживание',
-	}
+		jira_sdp_types={
+			'Task':'Задача',
+			'Consultation':'Консультация',
+			'Bug':'Баг',
+			'Service':'Обслуживание',
+		}
 
-	if jira_type in jira_sdp_types.keys():
-		rtype = jira_sdp_types[jira_type]
-	else:
-		rtype = jira_sdp_types['Consultation']
+		if jira_type in jira_sdp_types.keys():
+			rtype = jira_sdp_types[jira_type]
+		else:
+			rtype = jira_sdp_types['Consultation']
 
-	print('Subcategory',SUBCAT)
-	print('sdp_id',WORKORDERID)
-	print('jira issue',jira_issue)
-	print('subject',SUBJECT)
-	print('description',description)
-	#print('resolution',RESOLUTION)
+		print('Subcategory',SUBCAT)
+		print('sdp_id',WORKORDERID)
+		print('jira issue',jira_issue)
+		print('subject',SUBJECT)
+		print('description',description)
+		#print('resolution',RESOLUTION)
 
-	users={
-		'5de505aa22389c0d118c3eaf' : 'Сотников Артём Игоревич',
-		#'557058:f0548e8f-6a09-44bd-bfb5-43a0a40531bb' : 'Юрасов Алексей Александрович',
-		'yurasov@iceberg.ru' : 'Юрасов Алексей Александрович',
-		'5dfb26b35697460cb3d98780' : 'Бывальцев Виктор Валентинович',
-	}
-	technician = 'Юрасов Алексей Александрович'		
+		users={
+			'5de505aa22389c0d118c3eaf' : 'Сотников Артём Игоревич',
+			#'557058:f0548e8f-6a09-44bd-bfb5-43a0a40531bb' : 'Юрасов Алексей Александрович',
+			'yurasov@iceberg.ru' : 'Юрасов Алексей Александрович',
+			'5dfb26b35697460cb3d98780' : 'Бывальцев Виктор Валентинович',
+		}
+		technician = 'Юрасов Алексей Александрович'		
 
-	if user in users.keys():
-		technician = users[user]
-		print('technician',technician)
-	else:
-		print('technician not found:',user)
-		send_to_telegram(str(datetime.datetime.now())+' technician not found:'+str(user) )
+		if user in users.keys():
+			technician = users[user]
+			print('technician',technician)
+		else:
+			print('technician not found:',user)
+			send_to_telegram(str(datetime.datetime.now())+' technician not found:'+str(user) )
 
 
-	sdp_tokens={
-		'Фролов Максим Евгеньевич' : '210ECA4F-859F-45DE-9DDB-5AB19B9617A5',
-		'Сотников Артём Игоревич' : '4CD78BFF-BFBA-4A00-A91C-2DF01EA12CAA',
-		'Семенов Олег Владимирович' : '5CACD30F-793A-411B-BAFA-B01F57D225C9',
-		'Юрасов Алексей Александрович' : '76ED27EB-D26D-412A-8151-5A65A16198E7',
-		'Полухин Владимир Геннадьевич' : '5801D334-C5C3-4BEC-9209-309AFCA27DAE',
-		'Бывальцев Виктор Валентинович' : '157D4CAC-6947-4F44-BCE7-BAF2E3ABF672',
-	}
-	token = sdp_tokens['Юрасов Алексей Александрович']
-	if technician in sdp_tokens.keys():
-		token = sdp_tokens[technician]
-		print('sdp token',token)
-	else:
-		print('sdp token for',technician,'not found. using default')
-		send_to_telegram(str(datetime.datetime.now())+' sdp token for '+str(technician)+' not found. using default' )
+		sdp_tokens={
+			'Фролов Максим Евгеньевич' : '210ECA4F-859F-45DE-9DDB-5AB19B9617A5',
+			'Сотников Артём Игоревич' : '4CD78BFF-BFBA-4A00-A91C-2DF01EA12CAA',
+			'Семенов Олег Владимирович' : '5CACD30F-793A-411B-BAFA-B01F57D225C9',
+			'Юрасов Алексей Александрович' : '76ED27EB-D26D-412A-8151-5A65A16198E7',
+			'Полухин Владимир Геннадьевич' : '5801D334-C5C3-4BEC-9209-309AFCA27DAE',
+			'Бывальцев Виктор Валентинович' : '157D4CAC-6947-4F44-BCE7-BAF2E3ABF672',
+		}
+		token = sdp_tokens['Юрасов Алексей Александрович']
+		if technician in sdp_tokens.keys():
+			token = sdp_tokens[technician]
+			print('sdp token',token)
+		else:
+			print('sdp token for',technician,'not found. using default')
+			send_to_telegram(str(datetime.datetime.now())+' sdp token for '+str(technician)+' not found. using default' )
 
-	response = ''
-	worklog_comments = '.'
+		response = ''
+		worklog_comments = '.'
 
-	with open(add_worklog_file,'rb') as fh:
-		INPUT_DATA_ORIGINAL	= fh.read().decode("utf-8")
+		with open(add_worklog_file,'rb') as fh:
+			INPUT_DATA_ORIGINAL	= fh.read().decode("utf-8")
 
-	#jira_options = {'server': 'https://icebergproject.atlassian.net'}
-	jira_options = {'server': 'http://jira.iceberg.ru'}
-	jira_key = os.environ.get('JIRA_KEY', '')	
+		#jira_options = {'server': 'https://icebergproject.atlassian.net'}
+		jira_options = {'server': 'http://jira.iceberg.ru'}
+		jira_key = os.environ.get('JIRA_KEY', '')	
 
-	#with open('/home/alex/projects/servicedeskplus/sdp_close/jira.key','r') as key_file:
-	#	jira_key = key_file.read()
-	jira = JIRA(options=jira_options, basic_auth=('ServiceDesk', jira_key))
+		#with open('/home/alex/projects/servicedeskplus/sdp_close/jira.key','r') as key_file:
+		#	jira_key = key_file.read()
+		jira = JIRA(options=jira_options, basic_auth=('ServiceDesk', jira_key))
 
-	worklogs = jira.worklogs(jira_issue)
-	spent_hours = 0
-	spent_minutes = 1
-	for wl in worklogs:
-		spent_hours = int(strftime("%H", gmtime(wl.timeSpentSeconds)))
-		spent_minutes = int(strftime("%M", gmtime(wl.timeSpentSeconds)))
-		#print(wl.timeSpent, wl.timeSpentSeconds, wl.comment)
+		worklogs = jira.worklogs(jira_issue)
+		spent_hours = 0
+		spent_minutes = 1
+		for wl in worklogs:
+			spent_hours = int(strftime("%H", gmtime(wl.timeSpentSeconds)))
+			spent_minutes = int(strftime("%M", gmtime(wl.timeSpentSeconds)))
+			#print(wl.timeSpent, wl.timeSpentSeconds, wl.comment)
 
-		try:
-			worklog_comments+=('' if worklog_comments=='' else '\n')+wl.comment
-		except:
-			print('no comments')
-		worklog_comments = 'Закрыто' if worklog_comments.replace('_n','')=='' else worklog_comments
-		
-		INPUT_DATA = INPUT_DATA_ORIGINAL
-		INPUT_DATA = INPUT_DATA.replace("%technician%", technician)
-		INPUT_DATA = INPUT_DATA.replace("%workMinutes%", str(spent_minutes))
-		INPUT_DATA = INPUT_DATA.replace("%workHours%", str(spent_hours))
-		url='http://10.2.4.46/sdpapi/request/'+WORKORDERID+'/worklogs?OPERATION_NAME=ADD_WORKLOG&TECHNICIAN_KEY='+token+'&INPUT_DATA='+INPUT_DATA
-		headers = {'Content-Type': 'application/xml'}	
-		response += requests.post(url, headers=headers).text		
+			try:
+				worklog_comments+=('' if worklog_comments=='' else '\n')+wl.comment
+			except:
+				print('no comments')
+			worklog_comments = 'Закрыто' if worklog_comments.replace('_n','')=='' else worklog_comments
+			
+			INPUT_DATA = INPUT_DATA_ORIGINAL
+			INPUT_DATA = INPUT_DATA.replace("%technician%", technician)
+			INPUT_DATA = INPUT_DATA.replace("%workMinutes%", str(spent_minutes))
+			INPUT_DATA = INPUT_DATA.replace("%workHours%", str(spent_hours))
+			url='http://10.2.4.46/sdpapi/request/'+WORKORDERID+'/worklogs?OPERATION_NAME=ADD_WORKLOG&TECHNICIAN_KEY='+token+'&INPUT_DATA='+INPUT_DATA
+			headers = {'Content-Type': 'application/xml'}	
+			response += requests.post(url, headers=headers).text		
 
-	with open(edit_request_file,'rb') as fh:
-		INPUT_DATA	= fh.read().decode("utf-8")
-		INPUT_DATA = INPUT_DATA.replace("%rtype%", rtype)
-		INPUT_DATA = INPUT_DATA.replace("%Description%", description) #
-		INPUT_DATA = INPUT_DATA.replace("%Subject%", SUBJECT)
-		INPUT_DATA = INPUT_DATA.replace("%Resolution%", worklog_comments)
-		INPUT_DATA = INPUT_DATA.replace("%Technician%", technician)
-		INPUT_DATA = INPUT_DATA.replace("%Item%", ITEM)
-		INPUT_DATA = INPUT_DATA.replace("%Subcategory%", SUBCAT)
-		url='http://10.2.4.46/sdpapi/request/'+WORKORDERID+'?OPERATION_NAME=EDIT_REQUEST&TECHNICIAN_KEY='+token+'&INPUT_DATA='+INPUT_DATA
-		headers = {'Content-Type': 'application/xml'}	
-		response += requests.post(url, headers=headers).text
+		with open(edit_request_file,'rb') as fh:
+			INPUT_DATA	= fh.read().decode("utf-8")
+			INPUT_DATA = INPUT_DATA.replace("%rtype%", rtype)
+			INPUT_DATA = INPUT_DATA.replace("%Description%", description) #
+			INPUT_DATA = INPUT_DATA.replace("%Subject%", SUBJECT)
+			INPUT_DATA = INPUT_DATA.replace("%Resolution%", worklog_comments)
+			INPUT_DATA = INPUT_DATA.replace("%Technician%", technician)
+			INPUT_DATA = INPUT_DATA.replace("%Item%", ITEM)
+			INPUT_DATA = INPUT_DATA.replace("%Subcategory%", SUBCAT)
+			url='http://10.2.4.46/sdpapi/request/'+WORKORDERID+'?OPERATION_NAME=EDIT_REQUEST&TECHNICIAN_KEY='+token+'&INPUT_DATA='+INPUT_DATA
+			headers = {'Content-Type': 'application/xml'}	
+			response += requests.post(url, headers=headers).text
 
-	#except Exception as e:
-	#	response	= 'error'
-	#	send_to_telegram(str(datetime.datetime.now())+' sdp close by jira error: '+str(e))
+	except Exception as e:
+		response	= 'error'
+		send_to_telegram(str(datetime.datetime.now())+' sdp close by jira error: '+str(e))
 
 	return web.Response(text=response,content_type="text/html")
 
