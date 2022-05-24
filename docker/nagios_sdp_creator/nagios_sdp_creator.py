@@ -4,7 +4,7 @@ from aiohttp import web
 import urllib
 import urllib.parse
 #from urllib.parse import urlparse, parse_qsl
-i#mport multidict as MultiDict
+#mport multidict as MultiDict
 import requests
 from sdp_create import sdp_bid_create
 from jira_pause import set_pause as jira_set_pause
