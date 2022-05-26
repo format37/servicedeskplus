@@ -293,12 +293,14 @@ async def sdp_bid_close(request):
 		#print('resolution',RESOLUTION)
 
 		users={
-			'5de505aa22389c0d118c3eaf' : 'Сотников Артём Игоревич',
-			#'557058:f0548e8f-6a09-44bd-bfb5-43a0a40531bb' : 'Юрасов Алексей Александрович',
-			'yurasov@iceberg.ru' : 'Юрасов Алексей Александрович',
-			'5dfb26b35697460cb3d98780' : 'Бывальцев Виктор Валентинович',
+			'a.sotnikov@iceberg.ru' : 'Сотников Артём Игоревич',
+			'a.yurasov@iceberg.ru' : 'Юрасов Алексей Александрович',
+			'k.pesotskii@iceberg.ru' : 'Песоцкий Константин Вячеславович',
+			'v.byvaltsev@iceberg.ru' : 'Бывальцев Виктор Валентинович',
+			'i.titov@iceberg.ru' : 'Титов Иван Сергеевич',
+			'a.sevrjukova@iceberg.ru' : 'Севрюкова Анна Юрьевна',
 		}
-		technician = 'Юрасов Алексей Александрович'		
+		technician = 'Юрасов Алексей Александрович'
 
 		if user in users.keys():
 			technician = users[user]
@@ -307,13 +309,9 @@ async def sdp_bid_close(request):
 			print('technician not found:',user)
 			send_to_telegram(str(datetime.datetime.now())+' technician not found:'+str(user) )
 
-
 		sdp_tokens={
-			'Фролов Максим Евгеньевич' : '210ECA4F-859F-45DE-9DDB-5AB19B9617A5',
 			'Сотников Артём Игоревич' : '4CD78BFF-BFBA-4A00-A91C-2DF01EA12CAA',
-			'Семенов Олег Владимирович' : '5CACD30F-793A-411B-BAFA-B01F57D225C9',
 			'Юрасов Алексей Александрович' : '76ED27EB-D26D-412A-8151-5A65A16198E7',
-			'Полухин Владимир Геннадьевич' : '5801D334-C5C3-4BEC-9209-309AFCA27DAE',
 			'Бывальцев Виктор Валентинович' : '157D4CAC-6947-4F44-BCE7-BAF2E3ABF672',
 		}
 		token = sdp_tokens['Юрасов Алексей Александрович']
