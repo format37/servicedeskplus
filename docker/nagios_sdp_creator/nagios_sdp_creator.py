@@ -313,6 +313,7 @@ async def sdp_bid_close(request):
 			'Сотников Артём Игоревич' : '4CD78BFF-BFBA-4A00-A91C-2DF01EA12CAA',
 			'Юрасов Алексей Александрович' : '76ED27EB-D26D-412A-8151-5A65A16198E7',
 			'Бывальцев Виктор Валентинович' : '157D4CAC-6947-4F44-BCE7-BAF2E3ABF672',
+			'Титов Иван Сергеевич' : '53A9ED31-00AB-4FCB-8E97-FF523E781281',
 		}
 		token = sdp_tokens['Юрасов Алексей Александрович']
 		if technician in sdp_tokens.keys():
