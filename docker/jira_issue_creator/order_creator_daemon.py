@@ -205,70 +205,82 @@ def sdp_bid_create(created_by,caller_phone_number,department,receiver_phone_numb
 
 	jira_issue=''
 	if sdp_order!='':
-		print('\n======= jira create by ats:',datetime.datetime.now())
-		#icebergproject.atlassian.net/jira/people/search
-		#select an account and copypaste id from adress after people/
-		"""sdp_jira_accounts={	
-			'Сотников Артём Игоревич':'5de505aa22389c0d118c3eaf',
-			'Семенов Олег Владимирович':'5dfb26b2588f6e0cb033698e',				
-			'Бывальцев Виктор Валентинович':'5dfb26b35697460cb3d98780',
-			'Юрасов Алексей Александрович':'557058:f0548e8f-6a09-44bd-bfb5-43a0a40531bb',
-			'Титов Иван Сергеевич':'5f3a2c5d3e9e2e004dd3bf1c',
-			'Севрюкова Анна Юрьевна':'5f6c3d20f0d40100704c2a57',
-			'Песоцкий Константин Вячеславович':'603652b125b84e00694657ab',
-			}"""
-		sdp_jira_accounts={	
-			'Сотников Артём Игоревич':'a.sotnikov@iceberg.ru',
-			'Бывальцев Виктор Валентинович':'v.byvaltsev@iceberg.ru',
-			'Титов Иван Сергеевич':'i.titov@iceberg.ru',
-			'Юрасов Алексей Александрович':'yurasov@iceberg.ru',
-			'Севрюкова Анна Юрьевна':'a.sevrjukova@iceberg.ru',
-			'Песоцкий Константин Вячеславович':'k.pesotskii@iceberg.ru',
-			}
+		jira_created = False
+		while jira_created == False:
+			try:
+				print('\n======= jira create by ats:',datetime.datetime.now())
+				#icebergproject.atlassian.net/jira/people/search
+				#select an account and copypaste id from adress after people/
+				"""sdp_jira_accounts={	
+					'Сотников Артём Игоревич':'5de505aa22389c0d118c3eaf',
+					'Семенов Олег Владимирович':'5dfb26b2588f6e0cb033698e',				
+					'Бывальцев Виктор Валентинович':'5dfb26b35697460cb3d98780',
+					'Юрасов Алексей Александрович':'557058:f0548e8f-6a09-44bd-bfb5-43a0a40531bb',
+					'Титов Иван Сергеевич':'5f3a2c5d3e9e2e004dd3bf1c',
+					'Севрюкова Анна Юрьевна':'5f6c3d20f0d40100704c2a57',
+					'Песоцкий Константин Вячеславович':'603652b125b84e00694657ab',
+					}"""
+				sdp_jira_accounts={	
+					'Сотников Артём Игоревич':'a.sotnikov@iceberg.ru',
+					'Бывальцев Виктор Валентинович':'v.byvaltsev@iceberg.ru',
+					'Титов Иван Сергеевич':'i.titov@iceberg.ru',
+					'Юрасов Алексей Александрович':'yurasov@iceberg.ru',
+					'Севрюкова Анна Юрьевна':'a.sevrjukova@iceberg.ru',
+					'Песоцкий Константин Вячеславович':'k.pesotskii@iceberg.ru',
+					}
 
-		sdp_jira_issue_types={
-			'Изменение':'Задача',
-			'Информация':'Консультация',
-			'Инцидент':'Баг',
-			'Обслуживание':'Обслуживание',
-		}
+				sdp_jira_issue_types={
+					'Изменение':'Задача',
+					'Информация':'Консультация',
+					'Инцидент':'Баг',
+					'Обслуживание':'Обслуживание',
+				}
 
-		#jira_options = {'server': 'https://icebergproject.atlassian.net'}
-		jira_options = {'server': 'http://jira.iceberg.ru'}
-		#with open('/home/alex/projects/servicedeskplus/sdp_close/jira.key','r') as key_file:
-		#	jira_key = key_file.read().replace('\n', '')
-		jira_key = os.environ.get('JIRA_KEY', '')
-		jira_user = 'ServiceDesk'
+				#jira_options = {'server': 'https://icebergproject.atlassian.net'}
+				jira_options = {'server': 'http://jira.iceberg.ru'}
+				#with open('/home/alex/projects/servicedeskplus/sdp_close/jira.key','r') as key_file:
+				#	jira_key = key_file.read().replace('\n', '')
+				jira_key = os.environ.get('JIRA_KEY', '')
+				jira_user = 'ServiceDesk'
 
-		jira = JIRA(options=jira_options, basic_auth=(jira_user, jira_key))
+				jira = JIRA(options=jira_options, basic_auth=(jira_user, jira_key))
 
-		#issue=jira.issue('PRJ1C-324')
-		#issue.update({'Epic_link':'PRJ1C-5'})
+				#issue=jira.issue('PRJ1C-324')
+				#issue.update({'Epic_link':'PRJ1C-5'})
 
-		if technican in sdp_jira_accounts.keys():
-			issue=create_issue(
-				jira,					
-				'DEV1CHELP', #'HELP1C',
-				sdp_order+' '+subject,
-				description,
-				sdp_jira_accounts[technican],
-				sdp_jira_issue_types['Информация'],
-				'1С-Сервис'
-				)
-			# custom felds list:
-			# https://icebergproject.atlassian.net/rest/api/3/issue/HELP1C-424
-			#jira_issue='\nJira: https://icebergproject.atlassian.net/browse/'+str(issue)
-			jira_issue='\nJira: http://jira.iceberg.ru/browse/'+str(issue)
-			issue.update({'customfield_10043':sdp_order}) # sdp_id
-			issue.update({'customfield_10044':requester}) # requester_name
-			issue.update({'customfield_10045':caller_phone_number}) # requester_phone
-			#comment = jira.add_comment(str(issue), 'Created automatically from Service Desk Plus')
-			print('jira issue create succesfull')
-		else:
-			print(technican,'is not in sdp_jira_accounts')
-			message = str(datetime.datetime.now().strftime("%Y-%m-%d-%H:%M:%S"))+\
-				'\n'+str(technican)+' is not in sdp_jira_accounts'
-			send_to_telegram(message)
+				if technican in sdp_jira_accounts.keys():
+					issue=create_issue(
+						jira,					
+						'DEV1CHELP', #'HELP1C',
+						sdp_order+' '+subject,
+						description,
+						sdp_jira_accounts[technican],
+						sdp_jira_issue_types['Информация'],
+						'1С-Сервис'
+						)
+					# custom felds list:
+					# https://icebergproject.atlassian.net/rest/api/3/issue/HELP1C-424
+					#jira_issue='\nJira: https://icebergproject.atlassian.net/browse/'+str(issue)
+					jira_issue='\nJira: http://jira.iceberg.ru/browse/'+str(issue)
+					issue.update({'customfield_10043':sdp_order}) # sdp_id
+					issue.update({'customfield_10044':requester}) # requester_name
+					issue.update({'customfield_10045':caller_phone_number}) # requester_phone
+					#comment = jira.add_comment(str(issue), 'Created automatically from Service Desk Plus')
+					print('jira issue create succesfull')					
+				else:
+					print(technican,'is not in sdp_jira_accounts')
+					message = str(datetime.datetime.now().strftime("%Y-%m-%d-%H:%M:%S"))+\
+						'\n'+str(technican)+' is not in sdp_jira_accounts'
+					send_to_telegram(message)
+				jira_created = True
+
+			except Exception as e:
+				print('jira issue create error:',e)
+				message = str(datetime.datetime.now().strftime("%Y-%m-%d-%H:%M:%S"))+\
+					'\n'+str(technican)+' jira issue create error: '+str(e)+'\n waiting 10m for next try..'
+				send_to_telegram(message)
+				time.sleep(600)
+			
 
 	# send to telegram
 	message = str(datetime.datetime.now().strftime("%Y-%m-%d-%H:%M:%S"))+\
