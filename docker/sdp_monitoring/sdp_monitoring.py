@@ -9,20 +9,13 @@ import urllib
 import urllib.parse
 import urllib3
 import os
+import logging
 
-#with open('/home/alex/projects/servicedeskplus/sdp_monitoring/token.key','r') as fh:
-#	token=fh.read().replace('\n', '')
-#	fh.close()
 
-#with open('/home/alex/projects/servicedeskplus/sdp_monitoring/telegram.group','r') as fh:
-#	telegram_group=fh.read().replace('\n', '')
-#	fh.close()
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
+logger.setLevel(logging.INFO)
 
-get_requests_file='GET_REQUESTS.xml'
-alert_minutes_limit	= 30
-check_minutes_interval = 10
-check_hour_start	= 8
-check_hour_end		= 18
 
 def send_to_telegram(message):
 	token = os.environ.get('TELEGRAM_BOT_TOKEN', '')
@@ -32,6 +25,7 @@ def send_to_telegram(message):
 	get_request += '/sendMessage?chat_id=' + chat_id
 	get_request += '&text=' + urllib.parse.quote_plus(message)
 	session.get(get_request)
+
 
 def today_is_holiday():
 	week_day	= datetime.datetime.today().weekday()
@@ -62,10 +56,14 @@ def today_is_holiday():
 	
 	return False	
 
+
 def dt(u):
 	return datetime.datetime.utcfromtimestamp(int(u)+60*60*3)
 
-def check():
+
+def check(alert_minutes_limit):
+	get_requests_file='GET_REQUESTS.xml'
+	
 	with open(get_requests_file,'rb') as fh:
 		token = os.environ.get('SDP_KEY', '')
 		url='http://10.2.4.46/sdpapi/request/?OPERATION_NAME=GET_REQUESTS&TECHNICIAN_KEY='+token+'&INPUT_DATA='+fh.read().decode("utf-8")
@@ -85,7 +83,8 @@ def check():
 			response = http.request('GET', url)
 			telegram_users = eval(response.data.decode('utf-8'))
 		except Exception as e:
-			print('Telegram users request error: '+str(e))
+			# print('Telegram users request error: '+str(e))
+			logger.error('Telegram users request error: '+str(e))
 			telegram_users = {
 				'Песоцкий Константин Вячеславович': '@Komandorr', 
 				#'Сотников Артём Игоревич': '@vindento', 
@@ -142,12 +141,44 @@ def check():
 		else:
 			return('sent '+str(event_count)+' events')
 
-send_to_telegram(str(datetime.datetime.now())+' sdp monitoring started')
 
-while True:
-	
-	now = datetime.datetime.now()
-	if now.hour>=check_hour_start and now.hour<check_hour_end and today_is_holiday()==False:
-		print(str(now.year)+'.'+str(now.month)+'.'+str(now.day)+' '+str(now.hour)+':'+str(now.minute)+':'+str(now.second)+' '+str(check()))
-	time.sleep(check_minutes_interval*60)
-	
+def main():
+	alert_minutes_limit	= 30
+	check_minutes_interval = 10
+	check_hour_start	= 8
+	check_hour_end		= 18
+
+	send_to_telegram(str(datetime.datetime.now())+' sdp monitoring started')
+
+	while True:
+		
+		now = datetime.datetime.now()
+		if now.hour>=check_hour_start and now.hour<check_hour_end and today_is_holiday()==False:
+			try:
+				# print(str(now.year)+'.'+str(now.month)+'.'+str(now.day)+' '+str(now.hour)+':'+str(now.minute)+':'+str(now.second)+' '+str(check()))
+				info_string = str(now.year)+'.'
+				info_string += str(now.month)+'.'
+				info_string += str(now.day)+' '
+				info_string += str(now.hour)+':'
+				info_string += str(now.minute)+':'
+				info_string += str(now.second)+' '
+				info_string += str(check(alert_minutes_limit))
+				logger.info(info_string)
+			except Exception as e:
+				info_string = str(now.year)+'.'
+				info_string += str(now.month)+'.'
+				info_string += str(now.day)+' '
+				info_string += str(now.hour)+':'
+				info_string += str(now.minute)+':'
+				info_string += str(now.second)+' '
+				info_string += str(e)
+				logger.error(info_string)
+				send_to_telegram(info_string)
+				# sleep one hour
+				time.sleep(60*60)
+
+		time.sleep(check_minutes_interval*60)
+
+
+if __name__ == '__main__':
+	main()
