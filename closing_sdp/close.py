@@ -211,7 +211,8 @@ def sdp_bid_close(request):
 		response	= 'error'
 		# send_to_telegram(str(datetime.datetime.now())+' sdp close by jira error: '+str(e))
 
-	return web.Response(text=response,content_type="text/html")
+	# Return the response
+	return response
 
 if __name__ == '__main__':
   
