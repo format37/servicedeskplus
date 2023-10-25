@@ -248,6 +248,7 @@ if __name__ == '__main__':
 			 'subject': 'test',
 			 'issue_key': 'test',
 			 'component': '1C-Сервис',
+			 'user': 'Юрасов Алексей Александрович',
 			 }
 
     response = sdp_bid_close(query)
