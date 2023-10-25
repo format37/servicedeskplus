@@ -117,17 +117,17 @@ def sdp_bid_close(request):
 	# try:
 	sdp_jira_accounts = get_jira_accounts_from_url("https://gitlab.icecorp.ru/service/servicedeskplus/-/raw/master/settings/jira_members.json")
 	"""except Exception as e:
-		print(e);
-		sdp_jira_accounts = get_jira_accounts_from_file()"""
+	print(e);
+	sdp_jira_accounts = get_jira_accounts_from_file()"""
 
-		"""users={
-			'a.yurasov@iceberg.ru' : 'Юрасов Алексей Александрович',
-			'v.byvaltsev@iceberg.ru' : 'Бывальцев Виктор Валентинович',
-			'i.titov@iceberg.ru' : 'Титов Иван Сергеевич',
-			'a.sevrjukova@iceberg.ru' : 'Севрюкова Анна Юрьевна',
-			'a.sevrjukova@iceberg.ru' : 'Севрюкова Анна Юрьевна',
-		}
-		"""
+	"""users={
+		'a.yurasov@iceberg.ru' : 'Юрасов Алексей Александрович',
+		'v.byvaltsev@iceberg.ru' : 'Бывальцев Виктор Валентинович',
+		'i.titov@iceberg.ru' : 'Титов Иван Сергеевич',
+		'a.sevrjukova@iceberg.ru' : 'Севрюкова Анна Юрьевна',
+		'a.sevrjukova@iceberg.ru' : 'Севрюкова Анна Юрьевна',
+	}
+	"""
 	
 	technician = 'Юрасов Алексей Александрович'
 	# if user in users.keys():
