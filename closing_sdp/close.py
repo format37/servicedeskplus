@@ -14,13 +14,9 @@ def get_jira_accounts_from_file(file_path='jira_members.json'):
 		return json.load(f)
 
 def get_jira_accounts_from_url(url):
-	# try:
 	response = requests.get(url)
 	response.raise_for_status()  # Raise an exception for HTTP errors
 	return response.json()
-	# except requests.RequestException as e:
-	print(f"An error occurred while fetching data: {e}")
-	return {}
 
 def find_key_by_value(dictionary, value_to_find, default = None):
 	"""
@@ -38,7 +34,6 @@ def find_key_by_value(dictionary, value_to_find, default = None):
 			return key
 	
 	print('technician not found 1:', value_to_find)
-	# send_to_telegram(str(datetime.datetime.now())+' technician not found 1:'+str(user) )
 
 	return default
 
@@ -47,15 +42,11 @@ def sdp_bid_close(request):
 	add_worklog_file='ADD_WORKLOG.xml'
 	edit_request_file='EDIT_REQUEST.xml'
 
-	# try:
 	print('\n======= sdp close by jira:',datetime.datetime.now())
-	#print(request.rel_url.query)
 	WORKORDERID = request['sdp_id']
 	jira_type		= request['jira_type']
 	SUBJECT		= request['subject']
-	#description	= 'test'
 	description	= request['description']
-	#RESOLUTION	= "Закрыто\n"+request.rel_url.query['resolution']
 	RESOLUTION	= "Закрыто\n"
 	ITEM	= request['component']
 	user = request['user']
@@ -91,17 +82,7 @@ def sdp_bid_close(request):
 		'Реклама':'1С Cистемы',
 	}
 
-	"""if ITEM in sub_cats.keys():
-		SUBCAT	= sub_cats[ITEM]		"""
-
 	print('jira_type',jira_type)
-
-	"""jira_sdp_types = {
-		'Task':'Изменение',
-		'Consultation':'Информация',
-		'Bug':'Инцидент',
-		'Service':'Обслуживание',
-		}"""
 
 	jira_sdp_types={
 		'Task':'Задача',
@@ -115,13 +96,11 @@ def sdp_bid_close(request):
 	else:
 		rtype = jira_sdp_types['Consultation']
 
-	# print('Subcategory',SUBCAT)
 	print('sdp_id',WORKORDERID)
 	print('jira issue',jira_issue)
 	print('subject',SUBJECT)
 	print('description',description)
 
-	# try:
 	sdp_jira_accounts = get_jira_accounts_from_url("https://gitlab.icecorp.ru/service/servicedeskplus/-/raw/master/settings/jira_members.json")
 	token = '76ED27EB-D26D-412A-8151-5A65A16198E7'
 	# Adding worklog
@@ -144,6 +123,8 @@ def sdp_bid_close(request):
 	headers = {'Content-Type': 'application/xml'}
 	response += requests.post(url, headers=headers).text		
 
+	# Closing ticket
+
 	with open(edit_request_file,'rb') as fh:
 		INPUT_DATA	= fh.read().decode("utf-8")
 		INPUT_DATA = INPUT_DATA.replace("%rtype%", rtype)
@@ -161,18 +142,9 @@ def sdp_bid_close(request):
 
 if __name__ == '__main__':
 
-	bids = ['76311','76308','76306','76302','76300','76296','76291','76289','76287','76282','76280','76279','76269','76263','76262','76261','76260','76255','76254','76252','76251','76244','76242','76241','76208','76205','76200','76199','76194','76185','76146','76135','76131','76130','76124','76064','76037']
+	bids = ['76308','76306','76302','76300','76296','76291','76289','76287','76282','76280','76279','76269','76263','76262','76261','76260','76255','76254','76252','76251','76244','76242','76241','76208','76205','76200','76199','76194','76185','76146','76135','76131','76130','76124','76064','76037']
 
 	for bid in bids:
-		# http://10.2.4.87:8080/bidclosebyjira?
-		# resolution=.
-		# &issue_key={{issue.key}}
-		# &component={{issue.components.name.urlEncode}}
-		# &jira_type={{issue.issuetype.name}}
-		# &user={{issue.fields.Assignee}}
-		# &sdp_id={{issue.fields.sdp_id}}
-		# &subject={{issue.summary.urlEncode}}
-		# &description={{issue.fields.description.urlEncode}}
 		query = {'sdp_id': bid, 
 				'workMinutes': '5',
 				'description': 'consultation',
@@ -185,6 +157,5 @@ if __name__ == '__main__':
 
 		response = sdp_bid_close(query)
 		print(response)
-		break
 
 	print('done')
