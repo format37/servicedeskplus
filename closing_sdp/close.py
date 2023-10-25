@@ -95,10 +95,8 @@ def sdp_bid_close(request):
 		'Реклама':'1С Cистемы',
 	}
 
-	if ITEM in sub_cats.keys():
-		SUBCAT	= sub_cats[ITEM]
-	else:
-		
+	"""if ITEM in sub_cats.keys():
+		SUBCAT	= sub_cats[ITEM]		"""
 
 	print('jira_type',jira_type)
 
@@ -121,7 +119,7 @@ def sdp_bid_close(request):
 	else:
 		rtype = jira_sdp_types['Consultation']
 
-	print('Subcategory',SUBCAT)
+	# print('Subcategory',SUBCAT)
 	print('sdp_id',WORKORDERID)
 	print('jira issue',jira_issue)
 	print('subject',SUBJECT)
@@ -209,10 +207,10 @@ def sdp_bid_close(request):
 	return response
 
 if __name__ == '__main__':
-  
-  bids = ['76311','76308','76306','76302','76300','76296','76291','76289','76287','76282','76280','76279','76269','76263','76262','76261','76260','76255','76254','76252','76251','76244','76242','76241','76208','76205','76200','76199','76194','76185','76146','76135','76131','76130','76124','76064','76037']
 
-  for bid in bids:
+bids = ['76311','76308','76306','76302','76300','76296','76291','76289','76287','76282','76280','76279','76269','76263','76262','76261','76260','76255','76254','76252','76251','76244','76242','76241','76208','76205','76200','76199','76194','76185','76146','76135','76131','76130','76124','76064','76037']
+
+for bid in bids:
 	# http://10.2.4.87:8080/bidclosebyjira?
 	# resolution=.
 	# &issue_key={{issue.key}}
@@ -222,18 +220,18 @@ if __name__ == '__main__':
 	# &sdp_id={{issue.fields.sdp_id}}
 	# &subject={{issue.summary.urlEncode}}
 	# &description={{issue.fields.description.urlEncode}}
-    query = {'sdp_id': bid, 
-             'workMinutes': '5',
-             'description': 'consultation',
-			 'jira_type': 'Consultation',
-			 'subject': 'test',
-			 'issue_key': 'test',
-			 'component': '1C-Сервис',
-			 'user': 'Юрасов Алексей Александрович',
-			 }
+	query = {'sdp_id': bid, 
+			'workMinutes': '5',
+			'description': 'consultation',
+			'jira_type': 'Consultation',
+			'subject': 'test',
+			'issue_key': 'test',
+			'component': '1C-Сервис',
+			'user': 'Юрасов Алексей Александрович',
+			}
 
-    response = sdp_bid_close(query)
-    print(response)
-    break
+	response = sdp_bid_close(query)
+	print(response)
+	break
 
 print('done')
