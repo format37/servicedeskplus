@@ -47,34 +47,34 @@ async def bid_edit(request):
 	content='''<html><body>
 		<form method="get" action="http://10.2.4.87:8080/bidclose">
 		<table>
-		  <tr>
+		<tr>
 			<td>ID Заявки:</td>
 			<td><input name="WORKORDERID"> *</td>
-		  </tr>
-		  <tr>
+		</tr>
+		<tr>
 			<td>Тема:</td>
 			<td><input name="SUBJECT" value="'''+SUBJECT+'''"> *</td>			
-		  </tr>		  
-		  <tr>
+		</tr>		  
+		<tr>
 			<td>Исполнитель:</td>
 			<td><input name="TECHNICIAN" value="'''+technician+'''"> *</td>
-		  </tr>		  
-		  <tr>
+		</tr>		  
+		<tr>
 			<td>Заключение:</td>
 			<td><input name="RESOLUTION" value="'''+RESOLUTION+'''"> *</td>
-		  </tr>
-		  <tr>
+		</tr>
+		<tr>
 			<td>Минут:</td>
 			<td><input name="WORKMINUTES" value="'''+workMinutes+'''"></td>
-		  </tr>
-		  <tr>
+		</tr>
+		<tr>
 			<td>Часов:</td>
 			<td><input name="WORKHOURS" value="'''+workHours+'''"></td>
-		  </tr>
-		  <tr>
+		</tr>
+		<tr>
 			<td>Ключ:</td>
 			<td><input name="TOKEN" value="'''+token+'''"></td>
-		  </tr>
+		</tr>
 		</table>
 		<br>		
 		<input type="submit" value="Закрыть">
@@ -144,30 +144,30 @@ async def bid_close(request):
 	<input type="hidden" id="workHours" name="workHours" value="'''+workHours+'''">
 	<input type="hidden" id="token" name="token" value="'''+token+'''">
 		<table>
-		  <tr>
+		<tr>
 			<td>ID Заявки:</td>
 			<td>'''+WORKORDERID+'''</td>			
-		  </tr>
-		  <tr>
+		</tr>
+		<tr>
 			<td>Тема:</td>
 			<td>'''+SUBJECT+'''</td>			
-		  </tr>
-		  <tr>
+		</tr>
+		<tr>
 			<td>Исполнитель:</td>
 			<td>'''+technician+'''</td>
-		  </tr>		  
-		  <tr>
+		</tr>		  
+		<tr>
 			<td>Заключение:</td>
 			<td>'''+RESOLUTION+'''</td>
-		  </tr>
-		  <tr>
+		</tr>
+		<tr>
 			<td>Минут:</td>
 			<td>'''+workMinutes+'''</td>
-		  </tr>
-		  <tr>
+		</tr>
+		<tr>
 			<td>Часов:</td>
 			<td>'''+workHours+'''</td>
-		  </tr>
+		</tr>
 		</table>
 		<br>'''	
 	
@@ -214,37 +214,37 @@ async def bid_close(request):
 
 
 def get_jira_accounts_from_file(file_path='jira_members.json'):
-    with open(file_path, 'r') as f:
-        return json.load(f)
+	with open(file_path, 'r') as f:
+		return json.load(f)
 
 def get_jira_accounts_from_url(url):
-    try:
-        response = requests.get(url)
-        response.raise_for_status()  # Raise an exception for HTTP errors
-        return response.json()
-    except requests.RequestException as e:
-        print(f"An error occurred while fetching data: {e}")
-        return {}
+	try:
+		response = requests.get(url)
+		response.raise_for_status()  # Raise an exception for HTTP errors
+		return response.json()
+	except requests.RequestException as e:
+		print(f"An error occurred while fetching data: {e}")
+		return {}
 
 def find_key_by_value(dictionary, value_to_find, default = None):
-    """
-    Find the key corresponding to a given value in a dictionary.
+	"""
+	Find the key corresponding to a given value in a dictionary.
 
-    Parameters:
-        dictionary (dict): The dictionary to search in.
-        value_to_find: The value for which to find the corresponding key.
+	Parameters:
+		dictionary (dict): The dictionary to search in.
+		value_to_find: The value for which to find the corresponding key.
 
-    Returns:
-        The key corresponding to the value if found, otherwise None.
-    """
-    for key, value in dictionary.items():
-        if value == value_to_find:
-            return key
+	Returns:
+		The key corresponding to the value if found, otherwise None.
+	"""
+	for key, value in dictionary.items():
+		if value == value_to_find:
+			return key
 	
 	print('technician not found 1:',user)
 	send_to_telegram(str(datetime.datetime.now())+' technician not found 1:'+str(user) )
 
-    return default
+	return default
 
 async def sdp_bid_close(request):
 	try:
@@ -479,4 +479,4 @@ def main():
 
 
 if __name__ == '__main__':
-    main()
+	main()
