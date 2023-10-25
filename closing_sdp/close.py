@@ -1,4 +1,17 @@
 from jira import JIRA
+#!/usr/bin/env python
+import urllib
+import urllib.parse
+#from urllib.parse import urlparse, parse_qsl
+#mport multidict as MultiDict
+import requests
+import datetime
+from time import strftime
+from time import gmtime
+#from time import sleep
+from jira import JIRA
+import os
+import socket
 
 def get_jira_accounts_from_file(file_path='jira_members.json'):
 	with open(file_path, 'r') as f:
