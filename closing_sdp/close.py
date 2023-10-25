@@ -243,7 +243,7 @@ if __name__ == '__main__':
 	# &description={{issue.fields.description.urlEncode}}
     query = {'sdp_id': bid, 
              'workMinutes': '5',
-             'description': 'consultation'
+             'description': 'consultation',
 			 'jira_type': 'Consultation',
 			 'subject': 'test',
 			 'issue_key': 'test'
