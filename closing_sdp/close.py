@@ -246,7 +246,8 @@ if __name__ == '__main__':
              'description': 'consultation',
 			 'jira_type': 'Consultation',
 			 'subject': 'test',
-			 'issue_key': 'test'
+			 'issue_key': 'test',
+			 'component': '1C-Сервис',
 			 }
 
     response = sdp_bid_close(query)
