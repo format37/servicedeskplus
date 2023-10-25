@@ -1,15 +1,11 @@
-from jira import JIRA
 #!/usr/bin/env python
+from jira import JIRA
 import urllib
 import urllib.parse
-#from urllib.parse import urlparse, parse_qsl
-#mport multidict as MultiDict
 import requests
 import datetime
 from time import strftime
 from time import gmtime
-#from time import sleep
-from jira import JIRA
 import os
 import socket
 
@@ -124,53 +120,9 @@ def sdp_bid_close(request):
 	print('jira issue',jira_issue)
 	print('subject',SUBJECT)
 	print('description',description)
-	#print('resolution',RESOLUTION)
-
-	
 
 	# try:
 	sdp_jira_accounts = get_jira_accounts_from_url("https://gitlab.icecorp.ru/service/servicedeskplus/-/raw/master/settings/jira_members.json")
-	"""except Exception as e:
-	print(e);
-	sdp_jira_accounts = get_jira_accounts_from_file()"""
-
-	"""users={
-		'a.yurasov@iceberg.ru' : 'Юрасов Алексей Александрович',
-		'v.byvaltsev@iceberg.ru' : 'Бывальцев Виктор Валентинович',
-		'i.titov@iceberg.ru' : 'Титов Иван Сергеевич',
-		'a.sevrjukova@iceberg.ru' : 'Севрюкова Анна Юрьевна',
-		'a.sevrjukova@iceberg.ru' : 'Севрюкова Анна Юрьевна',
-	}
-	"""
-	
-	
-	# if user in users.keys():
-		# technician = users[user]
-	"""if user in sdp_jira_accounts.values():
-		technician = find_key_by_value(
-			sdp_jira_accounts, 
-			user,
-			'Юрасов Алексей Александрович'
-			)
-		print('technician',technician)
-	else:
-		print('technician not found 1:',user)
-		# send_to_telegram(str(datetime.datetime.now())+' technician not found 1:'+str(user) )
-
-	sdp_tokens={
-		'Юрасов Алексей Александрович' : '76ED27EB-D26D-412A-8151-5A65A16198E7',
-		'Бывальцев Виктор Валентинович' : '157D4CAC-6947-4F44-BCE7-BAF2E3ABF672',
-		'Титов Иван Сергеевич' : '53A9ED31-00AB-4FCB-8E97-FF523E781281',
-		'Севрюкова Анна Юрьевна' : 'A58A60DB-6F90-415E-8620-CD2674918B22',
-		'Гречкин Алексей Васильевич' : 'AAAC9CA6-C8D5-425C-96AA-578AF0518BF0',
-	}
-	token = sdp_tokens['Юрасов Алексей Александрович']
-	if technician in sdp_tokens.keys():
-		token = sdp_tokens[technician]
-		print('sdp token',token)
-	else:
-		print('sdp token for',technician,'not found. using default')"""
-		# send_to_telegram(str(datetime.datetime.now())+' sdp token for '+str(technician)+' not found. using default' )
 	token = '76ED27EB-D26D-412A-8151-5A65A16198E7'
 	# Adding worklog
 	spent_hours = 0
@@ -188,7 +140,8 @@ def sdp_bid_close(request):
 	INPUT_DATA = INPUT_DATA.replace("%workMinutes%", str(spent_minutes))
 	INPUT_DATA = INPUT_DATA.replace("%workHours%", str(spent_hours))
 	url='http://10.2.4.46/sdpapi/request/'+WORKORDERID+'/worklogs?OPERATION_NAME=ADD_WORKLOG&TECHNICIAN_KEY='+token+'&INPUT_DATA='+INPUT_DATA
-	headers = {'Content-Type': 'application/xml'}	
+	print('worklog url',url)
+	headers = {'Content-Type': 'application/xml'}
 	response += requests.post(url, headers=headers).text		
 
 	with open(edit_request_file,'rb') as fh:
