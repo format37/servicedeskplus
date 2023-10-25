@@ -41,7 +41,7 @@ def find_key_by_value(dictionary, value_to_find, default = None):
 		if value == value_to_find:
 			return key
 	
-	print('technician not found 1:',user)
+	print('technician not found 1:', value_to_find)
 	# send_to_telegram(str(datetime.datetime.now())+' technician not found 1:'+str(user) )
 
 	return default
