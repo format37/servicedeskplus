@@ -232,16 +232,6 @@ if __name__ == '__main__':
   bids = ['76311','76308','76306','76302','76300','76296','76291','76289','76287','76282','76280','76279','76269','76263','76262','76261','76260','76255','76254','76252','76251','76244','76242','76241','76208','76205','76200','76199','76194','76185','76146','76135','76131','76130','76124','76064','76037']
 
   for bid in bids:
-	"""WORKORDERID = request.rel_url.query['sdp_id']
-	jira_type		= request.rel_url.query['jira_type']
-	SUBJECT		= request.rel_url.query['subject']
-	#description	= 'test'
-	description	= request.rel_url.query['description']
-	#RESOLUTION	= "Закрыто\n"+request.rel_url.query['resolution']
-	RESOLUTION	= "Закрыто\n"
-	ITEM	= request.rel_url.query['component']
-	user = request.rel_url.query['user']
-	jira_issue = request.rel_url.query['issue_key']	"""
 	# http://10.2.4.87:8080/bidclosebyjira?
 	# resolution=.
 	# &issue_key={{issue.key}}
