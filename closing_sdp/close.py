@@ -50,16 +50,16 @@ def sdp_bid_close(request):
 	# try:
 	print('\n======= sdp close by jira:',datetime.datetime.now())
 	#print(request.rel_url.query)
-	WORKORDERID = request.rel_url.query['sdp_id']
-	jira_type		= request.rel_url.query['jira_type']
-	SUBJECT		= request.rel_url.query['subject']
+	WORKORDERID = request['sdp_id']
+	jira_type		= request['jira_type']
+	SUBJECT		= request['subject']
 	#description	= 'test'
-	description	= request.rel_url.query['description']
+	description	= request['description']
 	#RESOLUTION	= "Закрыто\n"+request.rel_url.query['resolution']
 	RESOLUTION	= "Закрыто\n"
-	ITEM	= request.rel_url.query['component']
-	user = request.rel_url.query['user']
-	jira_issue = request.rel_url.query['issue_key']	
+	ITEM	= request['component']
+	user = request['user']
+	jira_issue = request['issue_key']	
 
 	token	= os.environ.get('SDP_USER_TOKEN', '')
 	workHours	= '0'
@@ -232,9 +232,32 @@ if __name__ == '__main__':
   bids = ['76311','76308','76306','76302','76300','76296','76291','76289','76287','76282','76280','76279','76269','76263','76262','76261','76260','76255','76254','76252','76251','76244','76242','76241','76208','76205','76200','76199','76194','76185','76146','76135','76131','76130','76124','76064','76037']
 
   for bid in bids:
+	"""WORKORDERID = request.rel_url.query['sdp_id']
+	jira_type		= request.rel_url.query['jira_type']
+	SUBJECT		= request.rel_url.query['subject']
+	#description	= 'test'
+	description	= request.rel_url.query['description']
+	#RESOLUTION	= "Закрыто\n"+request.rel_url.query['resolution']
+	RESOLUTION	= "Закрыто\n"
+	ITEM	= request.rel_url.query['component']
+	user = request.rel_url.query['user']
+	jira_issue = request.rel_url.query['issue_key']	"""
+	# http://10.2.4.87:8080/bidclosebyjira?
+	# resolution=.
+	# &issue_key={{issue.key}}
+	# &component={{issue.components.name.urlEncode}}
+	# &jira_type={{issue.issuetype.name}}
+	# &user={{issue.fields.Assignee}}
+	# &sdp_id={{issue.fields.sdp_id}}
+	# &subject={{issue.summary.urlEncode}}
+	# &description={{issue.fields.description.urlEncode}}
     query = {'sdp_id': bid, 
              'workMinutes': '5',
-             'description': 'consultation'}
+             'description': 'consultation'
+			 'jira_type': 'Consultation',
+			 'subject': 'test',
+			 'issue_key': 'test'
+			 }
 
     response = sdp_bid_close(query)
     print(response)
