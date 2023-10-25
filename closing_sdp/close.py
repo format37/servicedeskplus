@@ -47,6 +47,10 @@ def find_key_by_value(dictionary, value_to_find, default = None):
 	return default
 
 def sdp_bid_close(request):
+
+	add_worklog_file='ADD_WORKLOG.xml'
+	edit_request_file='EDIT_REQUEST.xml'
+
 	# try:
 	print('\n======= sdp close by jira:',datetime.datetime.now())
 	#print(request.rel_url.query)
@@ -64,8 +68,7 @@ def sdp_bid_close(request):
 	token	= os.environ.get('SDP_USER_TOKEN', '')
 	workHours	= '0'
 	workMinutes = '1'	
-	add_worklog_file='ADD_WORKLOG.xml'
-	edit_request_file='EDIT_REQUEST.xml'
+	
 
 	print('item received:',ITEM)
 
@@ -95,7 +98,7 @@ def sdp_bid_close(request):
 	if ITEM in sub_cats.keys():
 		SUBCAT	= sub_cats[ITEM]
 	else:
-		SUBCAT = '1С Cистемы'
+		
 
 	print('jira_type',jira_type)
 
@@ -142,7 +145,7 @@ def sdp_bid_close(request):
 	}
 	"""
 	
-	technician = 'Юрасов Алексей Александрович'
+	
 	# if user in users.keys():
 		# technician = users[user]
 	if user in sdp_jira_accounts.values():
@@ -171,41 +174,24 @@ def sdp_bid_close(request):
 		print('sdp token for',technician,'not found. using default')
 		# send_to_telegram(str(datetime.datetime.now())+' sdp token for '+str(technician)+' not found. using default' )
 
-	response = ''
-	worklog_comments = '.'
+	# Adding worklog
+	spent_hours = 0
+	spent_minutes = 5
 
+	worklog_comments = 'Консультация'
+	technician = 'Юрасов Алексей Александрович'
+	SUBCAT = '1С Cистемы'
+	
 	with open(add_worklog_file,'rb') as fh:
 		INPUT_DATA_ORIGINAL	= fh.read().decode("utf-8")
 
-	#jira_options = {'server': 'https://icebergproject.atlassian.net'}
-	jira_options = {'server': 'http://jira.iceberg.ru'}
-	jira_key = os.environ.get('JIRA_KEY', '')	
-
-	#with open('/home/alex/projects/servicedeskplus/sdp_close/jira.key','r') as key_file:
-	#	jira_key = key_file.read()
-	jira = JIRA(options=jira_options, basic_auth=('ServiceDesk', jira_key))
-
-	worklogs = jira.worklogs(jira_issue)
-	spent_hours = 0
-	spent_minutes = 1
-	for wl in worklogs:
-		spent_hours = int(strftime("%H", gmtime(wl.timeSpentSeconds)))
-		spent_minutes = int(strftime("%M", gmtime(wl.timeSpentSeconds)))
-		#print(wl.timeSpent, wl.timeSpentSeconds, wl.comment)
-
-		# try:
-		worklog_comments+=('' if worklog_comments=='' else '\n')+wl.comment
-		"""except:
-			print('no comments')"""
-		worklog_comments = 'Закрыто' if worklog_comments.replace('_n','')=='' else worklog_comments
-		
-		INPUT_DATA = INPUT_DATA_ORIGINAL
-		INPUT_DATA = INPUT_DATA.replace("%technician%", technician)
-		INPUT_DATA = INPUT_DATA.replace("%workMinutes%", str(spent_minutes))
-		INPUT_DATA = INPUT_DATA.replace("%workHours%", str(spent_hours))
-		url='http://10.2.4.46/sdpapi/request/'+WORKORDERID+'/worklogs?OPERATION_NAME=ADD_WORKLOG&TECHNICIAN_KEY='+token+'&INPUT_DATA='+INPUT_DATA
-		headers = {'Content-Type': 'application/xml'}	
-		response += requests.post(url, headers=headers).text		
+	INPUT_DATA = INPUT_DATA_ORIGINAL
+	INPUT_DATA = INPUT_DATA.replace("%technician%", technician)
+	INPUT_DATA = INPUT_DATA.replace("%workMinutes%", str(spent_minutes))
+	INPUT_DATA = INPUT_DATA.replace("%workHours%", str(spent_hours))
+	url='http://10.2.4.46/sdpapi/request/'+WORKORDERID+'/worklogs?OPERATION_NAME=ADD_WORKLOG&TECHNICIAN_KEY='+token+'&INPUT_DATA='+INPUT_DATA
+	headers = {'Content-Type': 'application/xml'}	
+	response += requests.post(url, headers=headers).text		
 
 	with open(edit_request_file,'rb') as fh:
 		INPUT_DATA	= fh.read().decode("utf-8")
@@ -220,11 +206,6 @@ def sdp_bid_close(request):
 		headers = {'Content-Type': 'application/xml'}	
 		response += requests.post(url, headers=headers).text
 
-	# except Exception as e:
-	# 	response	= 'error'
-		# send_to_telegram(str(datetime.datetime.now())+' sdp close by jira error: '+str(e))
-
-	# Return the response
 	return response
 
 if __name__ == '__main__':
