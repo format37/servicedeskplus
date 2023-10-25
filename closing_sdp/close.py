@@ -171,7 +171,7 @@ def sdp_bid_close(request):
 	else:
 		print('sdp token for',technician,'not found. using default')"""
 		# send_to_telegram(str(datetime.datetime.now())+' sdp token for '+str(technician)+' not found. using default' )
-
+	token = '76ED27EB-D26D-412A-8151-5A65A16198E7'
 	# Adding worklog
 	spent_hours = 0
 	spent_minutes = 5
