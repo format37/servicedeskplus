@@ -36,6 +36,19 @@ def issue_assignee(jira,issue,accountId):
 	payload = {'accountId': accountId}
 	return jira._session.put(url, data=json.dumps(payload))
 
+def get_jira_accounts_from_file(file_path='jira_members.json'):
+	with open(file_path, 'r') as f:
+		return json.load(f)
+
+def get_jira_accounts_from_url(url):
+	try:
+		response = requests.get(url)
+		response.raise_for_status()  # Raise an exception for HTTP errors
+		return response.json()
+	except requests.RequestException as e:
+		print(f"An error occurred while fetching data: {e}")
+		return {}
+
 def create_issue(jira, project,summary,description,accountId,issuetype,item):
 	if '-Сервис' in item:
 		item='1С-Сервис'
@@ -220,14 +233,19 @@ def sdp_bid_create(created_by,caller_phone_number,department,receiver_phone_numb
 					'Севрюкова Анна Юрьевна':'5f6c3d20f0d40100704c2a57',
 					'Песоцкий Константин Вячеславович':'603652b125b84e00694657ab',
 					}"""
-				sdp_jira_accounts={	
+				"""sdp_jira_accounts={	
 					'Сотников Артём Игоревич':'a.sotnikov@iceberg.ru',
 					'Бывальцев Виктор Валентинович':'v.byvaltsev@iceberg.ru',
 					'Титов Иван Сергеевич':'i.titov@iceberg.ru',
 					'Юрасов Алексей Александрович':'yurasov@iceberg.ru',
 					'Севрюкова Анна Юрьевна':'a.sevrjukova@iceberg.ru',
 					'Песоцкий Константин Вячеславович':'k.pesotskii@iceberg.ru',
-					}
+					}"""
+				try:
+					sdp_jira_accounts = get_jira_accounts_from_url("https://gitlab.icecorp.ru/service/servicedeskplus/-/raw/master/settings/jira_members.json")
+				except Exception as e:
+					print(e)
+					sdp_jira_accounts = get_jira_accounts_from_file()
 
 				sdp_jira_issue_types={
 					'Изменение':'Задача',
