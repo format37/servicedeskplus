@@ -47,7 +47,7 @@ def find_key_by_value(dictionary, value_to_find, default = None):
 	return default
 
 def sdp_bid_close(request):
-
+	response = ''
 	add_worklog_file='ADD_WORKLOG.xml'
 	edit_request_file='EDIT_REQUEST.xml'
 
