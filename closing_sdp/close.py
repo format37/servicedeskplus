@@ -146,7 +146,7 @@ def sdp_bid_close(request):
 	
 	# if user in users.keys():
 		# technician = users[user]
-	if user in sdp_jira_accounts.values():
+	"""if user in sdp_jira_accounts.values():
 		technician = find_key_by_value(
 			sdp_jira_accounts, 
 			user,
@@ -169,7 +169,7 @@ def sdp_bid_close(request):
 		token = sdp_tokens[technician]
 		print('sdp token',token)
 	else:
-		print('sdp token for',technician,'not found. using default')
+		print('sdp token for',technician,'not found. using default')"""
 		# send_to_telegram(str(datetime.datetime.now())+' sdp token for '+str(technician)+' not found. using default' )
 
 	# Adding worklog
