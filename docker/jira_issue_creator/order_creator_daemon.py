@@ -70,6 +70,62 @@ def create_issue(jira, project,summary,description,accountId,issuetype,item):
 	}
 	return jira.create_issue(fields=issue_dict)
 
+def get_default_technitians(message = ""):
+	print(message)
+	send_to_telegram(message)
+	return {
+		'1613':'Юрасов Алексей Александрович',
+		'1606':'Бывальцев Виктор Валентинович',
+		'1601':'Кузьмин Евгений Андреевич',
+		'1602':'Дрожжин Николай Сергеевич',
+		'1501':'Васильев Дмитрий Александрович',
+		'1608':'Головин Олег Дмитриевич',
+		'1607':'Титов Иван Сергеевич',
+		'2202':'Севрюкова Анна Юрьевна'
+	}
+
+def get_default_requesters(message = ""):
+	print(message)
+	send_to_telegram(message)
+	{
+		'1539':'Смолина Наталья Викторовна',
+		'1639':'Судакова Елена Викторовна',
+		'2001':'Муненко Максим Владимирович',
+		'1531':'Бухтин Андрей Борисович',
+		'1550':'Кузьмин Олег Юрьевич',
+		'1516':'Лапшина Инесса Николаевна',
+		'1610':'Хайтович Светлана Федоровна',
+		'1542':'Руссман Татьяна Викторовна',
+		'1509':'Кондратьев Сергей Александрович',
+		'1645':'Дробышева Анна Сергеевна',
+		'1802':'Буренкова Вера Леонидовна',
+		'1545':'Гундоров Илья Александрович',
+		'2003':'Петровский Виталий Игоревич',
+		'1536':'Смирнов Геннадий Валерьевич',
+		'1532':'Пономарев Павел Петрович',
+		'1557':'Глазкова Ольга Ивановна',
+		'1409':'Шабанова Ирина Викторовна',
+		'1569':'Голосина Мария Игоревна',
+		'1568':'Глушков Дмитрий Александрович',
+		'1534':'Лагутин Юрий Семенович',
+		'1579':'Тихонов Антон Витальевич',
+		'1520':'Палагин Андрей Юрьевич',
+		'1571':'Дворова Ольга Викторовна',
+		'1528':'Захаров Василий Павлович',
+		'1612':'Сычева Ольга Ивановна',
+		'1572':'Леонова Марина Анатольевна',
+		'1548':'Симанова Екатерина Юрьевна',
+		'1523':'Апряткин Александр Васильевич',
+		'1676':'Сионская Галина Андреевна',
+		'2004':'Самохин Олег Игоревич',
+		'1584':'Авдеева Валентина Валерьевна',
+		'1617':'Акинфиева Евгения Валерьевна',
+		'1527':'Кудинов Дмитрий Александрович',
+		'1545':'Гундоров Илья Александрович',
+		'2101':'Темгаев Павел Борисович',
+		'1618':'Захарова Наталья Юрьевна',
+	}
+
 def sdp_bid_create(created_by,caller_phone_number,department,receiver_phone_number):
 	
 	try:
@@ -84,28 +140,32 @@ def sdp_bid_create(created_by,caller_phone_number,department,receiver_phone_numb
 		#api_key					= request.rel_url.query['api_key']					# API Key sdp
 		api_key = os.environ.get('API_KEY', '')
 		#sdp_key = os.environ.get('SDP_KEY', '')
+
+		# Use json.loads() to convert the JSON string to a Python dictionary
+		
 			
 		try:
 			http = urllib3.PoolManager()
 			url = 'http://10.2.4.52/service/servicedeskplus/-/raw/master/settings/technicans.txt'
 			response = http.request('GET', url)
-			technicans = eval(response.data.decode('utf-8'))
+			"""technicans = eval(response.data.decode('utf-8'))"""
+
+			# Assuming 'response' is an object with a 'data' attribute containing the JSON data
+			# Often 'response' is an object from a library like 'requests'
+
+			# If 'response.data' is in bytes, decode it to a string
+			if isinstance(response.data, bytes):
+				data_str = response.data.decode('utf-8')
+			else:
+				data_str = response.data  # If it's already a string
+			try:
+				technicians = json.loads(data_str)
+			except json.JSONDecodeError as e:
+				technicans =get_default_technitians(f'json.JSONDecodeError. technicans.txt: {e}')
+
 		except Exception as e:
-			print('technicans.txt request error: '+str(e))
-			technicans={
-				'1611':'Сотников Артём Игоревич',
-				'1613':'Юрасов Алексей Александрович',
-				'1606':'Бывальцев Виктор Валентинович',
-				'1615':'Семенов Олег Владимирович',
-				'1601':'Кузьмин Евгений Андреевич',
-				'1602':'Дрожжин Николай Сергеевич',
-				'1501':'Васильев Дмитрий Александрович',
-				'1608':'Головин Олег Дмитриевич',
-				'1519':'Бойко Илья Вадимович',
-				'1607':'Титов Иван Сергеевич',
-				'2202':'Севрюкова Анна Юрьевна',
-				'1621':'Песоцкий Константин Вячеславович',
-			}
+			technicans =get_default_technitians(f'technicans.txt request error: {e}')
+
 		receiver_four_digit_phone=receiver_phone_number[-4:]
 		if receiver_four_digit_phone in technicans.keys():
 			technican = technicans[receiver_four_digit_phone]
@@ -122,48 +182,17 @@ def sdp_bid_create(created_by,caller_phone_number,department,receiver_phone_numb
 			http = urllib3.PoolManager()
 			url = 'http://10.2.4.52/service/servicedeskplus/-/raw/master/settings/requesters.txt'
 			response = http.request('GET', url)
-			requesters = eval(response.data.decode('utf-8'))
+			# requesters = eval(response.data.decode('utf-8'))
+			if isinstance(response.data, bytes):
+				data_str = response.data.decode('utf-8')
+			else:
+				data_str = response.data  # If it's already a string
+			try:
+				technicians = json.loads(data_str)
+			except json.JSONDecodeError as e:
+				technicans =get_default_requesters(f'json.JSONDecodeError. requesters.txt: {e}')
 		except Exception as e:
-			print('requesters.txt request error: '+str(e))
-
-			requesters={
-				'1539':'Смолина Наталья Викторовна',
-				'1639':'Судакова Елена Викторовна',
-				'2001':'Муненко Максим Владимирович',
-				'1531':'Бухтин Андрей Борисович',
-				'1550':'Кузьмин Олег Юрьевич',
-				'1516':'Лапшина Инесса Николаевна',
-				'1610':'Хайтович Светлана Федоровна',
-				'1542':'Руссман Татьяна Викторовна',
-				'1509':'Кондратьев Сергей Александрович',
-				'1645':'Дробышева Анна Сергеевна',
-				'1802':'Буренкова Вера Леонидовна',
-				'1545':'Гундоров Илья Александрович',
-				'2003':'Петровский Виталий Игоревич',
-				'1536':'Смирнов Геннадий Валерьевич',
-				'1532':'Пономарев Павел Петрович',
-				'1557':'Глазкова Ольга Ивановна',
-				'1409':'Шабанова Ирина Викторовна',
-				'1569':'Голосина Мария Игоревна',
-				'1568':'Глушков Дмитрий Александрович',
-				'1534':'Лагутин Юрий Семенович',
-				'1579':'Тихонов Антон Витальевич',
-				'1520':'Палагин Андрей Юрьевич',
-				'1571':'Дворова Ольга Викторовна',
-				'1528':'Захаров Василий Павлович',
-				'1612':'Сычева Ольга Ивановна',
-				'1572':'Леонова Марина Анатольевна',
-				'1548':'Симанова Екатерина Юрьевна',
-				'1523':'Апряткин Александр Васильевич',
-				'1676':'Сионская Галина Андреевна',
-				'2004':'Самохин Олег Игоревич',
-				'1584':'Авдеева Валентина Валерьевна',
-				'1617':'Акинфиева Евгения Валерьевна',
-				'1527':'Кудинов Дмитрий Александрович',
-				'1545':'Гундоров Илья Александрович',
-				'2101':'Темгаев Павел Борисович',
-				'1618':'Захарова Наталья Юрьевна',
-			}
+			requesters=get_default_requesters(f'requesters.txt request error: {e}')
 
 		requesters.update(technicans)
 
