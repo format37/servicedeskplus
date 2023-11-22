@@ -11,15 +11,16 @@ from jira.utils import json_loads
 import urllib
 import pymssql
 import time
-#import asyncio
 import os
 import urllib3
 import pandas as pd
+import logging
 
-#while (1):
-#	pass
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
 
 def send_to_telegram(message):
+	logger.info(message)
 	token = os.environ.get('TELEGRAM_BOT_TOKEN', '')
 	chat_id = os.environ.get('TELEGRAM_CHAT', '')
 	session = requests.Session()
@@ -50,6 +51,7 @@ def get_jira_accounts_from_url(url):
 		return {}
 
 def create_issue(jira, project,summary,description,accountId,issuetype,item):
+	logger.info(f"Creating issue in project {project} with summary {summary}")
 	if '-Сервис' in item:
 		item='1С-Сервис'
 	#b = datetime.datetime.now()
@@ -71,7 +73,8 @@ def create_issue(jira, project,summary,description,accountId,issuetype,item):
 	return jira.create_issue(fields=issue_dict)
 
 def get_default_technitians(message = ""):
-	print(message)
+	# print(message)
+	logger.info(message)
 	send_to_telegram(message)
 	return {
 		'1613':'Юрасов Алексей Александрович',
@@ -85,7 +88,8 @@ def get_default_technitians(message = ""):
 	}
 
 def get_default_requesters(message = ""):
-	print(message)
+	# print(message)
+	logger.info(message)
 	send_to_telegram(message)
 	{
 		'1539':'Смолина Наталья Викторовна',
@@ -127,9 +131,9 @@ def get_default_requesters(message = ""):
 	}
 
 def sdp_bid_create(created_by,caller_phone_number,department,receiver_phone_number):
-	
+	logger.info(f"Creating SDP bid for {created_by} {caller_phone_number} {department} {receiver_phone_number}")
 	try:
-		print('\n======= sdp create by ats:',datetime.datetime.now())
+		# print('\n======= sdp create by ats:',datetime.datetime.now())
 		sdp_order=''
 		technican=''
 		category=''
@@ -313,16 +317,19 @@ def sdp_bid_create(created_by,caller_phone_number,department,receiver_phone_numb
 					issue.update({'customfield_10044':requester}) # requester_name
 					issue.update({'customfield_10045':caller_phone_number}) # requester_phone
 					#comment = jira.add_comment(str(issue), 'Created automatically from Service Desk Plus')
-					print('jira issue create succesfull')					
+					# print('jira issue create succesfull')					
+					logger.info(f"Jira issue created: {issue}")
 				else:
-					print(technican,'is not in sdp_jira_accounts')
+					# print(technican,'is not in sdp_jira_accounts')
+					# logger.info(f"{technican} is not in sdp_jira_accounts")
 					message = str(datetime.datetime.now().strftime("%Y-%m-%d-%H:%M:%S"))+\
 						'\n'+str(technican)+' is not in sdp_jira_accounts'
 					send_to_telegram(message)
 				jira_created = True
 
 			except Exception as e:
-				print('jira issue create error:',e)
+				# print('jira issue create error:',e)
+				# logger.info(f"Jira issue create error: {e}")
 				message = str(datetime.datetime.now().strftime("%Y-%m-%d-%H:%M:%S"))+\
 					'\n'+str(technican)+' jira issue create error: '+str(e)+'\n waiting 10m for next try..'
 				send_to_telegram(message)
@@ -355,7 +362,8 @@ def connect_sql():
 
 def main():
 	send_to_telegram(str(datetime.datetime.now())+' jira issue creator daemon started')
-	print(time.strftime('%Y-%m-%d %H:%M:%S'),'alive')
+	# print(time.strftime('%Y-%m-%d %H:%M:%S'),'alive')
+	logger.info(f"jira issue creator daemon started")
 	conn = connect_sql()
 	cursor = conn.cursor()
 
@@ -373,7 +381,7 @@ def main():
 		tasks = 0
 		df = pd.read_sql(query, con = conn)
 		for idx, row in df.iterrows():
-			print(
+			"""print(
 				time.strftime('%Y-%m-%d %H:%M:%S'),
 				'received',
 				row.id,
@@ -381,7 +389,8 @@ def main():
 				row.caller_phone_number,
 				row.department,
 				row.receiver_phone_number
-			)
+			)"""
+			logger.info(f"received {row.id} {row.created_by} {row.caller_phone_number} {row.department} {row.receiver_phone_number}")
 			to_clean.append(row.id)
 			sdp_bid_create(
 				row.created_by,
@@ -393,7 +402,8 @@ def main():
 					
 		for id in to_clean:
 			query ="delete from ats_requests where ID_column="+str(id)+";"
-			print(query)
+			# print(query)
+			logger.info(f"deleting {id}")
 			cursor.execute(query)
 			conn.commit()
 		

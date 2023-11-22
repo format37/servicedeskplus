@@ -2,6 +2,10 @@ from aiohttp import web
 import datetime
 import pymssql
 import time
+import logging
+
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
 
 def connect_sql():
 	sql_login='ICECORP\\1c_sql'
@@ -20,7 +24,8 @@ def queue_create(created_by, caller_phone_number, department, receiver_phone_num
 	conn.commit()
 
 async def sdp_bid_create(request):
-	print('\n======= sdp create by ats:',datetime.datetime.now())
+	# print('\n======= sdp create by ats:',datetime.datetime.now())
+	logger.info('======= sdp create by ats')
 	created_by 				= request.rel_url.query['created_by']				# Петров М.В.
 	caller_phone_number		= request.rel_url.query['caller_phone_number']		# 2001 - имя хоста от Nagios	
 	department				= request.rel_url.query['department']				# MRM
