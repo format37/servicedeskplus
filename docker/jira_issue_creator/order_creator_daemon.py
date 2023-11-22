@@ -198,7 +198,7 @@ def sdp_bid_create(created_by,caller_phone_number,department,receiver_phone_numb
 		except Exception as e:
 			requesters=get_default_requesters(f'requesters.txt request error: {e}')
 
-		requesters.update(requesters)
+		# requesters.update(requesters)
 
 		if caller_phone_number in requesters.keys():
 			requester	= requesters[caller_phone_number]
