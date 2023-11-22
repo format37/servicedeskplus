@@ -163,7 +163,7 @@ def sdp_bid_create(created_by,caller_phone_number,department,receiver_phone_numb
 			else:
 				data_str = response.data  # If it's already a string
 			try:
-				technicians = json.loads(data_str)
+				technicans = json.loads(data_str)
 			except json.JSONDecodeError as e:
 				technicans =get_default_technitians(f'json.JSONDecodeError. technicans.txt: {e}')
 
@@ -192,13 +192,13 @@ def sdp_bid_create(created_by,caller_phone_number,department,receiver_phone_numb
 			else:
 				data_str = response.data  # If it's already a string
 			try:
-				technicians = json.loads(data_str)
+				requesters = json.loads(data_str)
 			except json.JSONDecodeError as e:
-				technicans =get_default_requesters(f'json.JSONDecodeError. requesters.txt: {e}')
+				requesters =get_default_requesters(f'json.JSONDecodeError. requesters.txt: {e}')
 		except Exception as e:
 			requesters=get_default_requesters(f'requesters.txt request error: {e}')
 
-		requesters.update(technicans)
+		requesters.update(requesters)
 
 		if caller_phone_number in requesters.keys():
 			requester	= requesters[caller_phone_number]
