@@ -16,6 +16,7 @@ from jira import JIRA
 import os
 import socket
 #import time
+import json
 
 
 async def bid_edit(request):
@@ -213,11 +214,13 @@ async def bid_close(request):
 	return web.Response(text=content,content_type="text/html")
 
 
-def get_jira_accounts_from_file(file_path='jira_members.json'):
+# def get_jira_accounts_from_file(file_path='jira_members.json'):
+def get_json_from_file(file_path):
 	with open(file_path, 'r') as f:
 		return json.load(f)
 
-def get_jira_accounts_from_url(url):
+# def get_jira_accounts_from_url(url):
+def get_json_from_url(url):
 	try:
 		response = requests.get(url)
 		response.raise_for_status()  # Raise an exception for HTTP errors
@@ -325,45 +328,59 @@ async def sdp_bid_close(request):
 		print('description',description)
 		#print('resolution',RESOLUTION)
 
-		
-
 		try:
-			sdp_jira_accounts = get_jira_accounts_from_url("https://gitlab.icecorp.ru/service/servicedeskplus/-/raw/master/settings/jira_members.json")
+			config = get_json_from_url("https://gitlab.icecorp.ru/service/servicedeskplus/-/raw/master/settings/config.json")
 		except Exception as e:
-			print(e);
-			sdp_jira_accounts = get_jira_accounts_from_file()
+			send_to_telegram(str(datetime.datetime.now())+' Unable to read config from config.json. Using default. Error: '+str(e))
+			config = get_json_from_file('config.json')			
 
-			"""users={
-				'a.yurasov@iceberg.ru' : 'Юрасов Алексей Александрович',
-				'v.byvaltsev@iceberg.ru' : 'Бывальцев Виктор Валентинович',
-				'i.titov@iceberg.ru' : 'Титов Иван Сергеевич',
-				'a.sevrjukova@iceberg.ru' : 'Севрюкова Анна Юрьевна',
-				'a.sevrjukova@iceberg.ru' : 'Севрюкова Анна Юрьевна',
-			}
-			"""
+		# try:
+		# 	sdp_jira_accounts = get_json_from_url("https://gitlab.icecorp.ru/service/servicedeskplus/-/raw/master/settings/jira_members.json")
+		# except Exception as e:
+		# 	print(e);
+		# 	sdp_jira_accounts = get_json_from_file('jira_members.json')
+		sdp_jira_accounts = config['jira_members']
+
+		"""users={
+			'a.yurasov@iceberg.ru' : 'Юрасов Алексей Александрович',
+			'v.byvaltsev@iceberg.ru' : 'Бывальцев Виктор Валентинович',
+			'i.titov@iceberg.ru' : 'Титов Иван Сергеевич',
+			'a.sevrjukova@iceberg.ru' : 'Севрюкова Анна Юрьевна',
+			'a.sevrjukova@iceberg.ru' : 'Севрюкова Анна Юрьевна',
+		}
+		"""
 		
-		technician = 'Юрасов Алексей Александрович'
+		# technician = 'Юрасов Алексей Александрович'
+		technician = 'Титов Иван Сергеевич'
 		# if user in users.keys():
 			# technician = users[user]
 		if user in sdp_jira_accounts.values():
 			technician = find_key_by_value(
 				sdp_jira_accounts, 
 				user,
-				'Юрасов Алексей Александрович'
+				'Титов Иван Сергеевич'
 				)
 			print('technician',technician)
 		else:
 			print('technician not found 1:',user)
 			send_to_telegram(str(datetime.datetime.now())+' technician not found 1:'+str(user) )
 
-		sdp_tokens={
-			'Юрасов Алексей Александрович' : '76ED27EB-D26D-412A-8151-5A65A16198E7',
-			'Бывальцев Виктор Валентинович' : '157D4CAC-6947-4F44-BCE7-BAF2E3ABF672',
-			'Титов Иван Сергеевич' : '53A9ED31-00AB-4FCB-8E97-FF523E781281',
-			'Севрюкова Анна Юрьевна' : 'A58A60DB-6F90-415E-8620-CD2674918B22',
-			'Гречкин Алексей Васильевич' : 'AAAC9CA6-C8D5-425C-96AA-578AF0518BF0',
-		}
-		token = sdp_tokens['Юрасов Алексей Александрович']
+		# sdp_tokens={
+		# 	'Юрасов Алексей Александрович' : '76ED27EB-D26D-412A-8151-5A65A16198E7',
+		# 	'Бывальцев Виктор Валентинович' : '157D4CAC-6947-4F44-BCE7-BAF2E3ABF672',
+		# 	'Титов Иван Сергеевич' : '53A9ED31-00AB-4FCB-8E97-FF523E781281',
+		# 	'Севрюкова Анна Юрьевна' : 'A58A60DB-6F90-415E-8620-CD2674918B22',
+		# 	'Гречкин Алексей Васильевич' : 'AAAC9CA6-C8D5-425C-96AA-578AF0518BF0',
+		# }
+		# try:
+		# 	sdp_tokens = get_json_from_url("https://gitlab.icecorp.ru/service/servicedeskplus/-/raw/master/settings/sdp_tokens.json")
+		# except Exception as e:
+		# 	print(e)
+		# 	sdp_tokens = get_json_from_file('sdp_tokens.json')
+		sdp_tokens = config['sdp_tokens']
+
+		# token = sdp_tokens['Юрасов Алексей Александрович']
+		token = sdp_tokens['Титов Иван Сергеевич']
 		if technician in sdp_tokens.keys():
 			token = sdp_tokens[technician]
 			print('sdp token',token)
