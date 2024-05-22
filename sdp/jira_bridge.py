@@ -11,18 +11,31 @@ def get_api_key():
     with open('api.key', 'r') as key_file:
         return key_file.read()
 
-def get_jira_accounts_from_file(file_path='jira_members.json'):
-    with open(file_path, 'r') as f:
-        return json.load(f)
+# def get_jira_accounts_from_file(file_path='jira_members.json'):
+#     with open(file_path, 'r') as f:
+#         return json.load(f)
 
-def get_jira_accounts_from_url(url):
-    try:
-        response = requests.get(url)
-        response.raise_for_status()  # Raise an exception for HTTP errors
-        return response.json()
-    except requests.RequestException as e:
-        print(f"An error occurred while fetching data: {e}")
-        return {}
+def get_json_from_file(file_path):
+	with open(file_path, 'r') as f:
+		return json.load(f)
+
+# def get_jira_accounts_from_url(url):
+#     try:
+#         response = requests.get(url)
+#         response.raise_for_status()  # Raise an exception for HTTP errors
+#         return response.json()
+#     except requests.RequestException as e:
+#         print(f"An error occurred while fetching data: {e}")
+#         return {}
+
+def get_json_from_url(url):
+	try:
+		response = requests.get(url)
+		response.raise_for_status()  # Raise an exception for HTTP errors
+		return response.json()
+	except requests.RequestException as e:
+		print(f"An error occurred while fetching data: {e}")
+		return {}
 
 def issue_assignee(jira, issue, accountId):
     url = jira._options['server'] + '/rest/api/latest/issue/' + issue + '/assignee'
@@ -60,11 +73,20 @@ jira_options = {'server': 'http://jira.icecorp.ru'}
 os.environ['no_proxy'] = '*'
 jira = JIRA(options=jira_options, basic_auth=('ServiceDesk', get_api_key()))
 
+# try:
+# 	sdp_jira_accounts = get_jira_accounts_from_url("https://gitlab.icecorp.ru/service/servicedeskplus/-/raw/master/settings/jira_members.json")
+# except Exception as e:
+# 	print(e);
+# 	sdp_jira_accounts = get_jira_accounts_from_file()
+
 try:
-	sdp_jira_accounts = get_jira_accounts_from_url("https://gitlab.icecorp.ru/service/servicedeskplus/-/raw/master/settings/jira_members.json")
+    config = get_json_from_url("https://gitlab.icecorp.ru/service/servicedeskplus/-/raw/master/settings/config.json")
 except Exception as e:
-	print(e);
-	sdp_jira_accounts = get_jira_accounts_from_file()
+    # send_to_telegram(str(datetime.datetime.now())+' Unable to read config from config.json. Using default. Error: '+str(e))
+    print(e)
+    config = get_json_from_file('config.json')
+
+sdp_jira_accounts = config['jira_members']
 
 param = sys.argv[1]
 file_name = param[param.rfind('/') + 1:]
