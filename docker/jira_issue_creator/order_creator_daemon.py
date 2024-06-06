@@ -19,6 +19,26 @@ import logging
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
+def get_json_from_file(file_path):
+	with open(file_path, 'r') as f:
+		return json.load(f)
+
+def get_json_from_url(url):
+	try:
+		response = requests.get(url)
+		response.raise_for_status()  # Raise an exception for HTTP errors
+		return response.json()
+	except requests.RequestException as e:
+		print(f"An error occurred while fetching data: {e}")
+		return {}
+
+try:
+    config = get_json_from_url("https://gitlab.icecorp.ru/service/servicedeskplus/-/raw/master/settings/config.json")
+except Exception as e:
+    # send_to_telegram(str(datetime.datetime.now())+' Unable to read config from config.json. Using default. Error: '+str(e))
+    print(e)
+    config = get_json_from_file('config.json')
+
 def send_to_telegram(message):
 	logger.info(message)
 	token = os.environ.get('TELEGRAM_BOT_TOKEN', '')
@@ -45,7 +65,7 @@ def get_jira_accounts_from_url(url):
 	try:
 		response = requests.get(url)
 		response.raise_for_status()  # Raise an exception for HTTP errors
-		return response.json()
+		return response.json()['jira_members']
 	except requests.RequestException as e:
 		print(f"An error occurred while fetching data: {e}")
 		return {}
@@ -274,11 +294,13 @@ def sdp_bid_create(created_by,caller_phone_number,department,receiver_phone_numb
 					'Севрюкова Анна Юрьевна':'a.sevrjukova@iceberg.ru',
 					'Песоцкий Константин Вячеславович':'k.pesotskii@iceberg.ru',
 					}"""
-				try:
-					sdp_jira_accounts = get_jira_accounts_from_url("https://gitlab.icecorp.ru/service/servicedeskplus/-/raw/master/settings/jira_members.json")
-				except Exception as e:
-					print(e)
-					sdp_jira_accounts = get_jira_accounts_from_file()
+				# try:
+					# sdp_jira_accounts = get_jira_accounts_from_url("https://gitlab.icecorp.ru/service/servicedeskplus/-/raw/master/settings/jira_members.json")
+					# sdp_jira_accounts = get_jira_accounts_from_url("https://gitlab.icecorp.ru/service/servicedeskplus/-/raw/master/settings/config.json")
+				sdp_jira_accounts = config['jira_members']
+				# except Exception as e:
+				# 	print(e)
+				# 	sdp_jira_accounts = get_jira_accounts_from_file()
 
 				sdp_jira_issue_types={
 					'Изменение':'Задача',
