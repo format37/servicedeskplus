@@ -17,6 +17,10 @@ import os
 import socket
 #import time
 import json
+import logging
+
+logger = logging.getLogger(__name__)
+logger.setLevel(logging.INFO)
 
 
 async def bid_edit(request):
@@ -244,14 +248,16 @@ def find_key_by_value(dictionary, value_to_find, default = None):
 		if value == value_to_find:
 			return key
 	
-	print('technician not found 1:',user)
-	send_to_telegram(str(datetime.datetime.now())+' technician not found 1:'+str(user) )
+	# print('technician not found 1:',user)
+	# send_to_telegram(str(datetime.datetime.now())+' technician not found 1:'+str(user) )
+	logger.error('technician not found 1: %s', value_to_find)
 
 	return default
 
 async def sdp_bid_close(request):
 	try:
-		print('\n======= sdp close by jira:',datetime.datetime.now())
+		# print('\n======= sdp close by jira:',datetime.datetime.now())
+		logger.info('>> sdp close by jira: %s', datetime.datetime.now())
 		#print(request.rel_url.query)
 		WORKORDERID = request.rel_url.query['sdp_id']
 		jira_type		= request.rel_url.query['jira_type']
@@ -270,7 +276,8 @@ async def sdp_bid_close(request):
 		add_worklog_file='ADD_WORKLOG.xml'
 		edit_request_file='EDIT_REQUEST.xml'
 
-		print('item received:',ITEM)
+		# print('item received:',ITEM)
+		logger.info('item received: %s', ITEM)
 
 		items =[
 			'1C-Сервис',
@@ -282,9 +289,11 @@ async def sdp_bid_close(request):
 		]
 		if (ITEM in items)==False:
 			ITEM = '1C-Сервис'
-			print('item changed')
+			# print('item changed')
+			logger.info(f'item changed')
 
-		print('item set:',ITEM)
+		# print('item set:',ITEM)
+		logger.info('item set: %s', ITEM)
 
 		sub_cats = {
 			'1C-Сервис':'1С Cистемы',
@@ -300,7 +309,8 @@ async def sdp_bid_close(request):
 		else:
 			SUBCAT = '1С Cистемы'
 
-		print('jira_type',jira_type)
+		# print('jira_type',jira_type)
+		logger.info('jira_type: %s', jira_type)
 
 		"""jira_sdp_types = {
 			'Task':'Изменение',
@@ -331,8 +341,9 @@ async def sdp_bid_close(request):
 		try:
 			config = get_json_from_url("https://gitlab.icecorp.ru/service/servicedeskplus/-/raw/master/settings/config.json")
 		except Exception as e:
-			send_to_telegram(str(datetime.datetime.now())+' Unable to read config from config.json. Using default. Error: '+str(e))
-			config = get_json_from_file('config.json')			
+			# send_to_telegram(str(datetime.datetime.now())+' Unable to read config from config.json. Using default. Error: '+str(e))
+			logger.error('Unable to read config from config.json. Using default. Error: %s', e)
+			config = get_json_from_file('config.json')
 
 		# try:
 		# 	sdp_jira_accounts = get_json_from_url("https://gitlab.icecorp.ru/service/servicedeskplus/-/raw/master/settings/jira_members.json")
@@ -360,10 +371,12 @@ async def sdp_bid_close(request):
 				user,
 				'Титов Иван Сергеевич'
 				)
-			print('technician',technician)
+			# print('technician',technician)
+			logger.info('technician: %s', technician)
 		else:
-			print('technician not found 1:',user)
-			send_to_telegram(str(datetime.datetime.now())+' technician not found 1:'+str(user) )
+			# print('technician not found 1:',user)
+			logger.error('technician not found 1: %s', user)
+			# send_to_telegram(str(datetime.datetime.now())+' technician not found 1:'+str(user) )
 
 		# sdp_tokens={
 		# 	'Юрасов Алексей Александрович' : '76ED27EB-D26D-412A-8151-5A65A16198E7',
@@ -383,10 +396,12 @@ async def sdp_bid_close(request):
 		token = sdp_tokens['Титов Иван Сергеевич']
 		if technician in sdp_tokens.keys():
 			token = sdp_tokens[technician]
-			print('sdp token',token)
+			# print('sdp token',token)
+			logger.info('sdp token: %s', token)
 		else:
-			print('sdp token for',technician,'not found. using default')
-			send_to_telegram(str(datetime.datetime.now())+' sdp token for '+str(technician)+' not found. using default' )
+			# print('sdp token for',technician,'not found. using default')
+			logger.error('sdp token for %s not found. using default', technician)
+			# send_to_telegram(str(datetime.datetime.now())+' sdp token for '+str(technician)+' not found. using default' )
 
 		response = ''
 		worklog_comments = '.'
@@ -439,7 +454,8 @@ async def sdp_bid_close(request):
 
 	except Exception as e:
 		response	= 'error'
-		send_to_telegram(str(datetime.datetime.now())+' sdp close by jira error: '+str(e))
+		# send_to_telegram(str(datetime.datetime.now())+' sdp close by jira error: '+str(e))
+		logger.error('sdp close by jira error: %s', e)
 
 	return web.Response(text=response,content_type="text/html")
 
