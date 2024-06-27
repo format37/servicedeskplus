@@ -390,7 +390,7 @@ async def sdp_bid_close(request):
 		# except Exception as e:
 		# 	print(e)
 		# 	sdp_tokens = get_json_from_file('sdp_tokens.json')
-		sdp_tokens = config['sdp_tokens']
+		sdp_tokens = config['sdp_keys']
 
 		# token = sdp_tokens['Юрасов Алексей Александрович']
 		token = sdp_tokens['Титов Иван Сергеевич']
