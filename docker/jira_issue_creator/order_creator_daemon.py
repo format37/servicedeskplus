@@ -151,6 +151,7 @@ def get_default_requesters(message = ""):
 	}
 
 def sdp_bid_create(created_by,caller_phone_number,department,receiver_phone_number):
+	technican='unknown'
 	try:
 		http = urllib3.PoolManager()
 		url = 'http://10.2.4.52/service/servicedeskplus/-/raw/master/settings/technicans.txt'
