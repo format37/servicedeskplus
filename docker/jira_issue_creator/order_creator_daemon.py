@@ -151,6 +151,60 @@ def get_default_requesters(message = ""):
 	}
 
 def sdp_bid_create(created_by,caller_phone_number,department,receiver_phone_number):
+	try:
+		http = urllib3.PoolManager()
+		url = 'http://10.2.4.52/service/servicedeskplus/-/raw/master/settings/technicans.txt'
+		response = http.request('GET', url)
+		"""technicans = eval(response.data.decode('utf-8'))"""
+
+		# Assuming 'response' is an object with a 'data' attribute containing the JSON data
+		# Often 'response' is an object from a library like 'requests'
+
+		# If 'response.data' is in bytes, decode it to a string
+		if isinstance(response.data, bytes):
+			data_str = response.data.decode('utf-8')
+		else:
+			data_str = response.data  # If it's already a string
+		try:
+			technicans = json.loads(data_str)
+		except json.JSONDecodeError as e:
+			technicans =get_default_technitians(f'json.JSONDecodeError. technicans.txt: {e}')
+
+	except Exception as e:
+		technicans =get_default_technitians(f'technicans.txt request error: {e}')
+
+	receiver_four_digit_phone=receiver_phone_number[-4:]
+	if receiver_four_digit_phone in technicans.keys():
+		technican = technicans[receiver_four_digit_phone]
+
+	subject		= created_by+' '+caller_phone_number+' '+department
+	description = subject+' Звонок принят '+receiver_phone_number+' '+technican
+	# create_request_file='/home/alex/projects/servicedeskplus/sdp_close/CREATE_REQUEST.xml'
+	create_request_file='CREATE_REQUEST.xml'
+
+	response = '0'
+	requester	= 'RoboTechnician'
+	try:
+		http = urllib3.PoolManager()
+		url = 'http://10.2.4.52/service/servicedeskplus/-/raw/master/settings/requesters.txt'
+		response = http.request('GET', url)
+		# requesters = eval(response.data.decode('utf-8'))
+		if isinstance(response.data, bytes):
+			data_str = response.data.decode('utf-8')
+		else:
+			data_str = response.data  # If it's already a string
+		try:
+			requesters = json.loads(data_str)
+		except json.JSONDecodeError as e:
+			requesters =get_default_requesters(f'json.JSONDecodeError. requesters.txt: {e}')
+	except Exception as e:
+		requesters=get_default_requesters(f'requesters.txt request error: {e}')
+
+	# requesters.update(requesters)
+
+	if caller_phone_number in requesters.keys():
+		requester	= requesters[caller_phone_number]
+
 	need_to_create_sdp = False
 	if need_to_create_sdp:
 		logger.info(f"Creating SDP bid for {created_by} {caller_phone_number} {department} {receiver_phone_number}")
@@ -170,60 +224,60 @@ def sdp_bid_create(created_by,caller_phone_number,department,receiver_phone_numb
 			# Use json.loads() to convert the JSON string to a Python dictionary
 			
 				
-			try:
-				http = urllib3.PoolManager()
-				url = 'http://10.2.4.52/service/servicedeskplus/-/raw/master/settings/technicans.txt'
-				response = http.request('GET', url)
-				"""technicans = eval(response.data.decode('utf-8'))"""
+			# try:
+			# 	http = urllib3.PoolManager()
+			# 	url = 'http://10.2.4.52/service/servicedeskplus/-/raw/master/settings/technicans.txt'
+			# 	response = http.request('GET', url)
+			# 	"""technicans = eval(response.data.decode('utf-8'))"""
 
-				# Assuming 'response' is an object with a 'data' attribute containing the JSON data
-				# Often 'response' is an object from a library like 'requests'
+			# 	# Assuming 'response' is an object with a 'data' attribute containing the JSON data
+			# 	# Often 'response' is an object from a library like 'requests'
 
-				# If 'response.data' is in bytes, decode it to a string
-				if isinstance(response.data, bytes):
-					data_str = response.data.decode('utf-8')
-				else:
-					data_str = response.data  # If it's already a string
-				try:
-					technicans = json.loads(data_str)
-				except json.JSONDecodeError as e:
-					technicans =get_default_technitians(f'json.JSONDecodeError. technicans.txt: {e}')
+			# 	# If 'response.data' is in bytes, decode it to a string
+			# 	if isinstance(response.data, bytes):
+			# 		data_str = response.data.decode('utf-8')
+			# 	else:
+			# 		data_str = response.data  # If it's already a string
+			# 	try:
+			# 		technicans = json.loads(data_str)
+			# 	except json.JSONDecodeError as e:
+			# 		technicans =get_default_technitians(f'json.JSONDecodeError. technicans.txt: {e}')
 
-			except Exception as e:
-				technicans =get_default_technitians(f'technicans.txt request error: {e}')
+			# except Exception as e:
+			# 	technicans =get_default_technitians(f'technicans.txt request error: {e}')
 
-			receiver_four_digit_phone=receiver_phone_number[-4:]
-			if receiver_four_digit_phone in technicans.keys():
-				technican = technicans[receiver_four_digit_phone]
+			# receiver_four_digit_phone=receiver_phone_number[-4:]
+			# if receiver_four_digit_phone in technicans.keys():
+			# 	technican = technicans[receiver_four_digit_phone]
 
-			subject		= created_by+' '+caller_phone_number+' '+department
-			description = subject+' Звонок принят '+receiver_phone_number+' '+technican
-			# create_request_file='/home/alex/projects/servicedeskplus/sdp_close/CREATE_REQUEST.xml'
-			create_request_file='CREATE_REQUEST.xml'
+			# subject		= created_by+' '+caller_phone_number+' '+department
+			# description = subject+' Звонок принят '+receiver_phone_number+' '+technican
+			# # create_request_file='/home/alex/projects/servicedeskplus/sdp_close/CREATE_REQUEST.xml'
+			# create_request_file='CREATE_REQUEST.xml'
 
-			response = '0'
-			requester	= 'RoboTechnician'
+			# response = '0'
+			# requester	= 'RoboTechnician'
 
-			try:
-				http = urllib3.PoolManager()
-				url = 'http://10.2.4.52/service/servicedeskplus/-/raw/master/settings/requesters.txt'
-				response = http.request('GET', url)
-				# requesters = eval(response.data.decode('utf-8'))
-				if isinstance(response.data, bytes):
-					data_str = response.data.decode('utf-8')
-				else:
-					data_str = response.data  # If it's already a string
-				try:
-					requesters = json.loads(data_str)
-				except json.JSONDecodeError as e:
-					requesters =get_default_requesters(f'json.JSONDecodeError. requesters.txt: {e}')
-			except Exception as e:
-				requesters=get_default_requesters(f'requesters.txt request error: {e}')
+			# try:
+			# 	http = urllib3.PoolManager()
+			# 	url = 'http://10.2.4.52/service/servicedeskplus/-/raw/master/settings/requesters.txt'
+			# 	response = http.request('GET', url)
+			# 	# requesters = eval(response.data.decode('utf-8'))
+			# 	if isinstance(response.data, bytes):
+			# 		data_str = response.data.decode('utf-8')
+			# 	else:
+			# 		data_str = response.data  # If it's already a string
+			# 	try:
+			# 		requesters = json.loads(data_str)
+			# 	except json.JSONDecodeError as e:
+			# 		requesters =get_default_requesters(f'json.JSONDecodeError. requesters.txt: {e}')
+			# except Exception as e:
+			# 	requesters=get_default_requesters(f'requesters.txt request error: {e}')
 
-			# requesters.update(requesters)
+			# # requesters.update(requesters)
 
-			if caller_phone_number in requesters.keys():
-				requester	= requesters[caller_phone_number]
+			# if caller_phone_number in requesters.keys():
+			# 	requester	= requesters[caller_phone_number]
 
 			print('created_by:',created_by)
 			print('requester',requester)
