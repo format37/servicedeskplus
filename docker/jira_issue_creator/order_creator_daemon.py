@@ -272,7 +272,8 @@ def sdp_bid_create(created_by,caller_phone_number,department,receiver_phone_numb
 	#return web.Response(text=response,content_type="text/html")
 
 	jira_issue=''
-	if sdp_order!='':
+	# if sdp_order!='':
+	if True:
 		# jira_created = False
 		jira_created = True # Disabled Jira & SDP creation
 		while jira_created == False:
