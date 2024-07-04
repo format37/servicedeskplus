@@ -151,119 +151,121 @@ def get_default_requesters(message = ""):
 	}
 
 def sdp_bid_create(created_by,caller_phone_number,department,receiver_phone_number):
-	logger.info(f"Creating SDP bid for {created_by} {caller_phone_number} {department} {receiver_phone_number}")
-	try:
-		# print('\n======= sdp create by ats:',datetime.datetime.now())
-		sdp_order=''
-		technican=''
-		category=''
-		#created_by 				= request.rel_url.query['created_by']				# Петров М.В.
-		#caller_phone_number		= request.rel_url.query['caller_phone_number']		# 2001 - имя хоста от Nagios	
-		#department				= request.rel_url.query['department']				# MRM
-		#receiver_phone_number	= request.rel_url.query['receiver_phone_number']	# SIP/1611 - звонок принят
-		#api_key					= request.rel_url.query['api_key']					# API Key sdp
-		api_key = os.environ.get('API_KEY', '')
-		#sdp_key = os.environ.get('SDP_KEY', '')
-
-		# Use json.loads() to convert the JSON string to a Python dictionary
-		
-			
+	need_to_create_sdp = False
+	if need_to_create_sdp:
+		logger.info(f"Creating SDP bid for {created_by} {caller_phone_number} {department} {receiver_phone_number}")
 		try:
-			http = urllib3.PoolManager()
-			url = 'http://10.2.4.52/service/servicedeskplus/-/raw/master/settings/technicans.txt'
-			response = http.request('GET', url)
-			"""technicans = eval(response.data.decode('utf-8'))"""
+			# print('\n======= sdp create by ats:',datetime.datetime.now())
+			sdp_order=''
+			technican=''
+			category=''
+			#created_by 				= request.rel_url.query['created_by']				# Петров М.В.
+			#caller_phone_number		= request.rel_url.query['caller_phone_number']		# 2001 - имя хоста от Nagios	
+			#department				= request.rel_url.query['department']				# MRM
+			#receiver_phone_number	= request.rel_url.query['receiver_phone_number']	# SIP/1611 - звонок принят
+			#api_key					= request.rel_url.query['api_key']					# API Key sdp
+			api_key = os.environ.get('API_KEY', '')
+			#sdp_key = os.environ.get('SDP_KEY', '')
 
-			# Assuming 'response' is an object with a 'data' attribute containing the JSON data
-			# Often 'response' is an object from a library like 'requests'
-
-			# If 'response.data' is in bytes, decode it to a string
-			if isinstance(response.data, bytes):
-				data_str = response.data.decode('utf-8')
-			else:
-				data_str = response.data  # If it's already a string
-			try:
-				technicans = json.loads(data_str)
-			except json.JSONDecodeError as e:
-				technicans =get_default_technitians(f'json.JSONDecodeError. technicans.txt: {e}')
-
-		except Exception as e:
-			technicans =get_default_technitians(f'technicans.txt request error: {e}')
-
-		receiver_four_digit_phone=receiver_phone_number[-4:]
-		if receiver_four_digit_phone in technicans.keys():
-			technican = technicans[receiver_four_digit_phone]
-
-		subject		= created_by+' '+caller_phone_number+' '+department
-		description = subject+' Звонок принят '+receiver_phone_number+' '+technican
-		# create_request_file='/home/alex/projects/servicedeskplus/sdp_close/CREATE_REQUEST.xml'
-		create_request_file='CREATE_REQUEST.xml'
-
-		response = '0'
-		requester	= 'RoboTechnician'
-
-		try:
-			http = urllib3.PoolManager()
-			url = 'http://10.2.4.52/service/servicedeskplus/-/raw/master/settings/requesters.txt'
-			response = http.request('GET', url)
-			# requesters = eval(response.data.decode('utf-8'))
-			if isinstance(response.data, bytes):
-				data_str = response.data.decode('utf-8')
-			else:
-				data_str = response.data  # If it's already a string
-			try:
-				requesters = json.loads(data_str)
-			except json.JSONDecodeError as e:
-				requesters =get_default_requesters(f'json.JSONDecodeError. requesters.txt: {e}')
-		except Exception as e:
-			requesters=get_default_requesters(f'requesters.txt request error: {e}')
-
-		# requesters.update(requesters)
-
-		if caller_phone_number in requesters.keys():
-			requester	= requesters[caller_phone_number]
-
-		print('created_by:',created_by)
-		print('requester',requester)
-		print('technican:',technican)
-		print('caller_phone_number:',caller_phone_number)
-		print('sdp_key:',api_key)
-		print('department:',department)
-		print('receiver_phone_number:',receiver_phone_number)
-		print('subject:',subject)
-		
-		with open(create_request_file,'rb') as fh:		
-			INPUT_DATA	= fh.read().decode("utf-8")
-			INPUT_DATA = INPUT_DATA.replace("%Subject%",	subject)
-			INPUT_DATA = INPUT_DATA.replace("%Technician%",	technican)
-			INPUT_DATA = INPUT_DATA.replace("%Category%",	category)
-			INPUT_DATA = INPUT_DATA.replace("%Description%",description)
-			INPUT_DATA = INPUT_DATA.replace("%Requester%",requester)
-			url='http://10.2.4.46/sdpapi/request/?OPERATION_NAME=ADD_REQUEST&TECHNICIAN_KEY='+api_key+'&INPUT_DATA='+urllib.parse.quote_plus(INPUT_DATA)
-			#print(INPUT_DATA)
-			headers = {'Content-Type': 'application/xml'}		
-			xmlData = requests.post(url, headers=headers).text
-			API = ET.fromstring(xmlData)
-			#print('xmlData',xmlData)
-			responce	= API[0]		
-			operation	= responce[0]
-			result		= operation[0]
-			status		= result[0]
-			print('status',status.text)
-			message		= result[1]
-			print('message',message.text)
-
-			details		= operation[1]
-			response = details[0].text;
-			print('sdp new order',details[0].text)
-			sdp_order=details[0].text
+			# Use json.loads() to convert the JSON string to a Python dictionary
 			
-	except Exception as e:
-		message = str(datetime.datetime.now().strftime("%Y-%m-%d-%H:%M:%S"))+\
-		'\njira order_creator_daemon error: '+str(e)
-		send_to_telegram(message)
-	
-	#try:
+				
+			try:
+				http = urllib3.PoolManager()
+				url = 'http://10.2.4.52/service/servicedeskplus/-/raw/master/settings/technicans.txt'
+				response = http.request('GET', url)
+				"""technicans = eval(response.data.decode('utf-8'))"""
+
+				# Assuming 'response' is an object with a 'data' attribute containing the JSON data
+				# Often 'response' is an object from a library like 'requests'
+
+				# If 'response.data' is in bytes, decode it to a string
+				if isinstance(response.data, bytes):
+					data_str = response.data.decode('utf-8')
+				else:
+					data_str = response.data  # If it's already a string
+				try:
+					technicans = json.loads(data_str)
+				except json.JSONDecodeError as e:
+					technicans =get_default_technitians(f'json.JSONDecodeError. technicans.txt: {e}')
+
+			except Exception as e:
+				technicans =get_default_technitians(f'technicans.txt request error: {e}')
+
+			receiver_four_digit_phone=receiver_phone_number[-4:]
+			if receiver_four_digit_phone in technicans.keys():
+				technican = technicans[receiver_four_digit_phone]
+
+			subject		= created_by+' '+caller_phone_number+' '+department
+			description = subject+' Звонок принят '+receiver_phone_number+' '+technican
+			# create_request_file='/home/alex/projects/servicedeskplus/sdp_close/CREATE_REQUEST.xml'
+			create_request_file='CREATE_REQUEST.xml'
+
+			response = '0'
+			requester	= 'RoboTechnician'
+
+			try:
+				http = urllib3.PoolManager()
+				url = 'http://10.2.4.52/service/servicedeskplus/-/raw/master/settings/requesters.txt'
+				response = http.request('GET', url)
+				# requesters = eval(response.data.decode('utf-8'))
+				if isinstance(response.data, bytes):
+					data_str = response.data.decode('utf-8')
+				else:
+					data_str = response.data  # If it's already a string
+				try:
+					requesters = json.loads(data_str)
+				except json.JSONDecodeError as e:
+					requesters =get_default_requesters(f'json.JSONDecodeError. requesters.txt: {e}')
+			except Exception as e:
+				requesters=get_default_requesters(f'requesters.txt request error: {e}')
+
+			# requesters.update(requesters)
+
+			if caller_phone_number in requesters.keys():
+				requester	= requesters[caller_phone_number]
+
+			print('created_by:',created_by)
+			print('requester',requester)
+			print('technican:',technican)
+			print('caller_phone_number:',caller_phone_number)
+			print('sdp_key:',api_key)
+			print('department:',department)
+			print('receiver_phone_number:',receiver_phone_number)
+			print('subject:',subject)
+			
+			with open(create_request_file,'rb') as fh:		
+				INPUT_DATA	= fh.read().decode("utf-8")
+				INPUT_DATA = INPUT_DATA.replace("%Subject%",	subject)
+				INPUT_DATA = INPUT_DATA.replace("%Technician%",	technican)
+				INPUT_DATA = INPUT_DATA.replace("%Category%",	category)
+				INPUT_DATA = INPUT_DATA.replace("%Description%",description)
+				INPUT_DATA = INPUT_DATA.replace("%Requester%",requester)
+				url='http://10.2.4.46/sdpapi/request/?OPERATION_NAME=ADD_REQUEST&TECHNICIAN_KEY='+api_key+'&INPUT_DATA='+urllib.parse.quote_plus(INPUT_DATA)
+				#print(INPUT_DATA)
+				headers = {'Content-Type': 'application/xml'}		
+				xmlData = requests.post(url, headers=headers).text
+				API = ET.fromstring(xmlData)
+				#print('xmlData',xmlData)
+				responce	= API[0]		
+				operation	= responce[0]
+				result		= operation[0]
+				status		= result[0]
+				print('status',status.text)
+				message		= result[1]
+				print('message',message.text)
+
+				details		= operation[1]
+				response = details[0].text;
+				print('sdp new order',details[0].text)
+				sdp_order=details[0].text
+				
+		except Exception as e:
+			message = str(datetime.datetime.now().strftime("%Y-%m-%d-%H:%M:%S"))+\
+			'\njira order_creator_daemon error: '+str(e)
+			send_to_telegram(message)
+		
+		#try:
 	
 	response =''
 	#print('\nreturn',datetime.datetime.now())
@@ -271,7 +273,8 @@ def sdp_bid_create(created_by,caller_phone_number,department,receiver_phone_numb
 
 	jira_issue=''
 	if sdp_order!='':
-		jira_created = False
+		# jira_created = False
+		jira_created = True # Disabled Jira & SDP creation
 		while jira_created == False:
 			try:
 				print('\n======= jira create by ats:',datetime.datetime.now())
@@ -361,8 +364,8 @@ def sdp_bid_create(created_by,caller_phone_number,department,receiver_phone_numb
 	# send to telegram
 	message = str(datetime.datetime.now().strftime("%Y-%m-%d-%H:%M:%S"))+\
 		'\nЗвонок от '+caller_phone_number+' '+requester+' 74957770320,'+caller_phone_number+\
-		'\nПринял '+receiver_phone_number+' '+technican+\
-		'\nSdp: http://help.icecorp.ru/WorkOrder.do?woMode=viewWO&woID='+sdp_order+jira_issue
+		'\nПринял '+receiver_phone_number+' '+technican
+		# '\nSdp: http://help.icecorp.ru/WorkOrder.do?woMode=viewWO&woID='+sdp_order+jira_issue
 	send_to_telegram(message)
 
 	#return web.Response(text=response,content_type="text/html")
